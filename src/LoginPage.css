@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F0F0F0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    max-width: 800px;
+    width: 100%;
+}
+.info-card, .login-card {
+    flex: 1 1 360px;
+    padding: 20px;
+    color: #6C757D;
+}
+.login-card {
+    background: linear-gradient(to right, #125BDC, #36B0EF);
+    border-radius: 30px;
+    color: white;
+}
+.login-card input, .login-card button {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.login-card button {
+    background-color: white;
+    color: #007BFF;
+    border: none;
+    border-radius: 5px;
+}
+.login-card .button-container {
+    display: flex;
+    justify-content: space-between;
+}
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+.transparent-box {
+    background-color: rgba(255, 255, 255, 0.5); /* White background with 50% opacity */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px; /* Some padding */
+    margin-bottom: 20px; /* Bottom margin */
+  }
+  
