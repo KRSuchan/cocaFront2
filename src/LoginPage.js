@@ -37,11 +37,11 @@ function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
           <div className="button-container">
-            <button type="submit" onClick={handleLogin}>LOGIN</button>
-            <button type="submit">SIGN UP</button>
+            <button className="login-button" type="submit" onClick={handleLogin}>LOGIN</button>
+            <button className="signup-button" type="submit">SIGN UP</button>
           </div>
         </div>
-        <h2>COCA</h2>
+        <h2 className="right-aligned">COCA</h2>
       </div>
     </div>
   );
