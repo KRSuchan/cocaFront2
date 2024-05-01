@@ -36,6 +36,7 @@ const reducer = (state = { date: moment() }, action) => {
 // Create your Redux store
 const store = createStore(reducer);
 
+// 미니캘린더 버전1
 const MiniCalendar = () => {
     const date = useSelector(state => state.date);
     const dispatch = useDispatch();
