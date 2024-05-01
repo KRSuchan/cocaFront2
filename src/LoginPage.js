@@ -14,7 +14,7 @@ function LoginPage() {
   return (
     <div className="container">
       <div className="info-card">
-        <h2>✨빈일정찾기</h2>
+        <h2><span role="img" aria-label="sparkles">✨</span>빈일정찾기</h2>
         <p>빈 일정 찾기 버튼을 눌러, 모두의 일정을 비교하고 모두가 빈 시간에 회의하거나, 여행 일정을 추가해 보세요!</p>
       </div>
       <div className="login-card">
@@ -44,7 +44,8 @@ function LoginPage() {
       </div>
       
     </div>
-  );
+);
+
 }
 
 export default LoginPage;

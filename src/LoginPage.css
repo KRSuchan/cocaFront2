@@ -1,26 +1,29 @@
-
 .info-card {
     flex: 1 1 360px;
-    padding: 20px;
-    color: #8F2BCC; /* 글자 색상을 흰색으로 변경 */
-    /* background-color: ; 배경색을 보라색으로 변경 */
-    font-weight: bold; /* 글자를 볼드체로 변경 */
-    padding-right: 90px;
+    padding: 40px;
+    color: #ffffff; /* 글자 색상을 흰색으로 변경 */
+background: linear-gradient(to right, #8F2BCC, #c85fe2) !important; /* !important 키워드 추가 */    font-weight: bold; /* 글자를 볼드체로 변경 */
     font-family: 'Noto Sans KR', sans-serif; /* Noto Sans KR 폰트 적용 */
+    border-radius: 40px; /* 모서리를 둥글게 */
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+    margin-right: 90px;
 }
+
 .info-card h2{
     font-size: 44px;
     font-weight: 900;
     background: linear-gradient(to left, #E492F8, #b144f5); /* 그라데이션 배경 적용 */
     color: #ffffff;
     border-radius: 35px;
+    padding: 10px; /* 패딩 추가 */
 }
 
 .info-card p{
     font-weight: 900;
     font-size: 22px;
-
+    line-height: 1.6; /* 줄 간격 조정 */
 }
+
 body {
     font-family: Arial, sans-serif;
     background-color: #F0F0F0;
@@ -31,14 +34,15 @@ body {
     align-items: center;
     height: 100vh;
 }
+
 .container {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     max-width: 1200px; /* max-width를 더 크게 설정 */
     width: 100%;
+    padding: 20px; /* 컨테이너에 패딩 추가 */
 }
-
 
 .login-card {
     flex: 1 1 360px;
@@ -46,7 +50,7 @@ body {
     color: white; /* 글자 색상을 흰색으로 변경 */
     background: linear-gradient(to right, #125BDC, #36B0EF); /* 배경색을 그라데이션 파란색으로 유지 */
     border-radius: 30px;
-    
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
 }
 
 .login-card input {
@@ -57,7 +61,7 @@ body {
     border-radius: 10px;
     border: none;
     font-family: 'Lexend Zetta', sans-serif;
-
+    background-color: rgba(255, 255, 255, 0.8); /* 입력 필드에 약간의 투명도를 가진 흰색 배경 적용 */
 }
 
 .login-card button {
@@ -71,6 +75,13 @@ body {
     color: white;
     font-weight: 900;
     font-family: 'Lexend Zetta', sans-serif;
+    cursor: pointer; /* 마우스 커서를 포인터로 변경 */
+    transition: all 0.3s ease; /* 버튼 상태 변경에 애니메이션 효과 적용 */
+}
+
+.login-card button:hover {
+    background: #ffffff; /* 마우스 오버시 배경색을 흰색으로 변경 */
+    color: #008CBA; /* 마우스 오버시 글자색을 파란색으로 변경 */
 }
 
 .login-card .button-container {
@@ -79,25 +90,20 @@ body {
     gap: 10px; /* 버튼 간격 설정 */
 }
 
-/* @media screen and (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        align-items: center;
-    }
-} */
 .transparent-box {
     background-color: rgba(255, 255, 255, 0.35); /* White background with 50% opacity */
-    border-radius: 10px; /* Rounded corners */
+    border-radius: 20px; /* Rounded corners */
     padding: 10px; /* Some padding */
     margin-bottom: 20px; /* Bottom margin */
-  }
-  .right-aligned {
+}
+
+.right-aligned {
     text-align: right;
     font-size: 50px;
     font-family: 'Lexend Zetta', sans-serif;
-  }
-  
-  .login-button {
+}
+
+.login-button {
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;
@@ -109,9 +115,9 @@ body {
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 10px;
-  }
-  
-  .signup-button {
+}
+
+.signup-button {
     background-color: #008CBA; /* Blue */
     border: none;
     color: white;
@@ -123,4 +129,4 @@ body {
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 10px;
-  }
+}
