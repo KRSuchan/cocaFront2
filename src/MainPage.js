@@ -76,29 +76,6 @@ const MiniCalendar = () => {
     );
 };
 
-//그룹리스트 버전 1 antd
-// const GroupsList = () => {
-//     // Assume groups is an array of group names
-//     const groups = useSelector(state => state.groups);
-
-//     const handleClick = (group) => {
-//         alert(`You clicked on ${group}`); // 브라우저 알림창 표시
-//     };
-
-//     return (
-//         <div className="calendar-component">
-//             <List
-//                 dataSource={groups}
-//                 renderItem={group => (
-//                     <List.Item style={{ borderRadius: '15px', backgroundColor: '#f8f9fa', marginBottom: '10px', padding: '10px' }} onClick={() => handleClick(group)}>
-//                         {group}
-//                     </List.Item>
-//                 )}
-//             />
-//         </div>
-//     );
-// };
-
 const GroupsList = () => {
     // Assume groups is an array of group names
     const groups = useSelector(state => state.groups);
@@ -156,6 +133,11 @@ const ButtonPanel = () => {
 
 const MainCalendar = () => {
     const events = useSelector(state => state.events);
+    const [selectedDate, setSelectedDate] = useState(null); // 선택한 날짜를 추적하는 상태 변수를 추가합니다.
+
+    const handleSelect = ({ start, end }) => { // 선택한 날짜를 처리하는 이벤트 핸들러를 추가합니다.
+        setSelectedDate({ start, end });
+    };
 
     return (
         <div className="calendar-component-main">
@@ -165,10 +147,12 @@ const MainCalendar = () => {
                 startAccessor="start"
                 endAccessor="end"
                 style={{ height: '100%' }} // 캘린더의 높이를 100%로 설정
+                views={['month']} // month 뷰만 표시
             />
         </div>
     );
 };
+
 function MainPage() {
     return (
         <Provider store={store}>
