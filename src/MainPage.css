@@ -4,12 +4,22 @@
     height: 100vh;
 }
 
+body > div {
+    width: 100vw;
+    height: 100vh;
+}
+
+.left-panel, .right-panel {
+    overflow: hidden;
+}
+
 .left-panel {
     width: 30%;
     height: 100vh;
     border-right: 1px solid #ccc;
     padding: 10px;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .right-panel {
@@ -18,16 +28,61 @@
     padding: 10px;
 }
 
+/* 미니캘린더 */
 .calendar-component {
-    margin-bottom: 10px;
+    width: 100%;
 }
 
-/* Update the CSS for the calendar dates */
-.ant-picker-calendar-date {
-    background: none !important;
+.calendar-component .react-calendar {
+    width: 100%;
 }
 
-.ant-picker-calendar-date-value {
-    color: black !important;
-    font-weight: bold !important;
+.group-and-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* 추가 */
+    flex-grow: 1;
+    overflow: auto;
+}
+
+
+.group-and-button .groups-list {
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.group-and-button .button-panel {
+    flex-shrink: 0;
+}
+
+/* 버튼4개 */
+.button-panel {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button {
+    border-radius: 15px;
+    width: 100px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.button.disappointment {
+    background-color: #FF7F7F;
+}
+
+.button.green-color {
+    background-color: #7FB3D5;
+}
+
+.button.violet {
+    background-color: #BB8FCE;
+}
+
+.button.navy-blue {
+    background-color: #76D7C4;
 }

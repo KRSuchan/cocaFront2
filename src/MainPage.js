@@ -12,7 +12,8 @@ import 'moment/locale/ko';  // Import Korean locale
 import { useState } from 'react';
 import RCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import 'react-calendar/dist/Calendar.css';
+import { Button } from 'antd';
+import { SmileOutlined, SearchOutlined, StarOutlined, SettingOutlined } from '@ant-design/icons';
 
 moment.locale('ko');
 
@@ -40,36 +41,8 @@ const reducer = (state = { date: moment() }, action) => {
 // Create your Redux store
 const store = createStore(reducer);
 
-// 미니캘린더 버전1 = AntCalendar
-// const MiniCalendar = () => {
-//     const date = useSelector(state => state.date);
-//     const dispatch = useDispatch();
 
-//     const handlePrevMonth = () => {
-//         dispatch(updateDate(moment(date).subtract(1, 'months')));
-//     };
-
-//     const handleNextMonth = () => {
-//         dispatch(updateDate(moment(date).add(1, 'months')));
-//     };
-
-//     return (
-//         <div className="calendar-component">
-//             <div>
-//                 <LeftOutlined onClick={handlePrevMonth} />
-//                 <DatePicker 
-//                     picker="month"
-//                     value={moment(date)} 
-//                     onChange={(newDate) => dispatch(updateDate(moment(newDate)))}
-//                 />
-//                 <RightOutlined onClick={handleNextMonth} />
-//             </div>
-//             <AntCalendar value={moment(date)} mode="month" fullscreen={false} />
-//         </div>
-//     );
-// };
-
-//미니캘린더 버전2 
+//미니캘린더 버전2 = React Calendar
 const MiniCalendar = () => {
     const [date, setDate] = useState(new Date());
 
@@ -81,12 +54,17 @@ const MiniCalendar = () => {
         return ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
     };
 
+    const formatDay = (locale, date) => {
+        return date.getDate().toString();
+    };
+
     return (
         <div className="calendar-component">
             <RCalendar 
                 onChange={onChange} 
                 value={date} 
                 formatShortWeekday={formatShortWeekday}
+                formatDay={formatDay}
             />
         </div>
     );
@@ -106,6 +84,28 @@ const GroupsList = () => {
     );
 };
 
+
+const ButtonPanel = () => {
+    return (
+        <div className="button-panel">
+            <Button icon={<SmileOutlined style={{ fontSize: '20px' }} />} className="button disappointment">
+                <div>실망</div>
+            </Button>
+            <Button icon={<SearchOutlined style={{ fontSize: '20px' }} />} className="button green-color">
+                <div>그린색상</div>
+            </Button>
+            <Button icon={<StarOutlined style={{ fontSize: '20px' }} />} className="button violet">
+                <div>비올레차쥐</div>
+            </Button>
+            <Button icon={<SettingOutlined style={{ fontSize: '20px' }} />} className="button navy-blue">
+                <div>네이청</div>
+            </Button>
+        </div>
+    );
+};
+
+
+
 const MainCalendar = () => {
     const events = useSelector(state => state.events);
 
@@ -120,14 +120,16 @@ const MainCalendar = () => {
         </div>
     );
 };
-
 function MainPage() {
     return (
         <Provider store={store}>
             <div className="App">
                 <div className="left-panel">
                     <MiniCalendar />
-                    <GroupsList />
+                    <div className="group-and-button">
+                        <GroupsList />
+                        <ButtonPanel />
+                    </div>
                 </div>
                 <div className="right-panel">
                     <MainCalendar />
@@ -136,5 +138,7 @@ function MainPage() {
         </Provider>
     );
 }
+
+
 
 export default MainPage;
