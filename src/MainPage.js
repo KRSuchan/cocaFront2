@@ -8,6 +8,9 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CalendarOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Calendar as AntCalendar } from 'antd';
 import './MainPage.css'
+import 'moment/locale/ko';  // Import Korean locale
+
+moment.locale('ko');
 
 // Create the localizer
 const localizer = momentLocalizer(moment);
@@ -51,15 +54,17 @@ const MiniCalendar = () => {
                 <LeftOutlined onClick={handlePrevMonth} />
                 <DatePicker 
                     picker="month"
-                    value={date} 
-                    onChange={(newDate) => dispatch(updateDate(newDate))}
+                    value={moment(date)} 
+                    onChange={(newDate) => dispatch(updateDate(moment(newDate)))}
                 />
                 <RightOutlined onClick={handleNextMonth} />
             </div>
-            <AntCalendar value={date} mode="month" fullscreen={false} />
+            <AntCalendar value={moment(date)} mode="month" fullscreen={false} />
         </div>
     );
 };
+
+
 
 const GroupsList = () => {
     // Assume groups is an array of group names

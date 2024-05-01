@@ -1,12 +1,12 @@
 .App {
     display: flex;
-    flex-direction: row; /* Add this line */
+    flex-direction: row;
     height: 100vh;
 }
 
 .left-panel {
     width: 30%;
-    height: 100vh; /* Add this line */
+    height: 100vh;
     border-right: 1px solid #ccc;
     padding: 10px;
     overflow: auto;
@@ -14,10 +14,20 @@
 
 .right-panel {
     width: 70%;
-    height: 100vh; /* Add this line */
+    height: 100vh;
     padding: 10px;
 }
 
 .calendar-component {
     margin-bottom: 10px;
+}
+
+/* Update the CSS for the calendar dates */
+.ant-picker-calendar-date {
+    background: none !important;
+}
+
+.ant-picker-calendar-date-value {
+    color: black !important;
+    font-weight: bold !important;
 }
