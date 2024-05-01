@@ -1,7 +1,24 @@
+
 .info-card {
     flex: 1 1 360px;
     padding: 20px;
-    color: #8F2BCC; /* 글자 색상 변경 */
+    color: #8F2BCC; /* 글자 색상을 흰색으로 변경 */
+    /* background-color: ; 배경색을 보라색으로 변경 */
+    font-weight: bold; /* 글자를 볼드체로 변경 */
+    padding-right: 90px;
+}
+.info-card h2{
+    font-size: 44px;
+    font-weight: 900;
+    background: linear-gradient(to left, #E492F8, #b144f5); /* 그라데이션 배경 적용 */
+    color: #ffffff;
+    border-radius: 35px;
+}
+
+.info-card p{
+    font-weight: 900;
+    font-size: 20px;
+
 }
 body {
     font-family: Arial, sans-serif;
@@ -17,39 +34,39 @@ body {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    max-width: 800px;
+    max-width: 1200px; /* max-width를 더 크게 설정 */
     width: 100%;
 }
+
+
 .login-card {
     flex: 1 1 360px;
-    padding: 20px;
-    color: #6C757D;
-}
-.login-card {
-    background: linear-gradient(to right, #125BDC, #36B0EF);
+    padding: 40px; /* 패딩을 늘려서 여백을 더 크게 설정 */
+    color: white; /* 글자 색상을 흰색으로 변경 */
+    background: linear-gradient(to right, #125BDC, #36B0EF); /* 배경색을 그라데이션 파란색으로 유지 */
     border-radius: 30px;
-    color: white;
+    
 }
+
 .login-card input {
-    margin: 5px 0;
+    margin: 15px 0; /* 마진을 늘려서 입력 필드 주위의 여백을 더 크게 설정 */
     padding: 10px;
     width: 100%;
     box-sizing: border-box;
     border-radius: 10px;
-    border: none; /* 테두리 없음 */
-    color: blue; /* 파란색 글씨 */
-    font-weight: bold; /* 굵은 글씨 */
+    border: none;
 }
 
 .login-card button {
-    margin: 5px 0;
+    margin: 15px 0; /* 마진을 늘려서 버튼 주위의 여백을 더 크게 설정 */
     padding: 10px;
-    width: auto; /* 버튼 크기를 글자 크기에 맞게 변경 */
+    width: auto;
     box-sizing: border-box;
     border-radius: 10px;
-    border: 2.5px solid white; /* 흰색 테두리 */
-    background: linear-gradient(to Bottom, #35ACEF, #008CBA); /* 그라데이션 배경 */
+    border: 2.5px solid white;
+    background: linear-gradient(to Bottom, #35ACEF, #008CBA);
     color: white;
+    font-weight: 900;
 }
 
 .login-card .button-container {
@@ -58,12 +75,12 @@ body {
     gap: 10px; /* 버튼 간격 설정 */
 }
 
-@media screen and (max-width: 768px) {
+/* @media screen and (max-width: 768px) {
     .container {
         flex-direction: column;
         align-items: center;
     }
-}
+} */
 .transparent-box {
     background-color: rgba(255, 255, 255, 0.35); /* White background with 50% opacity */
     border-radius: 10px; /* Rounded corners */

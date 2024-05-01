@@ -14,9 +14,8 @@ function LoginPage() {
   return (
     <div className="container">
       <div className="info-card">
-        <h2>비인증자 차단</h2>
-        <p>보안 인증된 회원만이, 모임에 참여할 수 있습니다!</p>
-        <p>모임가입 시 신원인증하며, 이후 언제든지 확인할 수 있습니다.</p>
+        <h2>✨빈일정찾기</h2>
+        <p>빈 일정 찾기 버튼을 눌러, 모두의 일정을 비교하고 모두가 빈 시간에 회의하거나, 여행 일정을 추가해 보세요!</p>
       </div>
       <div className="login-card">
         <div className="transparent-box">
