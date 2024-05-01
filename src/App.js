@@ -13,8 +13,9 @@ function App() {
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" />
       </Helmet>
       <Routes>
+        <Route path="/main" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<MainPage />} />
+        <Route path="/" element={<LoginPage />} />
       </Routes>
     </Router>
   );

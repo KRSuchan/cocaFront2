@@ -8,7 +8,7 @@ function LoginPage() {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    navigate('/');
+    navigate('/main');
   };
 
   return (
