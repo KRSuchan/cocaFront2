@@ -41,8 +41,9 @@ function LoginPage() {
             <button className="signup-button" type="submit">SIGN UP</button>
           </div>
         </div>
-        <h2 className="right-aligned">COCA</h2>
+        <h1 className="right-aligned">COCA</h1>
       </div>
+      
     </div>
   );
 }
