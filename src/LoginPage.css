@@ -6,6 +6,7 @@
     /* background-color: ; 배경색을 보라색으로 변경 */
     font-weight: bold; /* 글자를 볼드체로 변경 */
     padding-right: 90px;
+    font-family: 'Noto Sans KR', sans-serif; /* Noto Sans KR 폰트 적용 */
 }
 .info-card h2{
     font-size: 44px;
@@ -17,7 +18,7 @@
 
 .info-card p{
     font-weight: 900;
-    font-size: 20px;
+    font-size: 22px;
 
 }
 body {
@@ -55,6 +56,8 @@ body {
     box-sizing: border-box;
     border-radius: 10px;
     border: none;
+    font-family: 'Lexend Zetta', sans-serif;
+
 }
 
 .login-card button {
@@ -67,6 +70,7 @@ body {
     background: linear-gradient(to Bottom, #35ACEF, #008CBA);
     color: white;
     font-weight: 900;
+    font-family: 'Lexend Zetta', sans-serif;
 }
 
 .login-card .button-container {

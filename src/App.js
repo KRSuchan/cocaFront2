@@ -10,6 +10,7 @@ function App() {
     <Router>
       <Helmet>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend+Zetta&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" />
       </Helmet>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
