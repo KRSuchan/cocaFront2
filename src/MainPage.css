@@ -61,14 +61,6 @@ body > div {
 /* 캘린더그룹 */
 
 /* 그룹 리스트 항목 */
-.calendar-component .groups-list .list-item {
-    border-radius: 15px;
-    background-color: #f8f9fa;
-    margin-bottom: 10px;
-    padding: 10px;
-    font-family: 'Noto Sans KR', sans-serif; /* 폰트 변경 */
-}
-
 
 /* 버튼4개 */
 .button-panel {
@@ -79,25 +71,28 @@ body > div {
 .button {
     border-radius: 10px;
     width: 100px;
+    height: 100px; /* 높이 추가 */
     color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    font-family: 'Noto Sans KR', sans-serif; /* 폰트 변경 */
+
 }
 
 .button.disappointment {
-    background-color: #FF7F7F;
+    background-color: #FE9FA5; /* 색상 변경 */
 }
 
 .button.green-color {
-    background-color: #7FB3D5;
+    background-color: #6FACA9; /* 색상 변경 */
 }
 
 .button.violet {
-    background-color: #BB8FCE;
+    background: linear-gradient(to right, #A93DE7, #E18DF8); /* 그라데이션 색상 변경 */
 }
 
 .button.navy-blue {
-    background-color: #76D7C4;
+    background-color: #69BDD5; /* 색상 변경 */
 }

@@ -14,6 +14,7 @@ import RCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Button } from 'antd';
 import { SmileOutlined, SearchOutlined, StarOutlined, SettingOutlined } from '@ant-design/icons';
+import { ListGroup } from 'react-bootstrap'; // React Bootstrap 라이브러리에서 ListGroup 컴포넌트를 가져옵니다.
 
 moment.locale('ko');
 
@@ -75,50 +76,82 @@ const MiniCalendar = () => {
     );
 };
 
+//그룹리스트 버전 1 antd
+// const GroupsList = () => {
+//     // Assume groups is an array of group names
+//     const groups = useSelector(state => state.groups);
+
+//     const handleClick = (group) => {
+//         alert(`You clicked on ${group}`); // 브라우저 알림창 표시
+//     };
+
+//     return (
+//         <div className="calendar-component">
+//             <List
+//                 dataSource={groups}
+//                 renderItem={group => (
+//                     <List.Item style={{ borderRadius: '15px', backgroundColor: '#f8f9fa', marginBottom: '10px', padding: '10px' }} onClick={() => handleClick(group)}>
+//                         {group}
+//                     </List.Item>
+//                 )}
+//             />
+//         </div>
+//     );
+// };
+
 const GroupsList = () => {
     // Assume groups is an array of group names
     const groups = useSelector(state => state.groups);
 
+    const [selectedGroup, setSelectedGroup] = useState(null); // 선택된 그룹을 추적하는 상태 변수를 추가합니다.
+
     const handleClick = (group) => {
-        alert(`You clicked on ${group}`); // 브라우저 알림창 표시
+        setSelectedGroup(group); // 클릭한 그룹을 선택된 그룹으로 설정합니다.
     };
 
     return (
         <div className="calendar-component">
-            <List
-                dataSource={groups}
-                renderItem={group => (
-                    <List.Item style={{ borderRadius: '15px', backgroundColor: '#f8f9fa', marginBottom: '10px', padding: '10px' }} onClick={() => handleClick(group)}>
+            <ListGroup variant="flush">
+                {groups.map(group => (
+                    <ListGroup.Item 
+                        style={{ 
+                            borderRadius: '15px', 
+                            backgroundColor: group === selectedGroup ? '#4CB3FF' : '#f8f9fa', // 선택된 그룹이면 배경색을 변경합니다.
+                            color: group === selectedGroup ? 'white' : 'black', // 선택된 그룹이면 글자색을 변경합니다.
+                            marginBottom: '10px', 
+                            padding: '10px',
+                            fontFamily: 'Noto Sans KR', // 폰트를 설정합니다.
+                            fontWeight: group === selectedGroup ? 'bold' : 'normal' // 선택된 그룹이면 글자를 굵게 합니다.
+                        }} 
+                        onClick={() => handleClick(group)}
+                    >
                         {group}
-                    </List.Item>
-                )}
-            />
+                    </ListGroup.Item>
+                ))}
+            </ListGroup>
         </div>
     );
 };
-
-
 
 
 const ButtonPanel = () => {
     return (
         <div className="button-panel">
-            <Button icon={<SmileOutlined style={{ fontSize: '25px' }} />} className="button disappointment">
+            <Button icon={<SmileOutlined style={{ fontSize: '30px' }} />} className="button disappointment">
                 <div>친구</div>
             </Button>
-            <Button icon={<SearchOutlined style={{ fontSize: '25px' }} />} className="button green-color">
+            <Button icon={<SearchOutlined style={{ fontSize: '30px' }} />} className="button green-color">
                 <div>그룹검색</div>
             </Button>
-            <Button icon={<StarOutlined style={{ fontSize: '25px' }} />} className="button violet">
+            <Button icon={<StarOutlined style={{ fontSize: '30px' }} />} className="button violet">
                 <div>빈일정</div>
             </Button>
-            <Button icon={<SettingOutlined style={{ fontSize: '25px' }} />} className="button navy-blue">
+            <Button icon={<SettingOutlined style={{ fontSize: '30px' }} />} className="button navy-blue">
                 <div>내설정</div>
             </Button>
         </div>
     );
 };
-
 
 
 const MainCalendar = () => {
@@ -135,6 +168,7 @@ const MainCalendar = () => {
         </div>
     );
 };
+
 function MainPage() {
     return (
         <Provider store={store}>
