@@ -14,6 +14,7 @@ body > div {
 }
 
 .left-panel {
+    box-sizing: border-box; /* 추가 */
     width: 30%;
     height: 100vh;
     border-right: 1px solid #ccc;
@@ -23,6 +24,7 @@ body > div {
 }
 
 .right-panel {
+    box-sizing: border-box; /* 추가 */
     width: 70%;
     height: 100vh;
     padding: 10px;
@@ -40,20 +42,22 @@ body > div {
 .group-and-button {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* 추가 */
+    justify-content: space-between;
     flex-grow: 1;
-    overflow: auto;
+    overflow: hidden; /* 수정 */
 }
 
 
+
 .group-and-button .groups-list {
-    flex-grow: 1;
+    flex: 1;
     overflow: auto;
 }
 
 .group-and-button .button-panel {
     flex-shrink: 0;
 }
+
 
 /* 버튼4개 */
 .button-panel {

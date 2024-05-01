@@ -89,16 +89,16 @@ const ButtonPanel = () => {
     return (
         <div className="button-panel">
             <Button icon={<SmileOutlined style={{ fontSize: '20px' }} />} className="button disappointment">
-                <div>실망</div>
+                <div>친구</div>
             </Button>
             <Button icon={<SearchOutlined style={{ fontSize: '20px' }} />} className="button green-color">
-                <div>그린색상</div>
+                <div>그룹검색</div>
             </Button>
             <Button icon={<StarOutlined style={{ fontSize: '20px' }} />} className="button violet">
-                <div>비올레차쥐</div>
+                <div>빈일정</div>
             </Button>
             <Button icon={<SettingOutlined style={{ fontSize: '20px' }} />} className="button navy-blue">
-                <div>네이청</div>
+                <div>내설정</div>
             </Button>
         </div>
     );
