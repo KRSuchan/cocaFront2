@@ -1,0 +1,23 @@
+.App {
+    display: flex;
+    flex-direction: row; /* Add this line */
+    height: 100vh;
+}
+
+.left-panel {
+    width: 30%;
+    height: 100vh; /* Add this line */
+    border-right: 1px solid #ccc;
+    padding: 10px;
+    overflow: auto;
+}
+
+.right-panel {
+    width: 70%;
+    height: 100vh; /* Add this line */
+    padding: 10px;
+}
+
+.calendar-component {
+    margin-bottom: 10px;
+}
