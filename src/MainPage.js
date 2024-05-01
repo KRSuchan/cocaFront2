@@ -29,18 +29,23 @@ const updateDate = (newDate) => {
 };
 
 // Define your reducer
-const reducer = (state = { date: moment() }, action) => {
-  switch (action.type) {
-    case 'UPDATE_DATE':
-      return { ...state, date: action.payload };
-    default:
-      return state;
-  }
-};
-
-// Create your Redux store
-const store = createStore(reducer);
-
+const initialState = {
+    date: moment(),
+    groups: ['내 캘린더', '앱 개발자 취뽀그룹', '플러터 개발자그룹', '재수생 스터디그룹'] // 더미 데이터 추가
+  };
+  
+  const reducer = (state = initialState, action) => {
+    switch (action.type) {
+      case 'UPDATE_DATE':
+        return { ...state, date: action.payload };
+      default:
+        return state;
+    }
+  };
+  
+  // Create your Redux store
+  const store = createStore(reducer);
+  
 
 //미니캘린더 버전2 = React Calendar
 const MiniCalendar = () => {
@@ -74,30 +79,40 @@ const GroupsList = () => {
     // Assume groups is an array of group names
     const groups = useSelector(state => state.groups);
 
+    const handleClick = (group) => {
+        alert(`You clicked on ${group}`); // 브라우저 알림창 표시
+    };
+
     return (
         <div className="calendar-component">
             <List
                 dataSource={groups}
-                renderItem={group => <List.Item>{group}</List.Item>}
+                renderItem={group => (
+                    <List.Item style={{ borderRadius: '15px', backgroundColor: '#f8f9fa', marginBottom: '10px', padding: '10px' }} onClick={() => handleClick(group)}>
+                        {group}
+                    </List.Item>
+                )}
             />
         </div>
     );
 };
 
 
+
+
 const ButtonPanel = () => {
     return (
         <div className="button-panel">
-            <Button icon={<SmileOutlined style={{ fontSize: '20px' }} />} className="button disappointment">
+            <Button icon={<SmileOutlined style={{ fontSize: '25px' }} />} className="button disappointment">
                 <div>친구</div>
             </Button>
-            <Button icon={<SearchOutlined style={{ fontSize: '20px' }} />} className="button green-color">
+            <Button icon={<SearchOutlined style={{ fontSize: '25px' }} />} className="button green-color">
                 <div>그룹검색</div>
             </Button>
-            <Button icon={<StarOutlined style={{ fontSize: '20px' }} />} className="button violet">
+            <Button icon={<StarOutlined style={{ fontSize: '25px' }} />} className="button violet">
                 <div>빈일정</div>
             </Button>
-            <Button icon={<SettingOutlined style={{ fontSize: '20px' }} />} className="button navy-blue">
+            <Button icon={<SettingOutlined style={{ fontSize: '25px' }} />} className="button navy-blue">
                 <div>내설정</div>
             </Button>
         </div>
