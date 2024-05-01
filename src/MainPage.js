@@ -158,7 +158,7 @@ const MainCalendar = () => {
     const events = useSelector(state => state.events);
 
     return (
-        <div className="calendar-component" style={{ height: '100%' }}> {/* 부모 요소의 높이를 100%로 설정 */}
+        <div className="calendar-component-main">
             <Calendar 
                 localizer={localizer}
                 events={events}
@@ -168,9 +168,7 @@ const MainCalendar = () => {
             />
         </div>
     );
-    
 };
-
 function MainPage() {
     return (
         <Provider store={store}>

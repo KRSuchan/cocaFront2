@@ -94,3 +94,8 @@ body > div {
     background-color: #69BDD5; /* 색상 변경 */
 }
 
+/* MainCalendar.css */
+.calendar-component-main {
+    height: 100%;
+    font-family: 'Lexend Zetta', sans-serif;
+}
