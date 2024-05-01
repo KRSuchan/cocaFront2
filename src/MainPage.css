@@ -76,7 +76,7 @@ body > div {
     align-items: center;
     justify-content: center;
     font-family: 'Noto Sans KR', sans-serif; /* 폰트 변경 */
-
+    font-weight: 600;
 }
 
 .button.disappointment {
@@ -98,5 +98,9 @@ body > div {
 /* MainCalendar.css */
 .calendar-component-main {
     height: 100%;
+    font-family: 'Lexend Zetta', sans-serif;
+}
+
+.rbc-toolbar button {
     font-family: 'Lexend Zetta', sans-serif;
 }

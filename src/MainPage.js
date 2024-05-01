@@ -9,12 +9,13 @@ import { CalendarOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons
 import { Calendar as AntCalendar } from 'antd';
 import './MainPage.css'
 import 'moment/locale/ko';  // Import Korean locale
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import RCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Button } from 'antd';
 import { SmileOutlined, SearchOutlined, StarOutlined, SettingOutlined } from '@ant-design/icons';
 import { ListGroup } from 'react-bootstrap'; // React Bootstrap 라이브러리에서 ListGroup 컴포넌트를 가져옵니다.
+
 
 moment.locale('ko');
 
@@ -132,12 +133,35 @@ const ButtonPanel = () => {
 
 
 const MainCalendar = () => {
-    const events = useSelector(state => state.events);
-    const [selectedDate, setSelectedDate] = useState(null); // 선택한 날짜를 추적하는 상태 변수를 추가합니다.
+    const [events, setEvents] = useState([
+        {
+            start: new Date(2024, 4, 1), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
+            end: new Date(2024, 4, 1),
+            title: '코딩',
+        },
+        {
+            start: new Date(2024, 4, 17), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
+            end: new Date(2024, 4, 20),
+            title: '일본여행',
+        },
+    ]);
 
-    const handleSelect = ({ start, end }) => { // 선택한 날짜를 처리하는 이벤트 핸들러를 추가합니다.
-        setSelectedDate({ start, end });
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    const handleSelectEvent = event => {
+        setSelectedDate({ start: event.start, end: event.end });
     };
+
+    const handleSelectSlot = slotInfo => {
+        setSelectedDate({ start: slotInfo.start.toLocaleDateString(), end: slotInfo.end.toLocaleDateString() });
+    };
+    
+
+    useEffect(() => {
+        if (selectedDate) {
+            window.alert(`선택한 날짜: ${selectedDate.start} - ${selectedDate.end}`);
+        }
+    }, [selectedDate]);
 
     return (
         <div className="calendar-component-main">
@@ -146,12 +170,23 @@ const MainCalendar = () => {
                 events={events}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: '100%' }} // 캘린더의 높이를 100%로 설정
-                views={['month']} // month 뷰만 표시
+                style={{ height: '100%' }}
+                views={['month']}
+                selectable={true} // 이 부분을 확인해주세요.
+                onSelectEvent={handleSelectEvent} // 일정 선택 시 handleSelectEvent 함수 호출
+                onSelectSlot={handleSelectSlot} // 빈 슬롯 선택 시 handleSelectSlot 함수 호출
             />
         </div>
     );
 };
+
+// MainPage 함수는 그대로 둡니다.
+
+
+// MainPage 함수는 그대로 둡니다.
+
+
+// MainPage 함수는 그대로 둡니다.
 
 function MainPage() {
     return (
