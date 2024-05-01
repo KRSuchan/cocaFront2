@@ -9,6 +9,10 @@ import { CalendarOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons
 import { Calendar as AntCalendar } from 'antd';
 import './MainPage.css'
 import 'moment/locale/ko';  // Import Korean locale
+import { useState } from 'react';
+import RCalendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import 'react-calendar/dist/Calendar.css';
 
 moment.locale('ko');
 
@@ -36,36 +40,57 @@ const reducer = (state = { date: moment() }, action) => {
 // Create your Redux store
 const store = createStore(reducer);
 
-// 미니캘린더 버전1
-const MiniCalendar = () => {
-    const date = useSelector(state => state.date);
-    const dispatch = useDispatch();
+// 미니캘린더 버전1 = AntCalendar
+// const MiniCalendar = () => {
+//     const date = useSelector(state => state.date);
+//     const dispatch = useDispatch();
 
-    const handlePrevMonth = () => {
-        dispatch(updateDate(moment(date).subtract(1, 'months')));
+//     const handlePrevMonth = () => {
+//         dispatch(updateDate(moment(date).subtract(1, 'months')));
+//     };
+
+//     const handleNextMonth = () => {
+//         dispatch(updateDate(moment(date).add(1, 'months')));
+//     };
+
+//     return (
+//         <div className="calendar-component">
+//             <div>
+//                 <LeftOutlined onClick={handlePrevMonth} />
+//                 <DatePicker 
+//                     picker="month"
+//                     value={moment(date)} 
+//                     onChange={(newDate) => dispatch(updateDate(moment(newDate)))}
+//                 />
+//                 <RightOutlined onClick={handleNextMonth} />
+//             </div>
+//             <AntCalendar value={moment(date)} mode="month" fullscreen={false} />
+//         </div>
+//     );
+// };
+
+//미니캘린더 버전2 
+const MiniCalendar = () => {
+    const [date, setDate] = useState(new Date());
+
+    const onChange = (newDate) => {
+        setDate(newDate);
     };
 
-    const handleNextMonth = () => {
-        dispatch(updateDate(moment(date).add(1, 'months')));
+    const formatShortWeekday = (locale, date) => {
+        return ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
     };
 
     return (
         <div className="calendar-component">
-            <div>
-                <LeftOutlined onClick={handlePrevMonth} />
-                <DatePicker 
-                    picker="month"
-                    value={moment(date)} 
-                    onChange={(newDate) => dispatch(updateDate(moment(newDate)))}
-                />
-                <RightOutlined onClick={handleNextMonth} />
-            </div>
-            <AntCalendar value={moment(date)} mode="month" fullscreen={false} />
+            <RCalendar 
+                onChange={onChange} 
+                value={date} 
+                formatShortWeekday={formatShortWeekday}
+            />
         </div>
     );
 };
-
-
 
 const GroupsList = () => {
     // Assume groups is an array of group names
