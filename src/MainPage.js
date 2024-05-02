@@ -148,12 +148,23 @@ const MainCalendar = () => {
 
     const [selectedDate, setSelectedDate] = useState(null);
 
+    // 선택한 날짜에 대한 이벤트를 찾는 함수
+    const findEventsForSelectedDate = (date) => {
+        return events.filter(event => {
+            const eventStart = new Date(event.start).setHours(0, 0, 0, 0);
+            const eventEnd = new Date(event.end).setHours(0, 0, 0, 0);
+            const selectedDate = new Date(date).setHours(0, 0, 0, 0);
+            return selectedDate >= eventStart && selectedDate <= eventEnd;
+        });
+    };
+
     const handleSelectEvent = event => {
         setSelectedDate({ start: event.start, end: event.end });
     };
 
     const handleSelectSlot = slotInfo => {
         setSelectedDate({ start: slotInfo.start.toLocaleDateString(), end: slotInfo.end.toLocaleDateString() });
+        
     };
     
 
@@ -180,24 +191,34 @@ const MainCalendar = () => {
     );
 };
 
-// MainPage 함수는 그대로 둡니다.
-
-
-// MainPage 함수는 그대로 둡니다.
-
-
-// MainPage 함수는 그대로 둡니다.
-
 function MainPage() {
+    // 'default'와 'newPanel' 중 하나를 값으로 가질 수 있는 activePanel 상태 추가
+    // 'default': 기본 left-panel을 보여줌, 'newPanel': 새로운 페이지를 left-panel에 보여줌
+    const [activePanel, setActivePanel] = useState('default');
+
     return (
         <Provider store={store}>
             <div className="App">
                 <div className="left-panel">
-                    <MiniCalendar />
-                    <div className="group-and-button">
-                        <GroupsList />
-                        <ButtonPanel />
-                    </div>
+                    {activePanel === 'default' ? (
+                        // 기존의 left-panel 내용
+                        <React.Fragment>
+                            <MiniCalendar />
+                            <div className="group-and-button">
+                                <GroupsList />
+                                <ButtonPanel />
+                                {/* 여기에 버튼 추가: 버튼 클릭 시 새로운 페이지로 전환 */}
+                                <button onClick={() => setActivePanel('newPanel')}>새 페이지로</button>
+                            </div>
+                        </React.Fragment>
+                    ) : (
+                        // 새로운 페이지 내용
+                        <React.Fragment>
+                            {/* x 버튼: 클릭 시 기존의 left-panel 보여줌 */}
+                            <button onClick={() => setActivePanel('default')}>X</button>
+                            {/* 새로운 페이지 컴포넌트 또는 내용 */}
+                        </React.Fragment>
+                    )}
                 </div>
                 <div className="right-panel">
                     <MainCalendar />
@@ -208,3 +229,4 @@ function MainPage() {
 }
 
 export default MainPage;
+
