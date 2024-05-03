@@ -194,7 +194,14 @@ const MainCalendar = ({onSlotSelect}) => {
     );
 };
 
-
+const Logo= () => {
+    return(
+        <div className="logo-container">
+                    <div style={{flexGrow: 1}}></div> 
+                    <div className="logo-text">COCA</div> 
+                </div>
+    );
+} 
 
 function MainPage() {
     // 'default'와 'newPanel' 중 하나를 값으로 가질 수 있는 activePanel 상태 추가
@@ -243,6 +250,7 @@ function MainPage() {
                 </div>
                 <div className="right-panel">
                     <MainCalendar onSlotSelect={onSlotSelect} />
+                    <Logo/>
                 </div>
             </div>
         </Provider>
