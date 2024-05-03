@@ -81,7 +81,7 @@ const GroupsList = () => {
     // Assume groups is an array of group names
     const groups = useSelector(state => state.groups);
 
-    const [selectedGroup, setSelectedGroup] = useState(null); // 선택된 그룹을 추적하는 상태 변수를 추가합니다.
+    const [selectedGroup, setSelectedGroup] = useState('내 캘린더'); // 선택된 그룹을 추적하는 상태 변수를 추가합니다.
 
     const handleClick = (group) => {
         setSelectedGroup(group); // 클릭한 그룹을 선택된 그룹으로 설정합니다.
@@ -97,7 +97,9 @@ const GroupsList = () => {
                             backgroundColor: group === selectedGroup ? '#4CB3FF' : '#f8f9fa', // 선택된 그룹이면 배경색을 변경합니다.
                             color: group === selectedGroup ? 'white' : 'black', // 선택된 그룹이면 글자색을 변경합니다.
                             marginBottom: '10px', 
-                            padding: '10px',
+                            padding: '15px',
+                            paddingLeft: '25px',
+                            fontSize: '15pt',
                             fontFamily: 'Noto Sans KR', // 폰트를 설정합니다.
                             fontWeight: group === selectedGroup ? 'bold' : 'normal' // 선택된 그룹이면 글자를 굵게 합니다.
                         }} 
@@ -163,8 +165,9 @@ const MainCalendar = ({onSlotSelect}) => {
     };
 
     const handleSelectSlot = slotInfo => {
-        //setSelectedDate({ start: slotInfo.start.toLocaleDateString(), end: slotInfo.end.toLocaleDateString() });
-        onSlotSelect(); // newPanel을 열기 위해 MainPage에서 받은 함수를 호출
+        // 선택한 슬롯의 시작 날짜를 YYYY-MM-DD 형식의 문자열로 변환
+        const startDate = slotInfo.end.toISOString().split('T')[0];
+        onSlotSelect(startDate); // 날짜 정보를 인자로 전달
     };
     
 
@@ -191,37 +194,50 @@ const MainCalendar = ({onSlotSelect}) => {
     );
 };
 
+
+
 function MainPage() {
     // 'default'와 'newPanel' 중 하나를 값으로 가질 수 있는 activePanel 상태 추가
     // 'default': 기본 left-panel을 보여줌, 'newPanel': 새로운 페이지를 left-panel에 보여줌
     const [activePanel, setActivePanel] = useState('default');
+    const [selectedDate, setSelectedDate] = useState(''); // 선택한 날짜 상태 추가
 
        // 여기에 onSlotSelect 함수를 정의합니다.
-       const onSlotSelect = () => {
+       const onSlotSelect = (date) => {
+        setSelectedDate(date); // 선택한 날짜를 상태로 저장
         setActivePanel('newPanel');
     };
+
+    const NewPage = () => (
+        <React.Fragment>
+            <div className='new-page'>
+                <button onClick={() => setActivePanel('default')}>X</button>
+                <h1>{selectedDate}</h1>
+            </div>
+        </React.Fragment>
+    );
 
     return (
         <Provider store={store}>
             <div className="App">
                 <div className="left-panel">
                     {activePanel === 'default' ? (
-                        // 기존의 left-panel 내용
                         <React.Fragment>
-                            <MiniCalendar />
+                            <div className="mini-calendar-container">
+                                <MiniCalendar />
+                            </div>
                             <div className="group-and-button">
-                                <GroupsList />
-                                <ButtonPanel />
-                                {/* 여기에 버튼 추가: 버튼 클릭 시 새로운 페이지로 전환 */}
-                                {/* <button onClick={() => setActivePanel('newPanel')}>새 페이지로</button> */}
+                                <div className="groups-list-container">
+                                    <GroupsList />
+                                </div>
+                                <div className="button-panel-container">
+                                    <ButtonPanel />
+                                </div>
                             </div>
                         </React.Fragment>
                     ) : (
-                        // 새로운 페이지 내용
                         <React.Fragment>
-                            {/* x 버튼: 클릭 시 기존의 left-panel 보여줌 */}
-                            <button onClick={() => setActivePanel('default')}>X</button>
-                            {/* 새로운 페이지 컴포넌트 또는 내용 */}
+                            <NewPage/>
                         </React.Fragment>
                     )}
                 </div>

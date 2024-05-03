@@ -18,26 +18,61 @@ body > div {
     width: 30%;
     height: 100vh;
     border-right: 1px solid #ccc;
-    padding: 10px;
-    display: flex;
+    /* padding: 20px; */
+    /* padding-right: 20px; */
+    display: flex; 
     flex-direction: column;
+    background: linear-gradient(to top left, #41abc9, #96cfdf);
 }
 
 .right-panel {
     box-sizing: border-box; /* 추가 */
-    width: 70%;
+    width: 80%;
     height: 100vh;
     padding: 10px;
-    /* background-color: white; */
+    background-color: white;
+}
+
+.mini-calendar-container {
+    margin-right: 20px;
+    border-bottom-right-radius: 40px;
+    background-color: white;
+    padding: 25px;
+    margin-bottom: 26px;
+    font-family: 'Noto Sans KR', sans-serif; /* 폰트 변경 */
+    font-weight: 900;
+}
+
+.groups-list-container {
+    padding: 25px;
+    margin-right: 20px;
+    border-top-right-radius: 40px;
+    border-bottom-right-radius: 40px;
+    background-color: white;
+    margin-bottom: 26px;
+    height: 100%;
+}
+
+.button-panel-container {
+    padding: 18px;
+    margin-right: 20px;
+    border-top-right-radius: 40px;
+    background-color: white;
+}
+
+.new-page {
+    /* 필요한 경우 새 페이지 스타일 */
 }
 
 /* 미니캘린더 */
 .calendar-component {
     width: 100%;
+    
 }
 
 .calendar-component .react-calendar {
     width: 100%;
+    border: 1px solid white;
 }
 
 .group-and-button {
@@ -67,7 +102,7 @@ body > div {
 }
 
 .button {
-    border-radius: 10px;
+    border-radius: 30px;
     width: 100px;
     height: 100px; /* 높이 추가 */
     color: white;
