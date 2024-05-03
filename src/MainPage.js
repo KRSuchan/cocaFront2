@@ -132,7 +132,7 @@ const ButtonPanel = () => {
 };
 
 
-const MainCalendar = () => {
+const MainCalendar = ({onSlotSelect}) => {
     const [events, setEvents] = useState([
         {
             start: new Date(2024, 4, 1), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
@@ -163,8 +163,8 @@ const MainCalendar = () => {
     };
 
     const handleSelectSlot = slotInfo => {
-        setSelectedDate({ start: slotInfo.start.toLocaleDateString(), end: slotInfo.end.toLocaleDateString() });
-        
+        //setSelectedDate({ start: slotInfo.start.toLocaleDateString(), end: slotInfo.end.toLocaleDateString() });
+        onSlotSelect(); // newPanel을 열기 위해 MainPage에서 받은 함수를 호출
     };
     
 
@@ -196,6 +196,11 @@ function MainPage() {
     // 'default': 기본 left-panel을 보여줌, 'newPanel': 새로운 페이지를 left-panel에 보여줌
     const [activePanel, setActivePanel] = useState('default');
 
+       // 여기에 onSlotSelect 함수를 정의합니다.
+       const onSlotSelect = () => {
+        setActivePanel('newPanel');
+    };
+
     return (
         <Provider store={store}>
             <div className="App">
@@ -208,7 +213,7 @@ function MainPage() {
                                 <GroupsList />
                                 <ButtonPanel />
                                 {/* 여기에 버튼 추가: 버튼 클릭 시 새로운 페이지로 전환 */}
-                                <button onClick={() => setActivePanel('newPanel')}>새 페이지로</button>
+                                {/* <button onClick={() => setActivePanel('newPanel')}>새 페이지로</button> */}
                             </div>
                         </React.Fragment>
                     ) : (
@@ -221,7 +226,7 @@ function MainPage() {
                     )}
                 </div>
                 <div className="right-panel">
-                    <MainCalendar />
+                    <MainCalendar onSlotSelect={onSlotSelect} />
                 </div>
             </div>
         </Provider>
@@ -229,4 +234,3 @@ function MainPage() {
 }
 
 export default MainPage;
-
