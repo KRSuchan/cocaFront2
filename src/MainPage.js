@@ -31,6 +31,7 @@ const updateDate = (newDate) => {
 };
 
 // Define your reducer
+// ✅ 그룹 목록 불러오기!
 const initialState = {
     date: moment(),
     groups: ['내 캘린더', '앱 개발자 취뽀그룹', '플러터 개발자그룹', '재수생 스터디그룹'] // 더미 데이터 추가
@@ -77,12 +78,14 @@ const MiniCalendar = () => {
     );
 };
 
+
 const GroupsList = () => {
     // Assume groups is an array of group names
     const groups = useSelector(state => state.groups);
 
     const [selectedGroup, setSelectedGroup] = useState('내 캘린더'); // 선택된 그룹을 추적하는 상태 변수를 추가합니다.
 
+    // ✅ 그룹 선택시!
     const handleClick = (group) => {
         setSelectedGroup(group); // 클릭한 그룹을 선택된 그룹으로 설정합니다.
     };
@@ -160,10 +163,11 @@ const MainCalendar = ({onSlotSelect}) => {
         });
     };
 
-    const handleSelectEvent = event => {
-        setSelectedDate({ start: event.start, end: event.end });
-    };
+    // const handleSelectEvent = event => {
+    //     setSelectedDate({ start: event.start, end: event.end });
+    // };
 
+    // ✅ 캘린더 슬롯 선택시!
     const handleSelectSlot = slotInfo => {
         // 선택한 슬롯의 시작 날짜를 YYYY-MM-DD 형식의 문자열로 변환
         const startDate = slotInfo.end.toISOString().split('T')[0];
@@ -187,7 +191,7 @@ const MainCalendar = ({onSlotSelect}) => {
                 style={{ height: '100%' }}
                 views={['month']}
                 selectable={true} // 이 부분을 확인해주세요.
-                onSelectEvent={handleSelectEvent} // 일정 선택 시 handleSelectEvent 함수 호출
+                // onSelectEvent={handleSelectEvent} // 일정 선택 시 handleSelectEvent 함수 호출
                 onSelectSlot={handleSelectSlot} // 빈 슬롯 선택 시 handleSelectSlot 함수 호출
             />
         </div>
@@ -203,6 +207,18 @@ const Logo= () => {
     );
 } 
 
+// NewPage 컴포넌트 수정
+const NewPage = ({ setActivePanel, selectedDate }) => (
+    <React.Fragment>
+        <div className='new-page'>
+            <div className='col'>
+                <h1>{selectedDate}</h1>
+                <button onClick={() => setActivePanel('default')}>X</button>
+            </div>
+        </div>
+    </React.Fragment>
+);
+
 function MainPage() {
     // 'default'와 'newPanel' 중 하나를 값으로 가질 수 있는 activePanel 상태 추가
     // 'default': 기본 left-panel을 보여줌, 'newPanel': 새로운 페이지를 left-panel에 보여줌
@@ -215,14 +231,6 @@ function MainPage() {
         setActivePanel('newPanel');
     };
 
-    const NewPage = () => (
-        <React.Fragment>
-            <div className='new-page'>
-                <button onClick={() => setActivePanel('default')}>X</button>
-                <h1>{selectedDate}</h1>
-            </div>
-        </React.Fragment>
-    );
 
     return (
         <Provider store={store}>
@@ -243,9 +251,9 @@ function MainPage() {
                             </div>
                         </React.Fragment>
                     ) : (
-                        <React.Fragment>
-                            <NewPage/>
-                        </React.Fragment>
+                        <div className="new-page-container">
+                            <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} />
+                        </div>
                     )}
                 </div>
                 <div className="right-panel">

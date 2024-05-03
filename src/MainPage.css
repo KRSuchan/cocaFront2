@@ -22,7 +22,7 @@ body > div {
     /* padding-right: 20px; */
     display: flex; 
     flex-direction: column;
-    background: linear-gradient(to top left, #41abc9, #96cfdf);
+    background: linear-gradient(to top, #41abc9, #b6e6f3);
 }
 
 .right-panel {
@@ -64,8 +64,34 @@ body > div {
     background-color: white;
 }
 
+.new-page-container {
+    margin: 25px;
+    margin-top: 0px;
+    height: 100%;
+    border-bottom-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+    background-color: white;
+    padding: 40px;
+}
+
 .new-page {
-    /* 필요한 경우 새 페이지 스타일 */
+    
+}
+
+.new-page .col {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.new-page h1 {
+    font-family: 'Lexend Zetta';
+    font-weight: 900;
+}
+
+.new-page button  {
+    font-size: 20pt;
+    font-family: 'Lexend Zetta';
 }
 
 /* 미니캘린더 */
@@ -153,8 +179,7 @@ body > div {
     height: 80px; /* 높이 설정 */
     background-color: white; 
     /* background: linear-gradient(to right, #41abc9, #96cfdf); */
-    font-family: 'Lexend Zetta', sans-serif; /* 'Lexend Zetta' 폰트 적용 */
-    
+    font-family: 'Lexend Zetta', sans-serif; /* 'Lexend Zetta' 폰트 적용 */   
 }
 
 /* 로고 텍스트 스타일링 */
@@ -165,3 +190,5 @@ body > div {
     /* color: white; */
     color: black;
 }
+
+/* 새 페이지 */
