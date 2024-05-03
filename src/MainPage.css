@@ -75,7 +75,9 @@ body > div {
 }
 
 .new-page {
-    
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* 또는 부모 요소에 따라 적절한 높이 값을 설정 */
 }
 
 .new-page .col {
@@ -86,13 +88,72 @@ body > div {
 
 .new-page h1 {
     font-family: 'Lexend Zetta';
-    font-weight: 900;
+    font-weight: bold;
+    /* color: #41abc9; */
+    color: #DCB274;
 }
 
 .new-page button  {
     font-size: 20pt;
     font-family: 'Lexend Zetta';
 }
+
+.new-page .schedule-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.schedule-card {
+    font-family: 'Noto Sans KR';
+    background: #fff;
+    /* border-radius: 8px; */
+    /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
+    margin-bottom: 30px;
+    /* padding: 20px; */
+}
+
+.schedule-title {
+    /* background-color: #C6E1ED; */
+    background: linear-gradient(to right,#FFECCF,white);
+    color: #D7AA66;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 20pt;
+    font-weight: 800;
+}
+
+.schedule-content {
+    color: #8C8C7F;
+    font-weight: 600;
+    font-size: 14pt;
+}
+
+.schedule-list {
+    flex-grow: 1; /* 이 요소가 가능한 모든 추가 공간을 차지하도록 설정 */
+    overflow-y: auto; /* 내용이 넘칠 경우 스크롤바 생성 */
+}
+
+.add-schedule-button {
+    width: 100%;
+    font-family: 'Noto Sans KR', sans-serif; /* 노토 산스 KR 폰트 사용 */
+    font-weight: 200;
+    background-color: #EFEFF0; /* 버튼 배경색 */
+    border: 3px solid #48AFCB; /* 테두리 색상 및 굵기 */
+    color: #41ADCA;
+    border-radius: 10px; /* 테두리 곡률 */
+    padding: 10px 20px; /* 내부 여백 */
+    cursor: pointer; /* 마우스 오버 시 커서 변경 */
+    outline: none; /* 클릭 시 발생하는 외곽선 제거 */
+    transition: background-color 0.3s; /* 배경색 변경 효과 */
+}
+
+.add-schedule-button:hover {
+    background-color: #DDEDEF; /* 버튼 호버 시 배경색 변경 */
+}
+
 
 /* 미니캘린더 */
 .calendar-component {

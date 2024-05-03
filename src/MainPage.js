@@ -167,7 +167,7 @@ const MainCalendar = ({onSlotSelect}) => {
     //     setSelectedDate({ start: event.start, end: event.end });
     // };
 
-    // ✅ 캘린더 슬롯 선택시!
+    // 캘린더 슬롯 선택시 메인페이지의 메소드 실행함
     const handleSelectSlot = slotInfo => {
         // 선택한 슬롯의 시작 날짜를 YYYY-MM-DD 형식의 문자열로 변환
         const startDate = slotInfo.end.toISOString().split('T')[0];
@@ -207,30 +207,49 @@ const Logo= () => {
     );
 } 
 
-// NewPage 컴포넌트 수정
-const NewPage = ({ setActivePanel, selectedDate }) => (
+const NewPage = ({ setActivePanel, selectedDate, schedule }) => (
     <React.Fragment>
         <div className='new-page'>
             <div className='col'>
                 <h1>{selectedDate}</h1>
                 <button onClick={() => setActivePanel('default')}>X</button>
             </div>
+            <div className="schedule-list">
+                {schedule.map((item, index) => (
+                    <div key={index} className="schedule-card">
+                        <div className="schedule-title">{item.title}</div>
+                        <div className="schedule-content">{item.content}</div>
+                    </div>
+                ))}
+            </div>
+            <button className="add-schedule-button">일정추가</button>
         </div>
     </React.Fragment>
 );
+
 
 function MainPage() {
     // 'default'와 'newPanel' 중 하나를 값으로 가질 수 있는 activePanel 상태 추가
     // 'default': 기본 left-panel을 보여줌, 'newPanel': 새로운 페이지를 left-panel에 보여줌
     const [activePanel, setActivePanel] = useState('default');
     const [selectedDate, setSelectedDate] = useState(''); // 선택한 날짜 상태 추가
+    const dummySchedule = [
+        {
+            title: "직방 마감",
+            content: "Smarthome(App) Product Owner\n직군 Product planning\n경력 10년 이상, 근무지 soma"
+        },
+        {
+            title: "프로젝트 리뷰",
+            content: "오후 2시, Google Meet"
+        }
+    ];
 
-       // 여기에 onSlotSelect 함수를 정의합니다.
+        
+       // ✅ 캘린더 슬롯 선택시!
        const onSlotSelect = (date) => {
         setSelectedDate(date); // 선택한 날짜를 상태로 저장
         setActivePanel('newPanel');
     };
-
 
     return (
         <Provider store={store}>
@@ -252,7 +271,7 @@ function MainPage() {
                         </React.Fragment>
                     ) : (
                         <div className="new-page-container">
-                            <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} />
+                            <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} schedule={dummySchedule} />                        
                         </div>
                     )}
                 </div>
