@@ -93,9 +93,10 @@ body > div {
     color: #DCB274;
 }
 
-.new-page button  {
+.new-page .col button  {
     font-size: 20pt;
     font-family: 'Lexend Zetta';
+    color: #8C8C7F;
 }
 
 .new-page .schedule-list {
@@ -148,6 +149,7 @@ body > div {
     cursor: pointer; /* 마우스 오버 시 커서 변경 */
     outline: none; /* 클릭 시 발생하는 외곽선 제거 */
     transition: background-color 0.3s; /* 배경색 변경 효과 */
+    font-size: 20pt;
 }
 
 .add-schedule-button:hover {
