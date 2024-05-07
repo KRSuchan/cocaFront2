@@ -1,0 +1,257 @@
+.App {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+body > div {
+    width: 100vw;
+    height: 100vh;
+}
+
+.left-panel, .right-panel {
+    overflow: hidden;
+}
+
+.left-panel {
+    box-sizing: border-box; /* 추가 */
+    width: 30%;
+    height: 100vh;
+    /* border-right: 1px solid #ccc; */
+    /* padding: 20px; */
+    /* padding-right: 20px; */
+    display: flex; 
+    flex-direction: column;
+    background: linear-gradient(to top, #41abc9, #b6e6f3);
+}
+
+.right-panel {
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    box-sizing: border-box;
+    width: 80%;
+    height: 100vh;
+    padding: 10px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    background-color: white;
+}
+
+.mini-calendar-container {
+    margin-right: 20px;
+    border-bottom-right-radius: 40px;
+    background-color: white;
+    padding: 25px;
+    margin-bottom: 26px;
+    font-family: 'Noto Sans KR', sans-serif; /* 폰트 변경 */
+    font-weight: 900;
+}
+
+.groups-list-container {
+    padding: 25px;
+    margin-right: 20px;
+    border-top-right-radius: 40px;
+    border-bottom-right-radius: 40px;
+    background-color: white;
+    margin-bottom: 26px;
+    height: 100%;
+}
+
+.button-panel-container {
+    padding: 18px;
+    margin-right: 20px;
+    border-top-right-radius: 40px;
+    background-color: white;
+}
+
+.new-page-container {
+    margin: 25px;
+    margin-top: 0px;
+    height: 100%;
+    border-bottom-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+    background-color: white;
+    padding: 40px;
+}
+
+.new-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* 또는 부모 요소에 따라 적절한 높이 값을 설정 */
+}
+
+.new-page .col {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.new-page h1 {
+    font-family: 'Lexend Zetta';
+    font-weight: bold;
+    /* color: #41abc9; */
+    color: #DCB274;
+}
+
+.new-page .col button  {
+    font-size: 20pt;
+    font-family: 'Lexend Zetta';
+    color: #8C8C7F;
+}
+
+.new-page .schedule-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.schedule-card {
+    font-family: 'Noto Sans KR';
+    background: #fff;
+    /* border-radius: 8px; */
+    /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
+    margin-bottom: 30px;
+    /* padding: 20px; */
+}
+
+.schedule-title {
+    /* background-color: #C6E1ED; */
+    background: linear-gradient(to right,#FFECCF,white);
+    color: #D7AA66;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 20pt;
+    font-weight: 800;
+}
+
+.schedule-content {
+    color: #8C8C7F;
+    font-weight: 600;
+    font-size: 14pt;
+}
+
+.schedule-list {
+    flex-grow: 1; /* 이 요소가 가능한 모든 추가 공간을 차지하도록 설정 */
+    overflow-y: auto; /* 내용이 넘칠 경우 스크롤바 생성 */
+}
+
+.add-schedule-button {
+    width: 100%;
+    font-family: 'Noto Sans KR', sans-serif; /* 노토 산스 KR 폰트 사용 */
+    font-weight: 200;
+    background-color: #EFEFF0; /* 버튼 배경색 */
+    border: 3px solid #48AFCB; /* 테두리 색상 및 굵기 */
+    color: #41ADCA;
+    border-radius: 10px; /* 테두리 곡률 */
+    padding: 10px 20px; /* 내부 여백 */
+    cursor: pointer; /* 마우스 오버 시 커서 변경 */
+    outline: none; /* 클릭 시 발생하는 외곽선 제거 */
+    transition: background-color 0.3s; /* 배경색 변경 효과 */
+    font-size: 20pt;
+}
+
+.add-schedule-button:hover {
+    background-color: #DDEDEF; /* 버튼 호버 시 배경색 변경 */
+}
+
+
+/* 미니캘린더 */
+.calendar-component {
+    width: 100%;
+    
+}
+
+.calendar-component .react-calendar {
+    width: 100%;
+    border: 1px solid white;
+}
+
+.group-and-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+    overflow: hidden; /* 수정 */
+}
+
+
+
+.group-and-button .groups-list {
+    flex: 1;
+    overflow: auto;
+}
+
+.group-and-button .button-panel {
+    flex-shrink: 0;
+}
+/* 그룹 리스트 항목 */
+
+/* 버튼4개 */
+.button-panel {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button {
+    border-radius: 30px;
+    width: 100px;
+    height: 100px; /* 높이 추가 */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans KR', sans-serif; /* 폰트 변경 */
+    font-weight: 600;
+}
+
+.button.disappointment {
+    background-color: #FE9FA5; /* 색상 변경 */
+}
+
+.button.green-color {
+    background-color: #6FACA9; /* 색상 변경 */
+}
+
+.button.violet {
+    background: linear-gradient(to right, #A93DE7, #E18DF8); /* 그라데이션 색상 변경 */
+}
+
+.button.navy-blue {
+    background-color: #69BDD5; /* 색상 변경 */
+}
+
+/* MainCalendar.css */
+.calendar-component-main {
+    flex: 1; /* 남은 공간을 모두 차지 */
+    font-family: 'Lexend Zetta', sans-serif;
+}
+
+ 
+.rbc-toolbar button {
+    font-family: 'Lexend Zetta', sans-serif;
+}
+
+/* 로고 컨테이너 스타일링 */
+.logo-container {
+    display: flex; /* 플렉스 박스 모델 사용 */
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: flex-end; /* 우측 정렬 */
+    height: 80px; /* 높이 설정 */
+    background-color: white; 
+    /* background: linear-gradient(to right, #41abc9, #96cfdf); */
+    font-family: 'Lexend Zetta', sans-serif; /* 'Lexend Zetta' 폰트 적용 */   
+}
+
+/* 로고 텍스트 스타일링 */
+.logo-text {
+    margin-right: 20px; /* 우측 여백 */
+    font-size: 49px; /* 폰트 크기 */
+    font-weight:900;
+    /* color: white; */
+    color: black;
+}
+
+/* 새 페이지 */
