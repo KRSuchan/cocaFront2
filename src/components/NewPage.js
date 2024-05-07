@@ -15,7 +15,7 @@ const NewPage = ({ setActivePanel, selectedDate, schedule }) => (
                     </div>
                 ))}
             </div>
-            <button className="add-schedule-button">일정추가</button>
+            <button className="add-schedule-button" onClick={() => setActivePanel('addSchedule')}>일정추가</button>
         </div>
     </React.Fragment>
 );

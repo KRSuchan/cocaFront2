@@ -20,6 +20,7 @@ import GroupsList from './components/GroupsList';
 import MainCalendar from './components/MainCalendar';
 import NewPage from './components/NewPage';
 import ButtonPanel from './components/ButtonPanel';
+import AddSchedulePage from './components/AddSchedulePage';
 
 moment.locale('ko');
 
@@ -109,9 +110,13 @@ function MainPage() {
                                 </div>
                             </div>
                         </React.Fragment>
-                    ) : (
+                    ) : activePanel === 'newPanel' ? (
                         <div className="new-page-container">
                             <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} schedule={dummySchedule} />                        
+                        </div>
+                    ) : (
+                        <div className="add-schedule-page-container">
+                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate} />
                         </div>
                     )}
                 </div>

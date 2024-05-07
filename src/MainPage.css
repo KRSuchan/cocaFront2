@@ -105,6 +105,63 @@ body > div {
     list-style: none;
 }
 
+/* 일정 추가 페이지  */
+
+.add-schedule-page-container {
+}
+
+
+.add-schedule-page {
+    margin: 25px;
+    margin-top: 0px;
+    height: 100%;
+    border-bottom-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+    background-color: white;
+    padding: 40px;
+}
+
+.add-schedule-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* 또는 부모 요소에 따라 적절한 높이 값을 설정 */
+}
+
+.add-schedule-page .col {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.add-schedule-page h1 {
+    font-family: 'Lexend Zetta';
+    font-weight: bold;
+    /* color: #41abc9; */
+    color: #DCB274;
+}
+
+.add-schedule-page .col button  {
+    font-size: 20pt;
+    font-family: 'Lexend Zetta';
+    color: #8C8C7F;
+}
+
+.add-schedule-page .add-schedule-form {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.add-schedule-form input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+}
+
+
 .schedule-card {
     font-family: 'Noto Sans KR';
     background: #fff;
