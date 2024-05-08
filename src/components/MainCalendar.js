@@ -72,10 +72,20 @@ const MainCalendar = ({onSlotSelect}) => {
 
         const finalStartDate = `${currentYear}-${paddedMonth}-01`;
         const finalEndDate = `${currentYear}-${paddedMonth}-${lastDayOfMonth}`;
+
+        let oneWeekAgo = new Date(currentYear, currentMonth, 1);
+        let oneWeekAfter = new Date(currentYear, currentMonth, lastDayOfMonth);
+
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        oneWeekAfter.setDate(oneWeekAfter.getDate() + 7);
+
+        const newStartDate = `${oneWeekAgo.getFullYear()}-${String(oneWeekAgo.getMonth()).padStart(2, '0')}-${String(oneWeekAgo.getDate()).padStart(2, '0')}`;
+        const newEndDate = `${oneWeekAfter.getFullYear()}-${String(oneWeekAfter.getMonth()).padStart(2, '0')}-${String(oneWeekAfter.getDate()).padStart(2, '0')}`;
     
         // return { startDate: finalStartDate, endDate: finalEndDate };
 
-        const data = await getPersonalSchedule(localStorage.getItem('userId'), finalStartDate, finalEndDate);
+        // const data = await getPersonalSchedule(localStorage.getItem('userId'), finalStartDate, finalEndDate);
+        const data = await getPersonalSchedule(localStorage.getItem('userId'), newStartDate, newEndDate);
 
         console.log("tmp : ", data);
 
