@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { SketchPicker } from 'react-color'; // Color Picker를 위한 라이브러리
 // import * as MainCalendar from './MainCalendar';
 
 // const formatDate = (date) => {
@@ -23,6 +24,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate }) => {
     const [location, setLocation] = useState('');
     const [isPrivate, setIsPrivate] = useState(false);
     const [attachments, setAttachments] = useState(null);
+    const [showColorPicker, setShowColorPicker] = useState(false); // Color Picker 표시 여부를 관리하는 state
 
     const formatDate = (date) => {
         const year = date.getFullYear();
@@ -44,8 +46,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate }) => {
                     title: scheduleName,
                     description: scheduleDescription,
                     location: location,
-                    startTime: `${startDate} 00:00:00`,
-                    endTime: `${endDate} 23:59:59`,
+                    startTime: startDate,
+                    endTime: endDate,
                     color: colorCode,
                     isPrivate: isPrivate
                 },
@@ -83,9 +85,12 @@ const AddSchedulePage = ({ setActivePanel, selectedDate }) => {
                 <div className="add-schedule-form">
                     <input type="text" value={scheduleName} onChange={(e) => setScheduleName(e.target.value)} placeholder="일정 이름" />
                     <input type="text" value={scheduleDescription} onChange={(e) => setScheduleDescription(e.target.value)} placeholder="일정 설명" />
-                    <input type="text" value={colorCode} onChange={(e) => setColorCode(e.target.value)} placeholder="색상 코드" />
-                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                    <button style= {{ height : '20px', color : colorCode, backgroundColor : colorCode}} onClick={() => setShowColorPicker(show => !show)}> {/* 색상 박스 클릭 시 Color Picker 표시 여부 토글 */}
+                        <div style={{ background: colorCode }} /> {/* 선택된 색상 표시 */}
+                        {showColorPicker && <SketchPicker color={colorCode} onChangeComplete={(color) => { setColorCode(color.hex); setShowColorPicker(false); }} />} {/* Color Picker */}
+                    </button>
+                    <input type="datetime-local" value={startDate} onChange={(e) => setStartDate(e.target.value)} /> {/* 날짜와 시간 선택 */}
+                    <input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)} /> {/* 날짜와 시간 선택 */}
                     <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="장소" />
                     <label>
                         <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />비공개 여부 체크
