@@ -11,7 +11,7 @@ const NewPage = ({ setActivePanel, selectedDate, schedule }) => (
                 {schedule.map((item, index) => (
                     <div key={index} className="schedule-card">
                         <div className="schedule-title">{item.title}</div>
-                        <div className="schedule-content">{item.content}</div>
+                        <div className="schedule-content">{item.description}</div>
                     </div>
                 ))}
             </div>

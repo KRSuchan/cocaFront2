@@ -2,11 +2,28 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import axios from 'axios';
 
 moment.locale('ko');
 
 // Create the localizer
 const localizer = momentLocalizer(moment);
+
+// 메인페이지 일정 정보 통신
+const getPersonalSchedule = async (id,  startDate, endDate) => {
+    console.log(id, startDate, endDate);
+
+    try {
+        const res = axios.get(`http://localhost:8080/api/personal-schedule/summary/between-dates?memberId=${id}&startDate=${startDate}&endDate=${endDate}`);
+
+        console.log(res);
+
+        return (await res).data.data;
+    } catch (error) {
+        console.error("유저 일정 불러오기 에러 : ", error);
+        return null;
+    }
+}
 
 const MainCalendar = ({onSlotSelect}) => {
     const [events, setEvents] = useState([
@@ -21,8 +38,55 @@ const MainCalendar = ({onSlotSelect}) => {
             title: '일본여행',
         },
     ]);
-
     const [selectedDate, setSelectedDate] = useState(null);
+
+    const handleNavigate = async (date) => {
+        const currentYear = date.getFullYear();
+        const currentMonth = date.getMonth() + 1;
+        const lastDayOfMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+        const paddedMonth = String(currentMonth).padStart(2, '0');
+
+        const finalStartDate = `${currentYear}-${paddedMonth}-01`;
+        const finalEndDate = `${currentYear}-${paddedMonth}-${lastDayOfMonth}`;
+    
+        // return { startDate: finalStartDate, endDate: finalEndDate };
+
+        const data = await getPersonalSchedule(localStorage.getItem('userId'), finalStartDate, finalEndDate);
+
+        console.log("tmp : ", data);
+
+        handleData(data);
+    }
+
+    const handleData = (data) => {
+        if (data) {
+            const formattedEvents = data.map(item => ({
+                start: new Date(item.startTime),
+                end: new Date(item.endTime),
+                title: item.title,
+                id: item.id,
+                color: item.color,
+                isPrivate: item.isPrivate,
+            }));
+
+            console.log("format : ", formattedEvents);
+
+            setEvents(formattedEvents);
+
+            console.log("handle : ", events);
+        }
+    }
+
+    useEffect(() => {
+        const currentDate = new Date();
+            handleNavigate(currentDate);
+    }, []);
+
+    useEffect(() => {
+        console.log("handle : ", events)
+    }, [events]);
+    
 
     // 선택한 날짜에 대한 이벤트를 찾는 함수
     const findEventsForSelectedDate = (date) => {
@@ -52,6 +116,8 @@ const MainCalendar = ({onSlotSelect}) => {
         }
     }, [selectedDate]);
 
+    // let initTime = can
+
     return (
         <div className="calendar-component-main">
             <Calendar 
@@ -64,6 +130,8 @@ const MainCalendar = ({onSlotSelect}) => {
                 selectable={true} // 이 부분을 확인해주세요.
                 // onSelectEvent={handleSelectEvent} // 일정 선택 시 handleSelectEvent 함수 호출
                 onSelectSlot={handleSelectSlot} // 빈 슬롯 선택 시 handleSelectSlot 함수 호출
+                onNavigate={handleNavigate}
+                // defaultDate={new Date()}
             />
         </div>
     );

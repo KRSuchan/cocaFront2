@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+// import * as MainCalendar from './MainCalendar';
+
+// const formatDate = (date) => {
+//     const year = date.getFullYear();
+//     const month = String(date.getMonth() + 1).padStart(2, '0');
+//     const day = String(date.getDate()).padStart(2, '0');
+//     return `${year}-${month}-${day}`;
+// }
 
 const AddSchedulePage = ({ setActivePanel, selectedDate }) => {
+
+    // if(typeof selectedDate === 'string') {
+    //     selectedDate = new Date(selectedDate);
+    // }
+
     const [scheduleName, setScheduleName] = useState('');
     const [scheduleDescription, setScheduleDescription] = useState('');
     const [colorCode, setColorCode] = useState('');
@@ -8,6 +22,56 @@ const AddSchedulePage = ({ setActivePanel, selectedDate }) => {
     const [endDate, setEndDate] = useState(selectedDate);
     const [location, setLocation] = useState('');
     const [isPrivate, setIsPrivate] = useState(false);
+    const [attachments, setAttachments] = useState(null);
+
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    const postSchedule = async () => {
+        try {
+            const url = 'http://localhost:8080/api/personal-schedule/add';
+    
+            console.log(startDate);
+            console.log(typeof startDate);
+            console.log(scheduleName);
+    
+            const requestData = {
+                personalSchedule: {
+                    title: scheduleName,
+                    description: scheduleDescription,
+                    location: location,
+                    startTime: `${startDate} 00:00:00`,
+                    endTime: `${endDate} 23:59:59`,
+                    color: colorCode,
+                    isPrivate: isPrivate
+                },
+                member: {
+                    id: localStorage.getItem('userId')
+                },
+                attachments: attachments || null // attachments가 존재하지 않으면 null로 설정
+            };
+    
+            const response = await axios.post(url, requestData);
+    
+            console.log(response.data.message);
+    
+            // MainCalendar.handleNavigate(startDate); 
+            // post 후 화면에 내용 뿌려주기 필요.
+
+            // 일단 임시방편
+            window.location.reload();
+
+            // return response.data;
+    
+        } catch (error) {
+            console.error("일정 등록 에러: ", error);
+            throw error; // 에러를 상위로 전파
+        }
+    }
 
     return (
         <React.Fragment>
@@ -27,7 +91,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate }) => {
                         <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />비공개 여부 체크
                     </label>
                 </div>
-                <button className="add-schedule-button">일정추가</button>
+                <button className="add-schedule-button" onClick={postSchedule}>일정추가</button>
             </div>
         </React.Fragment>
     );
