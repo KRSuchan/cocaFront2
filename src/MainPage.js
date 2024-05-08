@@ -21,11 +21,28 @@ import MainCalendar from './components/MainCalendar';
 import NewPage from './components/NewPage';
 import ButtonPanel from './components/ButtonPanel';
 import AddSchedulePage from './components/AddSchedulePage';
+import axios from 'axios';
 
 moment.locale('ko');
 
 // Create the localizer
 const localizer = momentLocalizer(moment);
+
+// 일정 상세 통신
+const getPersonalDetailSchedule = async (id, startDate, endDate) => {
+    console.log(id, startDate, endDate);
+
+    try {
+        const res = axios.get(`http://localhost:8080/api/personal-schedule/detail/between-dates?memberId=${id}&startDate=${startDate}&endDate=${endDate}`);
+
+        console.log(res);
+
+        return (await res).data;
+    } catch (error) {
+        console.error("유저 상세 일정 불러오기 에러 : ", error);
+        return null;
+    }
+}
 
 // Define your updateDate action creator
 const updateDate = (newDate) => {
@@ -54,12 +71,6 @@ const initialState = {
   // Create your Redux store
   const store = createStore(reducer);
 
-
-
-
-
-
-
 const Logo= () => {
     return(
         <div className="logo-container">
@@ -74,21 +85,35 @@ function MainPage() {
     // 'default': 기본 left-panel을 보여줌, 'newPanel': 새로운 페이지를 left-panel에 보여줌
     const [activePanel, setActivePanel] = useState('default');
     const [selectedDate, setSelectedDate] = useState(''); // 선택한 날짜 상태 추가
-    const dummySchedule = [
+    const [schedule, setSchedule] = useState([
         {
             title: "직방 마감",
-            content: "Smarthome(App) Product Owner\n직군 Product planning\n경력 10년 이상, 근무지 soma"
+            description: "Smarthome(App) Product Owner\n직군 Product planning\n경력 10년 이상, 근무지 soma"
         },
         {
             title: "프로젝트 리뷰",
-            content: "오후 2시, Google Meet"
+            description: "오후 2시, Google Meet"
         }
-    ];
+    ]);
 
         
        // ✅ 캘린더 슬롯 선택시!
-       const onSlotSelect = (date) => {
+       const onSlotSelect = async (date) => {
         setSelectedDate(date); // 선택한 날짜를 상태로 저장
+        
+        console.log(date);
+        try {
+            const res = await getPersonalDetailSchedule(localStorage.getItem('userId'), date, date);
+
+            if(res && res.code == 200) {
+                setSchedule(res.data);
+            } else {
+                console.error("상세 일정 불러오기 실패")
+            }
+        } catch (error) {
+            console.error("상세 일정 불러오기 에러 : ", error);
+        }
+
         setActivePanel('newPanel');
     };
 
@@ -112,7 +137,7 @@ function MainPage() {
                         </React.Fragment>
                     ) : activePanel === 'newPanel' ? (
                         <div className="new-page-container">
-                            <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} schedule={dummySchedule} />                        
+                            <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} schedule={schedule} />                        
                         </div>
                     ) : (
                         <div className="add-schedule-page-container">

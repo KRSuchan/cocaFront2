@@ -1,3 +1,13 @@
+.cards-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* 모든 자식 요소의 높이를 동일하게 조정 */
+    width: 100%; /* 필요한 경우 */
+  }
+  
+  /* 나머지 스타일은 동일하게 유지 */
+  
+
 .info-card {
     flex: 1 1 360px;
     padding: 40px;
@@ -37,12 +47,16 @@ body {
 
 .container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
     flex-wrap: wrap;
+    height: 100vh; /* 브라우저 창의 전체 높이를 사용 */
     max-width: 1200px; /* max-width를 더 크게 설정 */
     width: 100%;
     padding: 20px; /* 컨테이너에 패딩 추가 */
+    margin: 0 auto; /* 좌우 마진 자동으로 설정하여 중앙 정렬 */
 }
+
 
 .login-card {
     flex: 1 1 360px;
