@@ -29,6 +29,24 @@ const getPersonalSchedule = async (id,  startDate, endDate) => {
 }
 
 const MainCalendar = ({onSlotSelect}) => {
+    const localStorageDate = localStorage.getItem('savedDate');
+    let savedDate = null;
+    if(localStorageDate) {
+        savedDate = new Date(localStorageDate);
+    } else {
+        savedDate = new Date();
+    }
+    // const [savedDate, setSavedDate] = useState(new Date());
+    console.log("sd : ", savedDate);
+
+    // useEffect(() => {
+    //     const savedDate = localStorage.getItem('savedDate');
+    //     if (savedDate) {
+    //       setSavedDate(new Date(savedDate));
+    //     }
+    //   }, []);
+
+
     const [events, setEvents] = useState([
         {
             start: new Date(2024, 4, 1), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
@@ -44,6 +62,8 @@ const MainCalendar = ({onSlotSelect}) => {
     const [selectedDate, setSelectedDate] = useState(null);
 
     const handleNavigate = async (date) => {
+        localStorage.setItem('savedDate', date);
+
         const currentYear = date.getFullYear();
         const currentMonth = date.getMonth() + 1;
         const lastDayOfMonth = new Date(currentYear, currentMonth, 0).getDate();
@@ -82,7 +102,7 @@ const MainCalendar = ({onSlotSelect}) => {
     }
 
     useEffect(() => {
-        const currentDate = new Date();
+        const currentDate = savedDate;
             handleNavigate(currentDate);
     }, []);
 
@@ -134,7 +154,7 @@ const MainCalendar = ({onSlotSelect}) => {
                 // onSelectEvent={handleSelectEvent} // 일정 선택 시 handleSelectEvent 함수 호출
                 onSelectSlot={handleSelectSlot} // 빈 슬롯 선택 시 handleSelectSlot 함수 호출
                 onNavigate={handleNavigate}
-                // defaultDate={new Date()}
+                defaultDate={savedDate == null ? new Date() : savedDate}
             />
         </div>
     );
