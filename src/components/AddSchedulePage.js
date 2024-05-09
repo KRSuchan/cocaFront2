@@ -23,8 +23,22 @@ const AddSchedulePage = ({ setActivePanel, selectedDate }) => {
     const [endDate, setEndDate] = useState(selectedDate);
     const [location, setLocation] = useState('');
     const [isPrivate, setIsPrivate] = useState(false);
-    const [attachments, setAttachments] = useState(null);
+    // const [attachments, setAttachments] = useState(null);
+    const [attachments, setAttachments] = useState([]); // 첨부파일을 배열로 관리
     const [showColorPicker, setShowColorPicker] = useState(false); // Color Picker 표시 여부를 관리하는 state
+
+    // 첨부파일 변경 처리 함수
+    const handleAttachmentChange = (event, index) => {
+        // 선택된 파일을 attachments 배열에 설정
+        const newAttachments = [...attachments];
+        newAttachments[index] = event.target.files[0];
+        setAttachments(newAttachments);
+    };
+
+    // 첨부파일 추가 함수
+    const addAttachmentField = () => {
+        setAttachments([...attachments, null]); // 새로운 첨부파일 필드를 위한 null 값 추가
+    };
 
     const formatDate = (date) => {
         const year = date.getFullYear();
@@ -89,7 +103,16 @@ const AddSchedulePage = ({ setActivePanel, selectedDate }) => {
                     <input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)} /> {/* 날짜와 시간 선택 */}
                     <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="장소" />
                 </div>
-                <button style= {{ height : '20px', color : colorCode, backgroundColor : colorCode}} onClick={() => setShowColorPicker(show => !show)}> {/* 색상 박스 클릭 시 Color Picker 표시 여부 토글 */}
+                {attachments.map((attachment, index) => (
+                    <div className="form-group" key={index}>
+                        <label htmlFor={`attachment-${index}`}>첨부파일 {index + 1}</label>
+                        <input type="file" id={`attachment-${index}`} onChange={(e) => handleAttachmentChange(e, index)} />
+                    </div>
+                ))}
+                {attachments.length < 2 && (
+                    <button onClick={addAttachmentField}>첨부파일 추가</button>
+                )}
+                <button style= {{ height : '40px', color : colorCode, backgroundColor : colorCode}} onClick={() => setShowColorPicker(show => !show)}> {/* 색상 박스 클릭 시 Color Picker 표시 여부 토글 */}
                         <div style={{ background: colorCode }} /> {/* 선택된 색상 표시 */}
                         {showColorPicker && <SketchPicker color={colorCode} onChangeComplete={(color) => { setColorCode(color.hex); setShowColorPicker(false); }} />} {/* Color Picker */}
                     </button>

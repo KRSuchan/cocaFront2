@@ -109,7 +109,7 @@ function MainPage() {
             title: "프로젝트 리뷰",
             description: "오후 2시, Google Meet",
             id: '142',
-            color: '#D7AA66',
+            color: '#D06B74',
             isPrivate: true, 
             description: "임시 내용1",
             location: "집1",
