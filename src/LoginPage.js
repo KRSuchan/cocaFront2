@@ -13,6 +13,10 @@ function LoginPage() {
     // navigate('/main');
   };
 
+  const handleSignUp = () => {
+    navigate('/signup');
+  };
+
   const login = () => {
     axios.post("http://localhost:8080/api/member/loginReq", {
       id: userId,
@@ -66,7 +70,7 @@ function LoginPage() {
             />
             <div className="button-container">
               <button className="login-button" type="submit" onClick={handleLogin}>LOGIN</button>
-              <button className="signup-button" type="submit">SIGN UP</button>
+              <button className="signup-button" type="submit" onClick={handleSignUp}>SIGN UP</button>
             </div>
           </div>
           <h1 className="right-aligned">COCA</h1>
