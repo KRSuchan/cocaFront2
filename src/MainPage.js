@@ -7,7 +7,7 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CalendarOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Calendar as AntCalendar } from 'antd';
-import './MainPage.css'
+import './css/MainPage.css'
 import 'moment/locale/ko';  // Import Korean locale
 import { useState, useEffect } from 'react';
 import RCalendar from 'react-calendar';
