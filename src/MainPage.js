@@ -92,11 +92,11 @@ function MainPage() {
             id: '142',
             color: '#479950',
             isPrivate: true, 
-            description: "임시 내용1",
-            location: "집1",
+            description: "임시 내용1Smarthome(App) Product Owner 직군 Product planning경력 10년 이상, 근무지 soma",
+            location: "토스본사",
             attachments: [
                 {
-                    "fileName": "testName1",
+                    "fileName": "관련서류",
                     "filePath": "testUrl1"
                 },
                 {

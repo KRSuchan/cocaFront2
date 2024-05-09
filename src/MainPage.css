@@ -116,17 +116,13 @@ body > div {
 /* 일정 추가 페이지  */
 
 .add-schedule-page-container {
-}
-
-
-.add-schedule-page {
     margin: 25px;
     margin-top: 0px;
     height: 100%;
     border-bottom-right-radius: 40px;
     border-bottom-left-radius: 40px;
     background-color: white;
-    padding: 40px;
+    padding: 40px;  
 }
 
 .add-schedule-page {
@@ -145,7 +141,7 @@ body > div {
     font-family: 'Lexend Zetta';
     font-weight: bold;
     /* color: #41abc9; */
-    color: #DCB274;
+    color: black;
 }
 
 .add-schedule-page .col button  {
@@ -167,6 +163,17 @@ body > div {
     box-sizing: border-box;
     border: 2px solid #ccc;
     border-radius: 4px;
+    font-weight: 600;
+    font-family: 'Noto Sans Kr';
+    font-size: 12pt;
+}
+
+.add-schedule-page .col2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 900;
+    color:#8C8C7F;
 }
 
 

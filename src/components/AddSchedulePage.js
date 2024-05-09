@@ -85,17 +85,18 @@ const AddSchedulePage = ({ setActivePanel, selectedDate }) => {
                 <div className="add-schedule-form">
                     <input type="text" value={scheduleName} onChange={(e) => setScheduleName(e.target.value)} placeholder="일정 이름" />
                     <input type="text" value={scheduleDescription} onChange={(e) => setScheduleDescription(e.target.value)} placeholder="일정 설명" />
-                    <button style= {{ height : '20px', color : colorCode, backgroundColor : colorCode}} onClick={() => setShowColorPicker(show => !show)}> {/* 색상 박스 클릭 시 Color Picker 표시 여부 토글 */}
-                        <div style={{ background: colorCode }} /> {/* 선택된 색상 표시 */}
-                        {showColorPicker && <SketchPicker color={colorCode} onChangeComplete={(color) => { setColorCode(color.hex); setShowColorPicker(false); }} />} {/* Color Picker */}
-                    </button>
                     <input type="datetime-local" value={startDate} onChange={(e) => setStartDate(e.target.value)} /> {/* 날짜와 시간 선택 */}
                     <input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)} /> {/* 날짜와 시간 선택 */}
                     <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="장소" />
-                    <label>
-                        <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />비공개 여부 체크
-                    </label>
                 </div>
+                <button style= {{ height : '20px', color : colorCode, backgroundColor : colorCode}} onClick={() => setShowColorPicker(show => !show)}> {/* 색상 박스 클릭 시 Color Picker 표시 여부 토글 */}
+                        <div style={{ background: colorCode }} /> {/* 선택된 색상 표시 */}
+                        {showColorPicker && <SketchPicker color={colorCode} onChangeComplete={(color) => { setColorCode(color.hex); setShowColorPicker(false); }} />} {/* Color Picker */}
+                    </button>
+                <label className='col2'>
+                        <p>비공개일정🔒</p>
+                        <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />
+                    </label>
                 <button className="add-schedule-button" onClick={postSchedule}>일정추가</button>
             </div>
         </React.Fragment>

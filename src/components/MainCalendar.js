@@ -62,7 +62,7 @@ const MainCalendar = ({onSlotSelect}) => {
                 id: '141',
                 color: '#479950',
                 isPrivate: true,        
-                description: "임시 내용1",
+                description: "임시 내용1Smarthome(App) Product Owner 직군 Product planning경력 10년 이상, 근무지 soma",
         },
         {
             start: new Date(2024, 3, 29), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
