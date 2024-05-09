@@ -91,15 +91,17 @@ const MainCalendar = ({onSlotSelect}) => {
                 id: item.id,
                 color: item.color,
                 isPrivate: item.isPrivate,
+                style: { backgroundColor: item.color }, // 이벤트의 배경색을 설정
             }));
-
+    
             console.log("format : ", formattedEvents);
-
+    
             setEvents(formattedEvents);
-
+    
             console.log("handle : ", events);
         }
     }
+    
 
     useEffect(() => {
         const currentDate = savedDate;
@@ -155,6 +157,15 @@ const MainCalendar = ({onSlotSelect}) => {
                 onSelectSlot={handleSelectSlot} // 빈 슬롯 선택 시 handleSelectSlot 함수 호출
                 onNavigate={handleNavigate}
                 defaultDate={savedDate == null ? new Date() : savedDate}
+                eventPropGetter={(event, start, end, isSelected) => { //이벤트 스타일 바꾸는 함수 호출
+                    return {
+                        style: {
+                            backgroundColor: event.color, //이벤트의 색상을 통신에서 받아온 색상으로
+                            color: 'white', //이벤트 폰트색 검정으로
+                            fontFamily : 'Noto Sans KR',
+                        },
+                    };
+                }}
             />
         </div>
     );
