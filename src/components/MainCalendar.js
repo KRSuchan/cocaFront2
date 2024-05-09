@@ -51,12 +51,38 @@ const MainCalendar = ({onSlotSelect}) => {
         {
             start: new Date(2024, 4, 1), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
             end: new Date(2024, 4, 1),
+            description: "임시 내용1",
             title: '코딩',
+
         },
         {
             start: new Date(2024, 4, 17), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
             end: new Date(2024, 4, 20),
             title: '일본여행',
+                id: '141',
+                color: '#479950',
+                isPrivate: true,        
+                description: "임시 내용1",
+        },
+        {
+            start: new Date(2024, 3, 29), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
+            end: new Date(2024, 3, 30),
+            title: '호주여행',
+            id: '142',
+            color: '#D7AA66',
+            isPrivate: true, 
+            description: "임시 내용1",
+            location: "집1",
+            attachments: [
+                {
+                    "fileName": "testName1",
+                    "filePath": "testUrl1"
+                },
+                {
+                    "fileName": "testName2",
+                    "filePath": "testUrl2"
+                }
+            ]
         },
     ]);
     const [selectedDate, setSelectedDate] = useState(null);

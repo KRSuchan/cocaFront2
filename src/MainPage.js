@@ -88,11 +88,37 @@ function MainPage() {
     const [schedule, setSchedule] = useState([
         {
             title: "직방 마감",
-            description: "Smarthome(App) Product Owner\n직군 Product planning\n경력 10년 이상, 근무지 soma"
+            description: "Smarthome(App) Product Owner\n직군 Product planning\n경력 10년 이상, 근무지 soma",
+            id: '142',
+            color: '#479950',
+            isPrivate: true, 
+            description: "임시 내용1",
+            location: "집1",
+            attachments: [
+                {
+                    "fileName": "testName1",
+                    "filePath": "testUrl1"
+                },
+                {
+                    "fileName": "testName2",
+                    "filePath": "testUrl2"
+                }
+            ]
         },
         {
             title: "프로젝트 리뷰",
-            description: "오후 2시, Google Meet"
+            description: "오후 2시, Google Meet",
+            id: '142',
+            color: '#D7AA66',
+            isPrivate: true, 
+            description: "임시 내용1",
+            location: "집1",
+            attachments: [
+                {
+                    "fileName": "testName1",
+                    "filePath": "testUrl1"
+                }
+            ]
         }
     ]);
 
