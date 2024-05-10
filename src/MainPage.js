@@ -83,6 +83,7 @@ const Logo= () => {
 function MainPage() {
     // 'default'와 'newPanel' 중 하나를 값으로 가질 수 있는 activePanel 상태 추가
     // 'default': 기본 left-panel을 보여줌, 'newPanel': 새로운 페이지를 left-panel에 보여줌
+    const [editingSchedule, setEditingSchedule] = useState(null); // 편집 중인 일정 상태
     const [activePanel, setActivePanel] = useState('default');
     const [selectedDate, setSelectedDate] = useState(''); // 선택한 날짜 상태 추가
     const [schedule, setSchedule] = useState([
@@ -94,6 +95,8 @@ function MainPage() {
             isPrivate: true, 
             description: "임시 내용1Smarthome(App) Product Owner 직군 Product planning경력 10년 이상, 근무지 soma",
             location: "토스본사",
+            start: '2024-04-17T00:00', 
+            end: '2024-04-20T00:00',
             attachments: [
                 {
                     "fileName": "관련서류",
@@ -111,7 +114,7 @@ function MainPage() {
             id: '142',
             color: '#D06B74',
             isPrivate: true, 
-            description: "임시 내용1",
+            description: "개인정보를 취급하는 민간사업자 및 공공기관에서 개인정보 보호조치 사항에 대한 자율적인 점검을 통하여 개인정보 보호수준을 진단하고 개선할 수 있도록 지원하는 서비스입니다.            ",
             location: "집1",
             attachments: [
                 {
@@ -163,9 +166,14 @@ function MainPage() {
                         </React.Fragment>
                     ) : activePanel === 'newPanel' ? (
                         <div className="new-page-container">
-                            <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} schedule={schedule} />                        
+                            <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} schedule={schedule} setEditingSchedule={setEditingSchedule}/>                        
                         </div>
-                    ) : (
+                    ) : activePanel === 'editSchedule' ? (
+                        <div className="add-schedule-page-container">
+                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate} editingSchedule={editingSchedule} />
+                        </div>
+                    ) : 
+                    (
                         <div className="add-schedule-page-container">
                             <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate} />
                         </div>

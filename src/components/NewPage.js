@@ -1,6 +1,6 @@
 import React from 'react';
 
-const NewPage = ({ setActivePanel, selectedDate, schedule }) => (
+const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule , editingSchedule  }) => (
     <React.Fragment>
         <div className='new-page'>
             <div className='col' style={{backgroundColor: schedule.color}}>
@@ -11,7 +11,13 @@ const NewPage = ({ setActivePanel, selectedDate, schedule }) => (
                 {schedule.map((item, index) => (
                     <div key={index} className="schedule-card">
                         
-                        <div className="schedule-title" style={{background: `linear-gradient(to right, ${item.color}, white)`}}>{item.title}</div>
+                        <div className="schedule-title" style={{background: `linear-gradient(to right, ${item.color}, white)`}}
+                             onClick={() => {
+                                 setEditingSchedule(item); // 현재 편집할 일정을 상태로 설정
+                                 setActivePanel('editSchedule'); // 편집 패널로 전환
+                             }}>
+                            {item.title}
+                        </div>
                         <div className="col2">
                             <div className="schedule-location">{item.location}</div>
                             <div className="schedule-privacy">{item.isPrivate ? '비공개일정🔒' : '공개일정🔓'}</div>
