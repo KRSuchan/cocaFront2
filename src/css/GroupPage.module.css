@@ -167,3 +167,63 @@
   border-radius: 5px;
   margin-top: 20px;
 }
+
+/* 생성페이지 */
+
+.createGroupPageBox .groupNameTitle{
+  font-size: 30pt;
+  font-weight: 500;
+  color: #D06B74;
+  font-family: 'Black Han Sans';
+}
+
+.createGroupPage{
+  background-color: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Noto Sans Kr';
+}
+
+.createGroupPage input{
+  height: 30px;
+  font-size: 13pt;
+  font-weight: 600;
+  margin-bottom: 20px;
+  border: 1px solid #e1e1e1; /* 테두리 색상 변경 */
+  border-radius: 8px; /* 테두리 둥글게 */
+  padding: 5px 10px; /* 내부 여백 추가 */
+  outline: none; /* 포커스 시 아웃라인 제거 */
+}
+
+.createGroupPage textarea{
+  height: 50px;
+  font-size: 13pt;
+  font-weight: 600;
+  margin-bottom: 20px;
+  border: 1px solid #e1e1e1; /* 테두리 색상 변경 */
+  border-radius: 8px; /* 테두리 둥글게 */
+  padding: 5px 10px; /* 내부 여백 추가 */
+  outline: none; /* 포커스 시 아웃라인 제거 */
+}
+
+.createGroupPage select{
+  height: 50px;
+  font-size: 13pt;
+  font-weight: 600;
+  margin-bottom: 20px;
+  border: 1px solid #e1e1e1; /* 테두리 색상 변경 */
+  border-radius: 8px; /* 테두리 둥글게 */
+  padding: 5px 10px; /* 내부 여백 추가 */
+  outline: none; /* 포커스 시 아웃라인 제거 */
+}
+
+.createGroupPage .title2{
+  font-size: 17pt;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #D06B74;
+}
+
