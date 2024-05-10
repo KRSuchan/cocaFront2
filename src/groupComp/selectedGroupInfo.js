@@ -2,7 +2,10 @@
 import React from 'react';
 import styles from '../css/GroupPage.module.css';
 
-const selectedGroupInfo = ({ group, onLeave, onJoin, isMember }) => {
+const selectedGroupInfo = ({ group, onLeave, onJoin, isMember, onEdit}) => {
+
+    const isManager = true; // ✅ 이 그룹의 관리자 권한이 있는가?!!
+
   return (
     <div className={styles.selectedGroupInfo}>
       <span className={styles.groupNameTitle}>{group.name}</span>
@@ -23,6 +26,10 @@ const selectedGroupInfo = ({ group, onLeave, onJoin, isMember }) => {
       ) : (
         <button className={styles.joinButton} onClick={onJoin}>참가</button>
       )}
+      {isManager && (
+        <button className={styles.joinButton} onClick={onEdit}>수정</button>
+      )}
+
     </div>
   );
 };

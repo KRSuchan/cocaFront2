@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import SelectedGroupInfo from './groupComp/selectedGroupInfo';
 import CreateGroupPage from './groupComp/CreateGroupPage';
+import EditGroupPage from './groupComp/EditGroupPage';
 
 const GroupPage = () => {
 
@@ -13,6 +14,9 @@ const GroupPage = () => {
 
   // 생성 페이지 상태
   const [createGroupPage, setCreateGroupPage] = useState(false);
+
+  // 수정 페이지 상태
+  const [editingGroup, setEditingGroup] = useState(false); 
 
   // 그룹 목록 상태
   const [groups, setGroups] = useState([
@@ -25,6 +29,11 @@ const GroupPage = () => {
   const [hashtags, setHashtags] = useState(['#IT', '#스터디', '#웹개발', '#파이썬']);
   const [selectedGroup, setSelectedGroup] = useState(null); //목록에서 선택된 그룹
   const [isMember, setIsMember] = useState(false); // 이미 참가된 그룹인지 여부
+
+
+  const handleBackClick = () => { // 뒤로가기 버튼
+    navigate("/main");
+  }
 
   // 해시태그 클릭 핸들러
   const handleHashtagClick = (hashtag) => { //해시태그 클릭할때
@@ -49,7 +58,17 @@ const GroupPage = () => {
 
   // 생성 버튼 핸들러
   const handleCreate = () => { // 생성 버튼 [그룹 페이지]
-    setCreateGroupPage(!createGroupPage);
+    setCreateGroupPage(!createGroupPage); //그룹 생성 페이지 띄움
+  };
+
+  const handleEdit = () => { // 수정 버튼 [그룹 상세 페이지]
+    setEditingGroup(true); // 수정 페이지 띄움
+  };
+
+  const handleSaveEdit = (updatedGroup) => { // ✅ 그룹 수정 페이지에서 저장 할때
+    console.log('Saving edited group:', updatedGroup);
+    // Send the updated group data to the backend
+    setEditingGroup(false); // Exit edit mode after saving
   };
 
   const handleCreateGroup = (name, description, managers, interests) => { // ✅ 생성 버튼 눌렀을떄 [그룹 생성 페이지]
@@ -63,13 +82,6 @@ const GroupPage = () => {
     console.log('Leaving group:', selectedGroup.name);
     // 예시로 console.log를 사용했습니다. 실제로는 여기에 API 호출을 넣으세요.
   };
-
-
-
-
-  const handleBackClick = () => { // 뒤로가기 버튼
-    navigate("/main");
-  }
 
 // 참가 핸들러
 const handleJoin = () => { // ✅ 참가버튼 눌렀을때
@@ -120,17 +132,22 @@ const handleJoin = () => { // ✅ 참가버튼 눌렀을때
         <button className={styles.groupCreateButton} onClick={handleCreate}>생성</button>
       </div>
       <div className={styles.rightPanel}>
+
         {/* 우측 판넬의 내용 */}
         {createGroupPage ? (
-        <CreateGroupPage onCreate={handleCreateGroup} />
-      ) : selectedGroup ? (
-        <SelectedGroupInfo
-          group={selectedGroup}
-          onLeave={handleLeave}
-          onJoin={handleJoin}
-          isMember={isMember}
-        />
-      ) : null}
+          <CreateGroupPage onCreate={handleCreateGroup} />
+        ) : editingGroup ? (
+          <EditGroupPage group={selectedGroup} onSave={handleSaveEdit} />
+        ) : selectedGroup ? (
+          <SelectedGroupInfo
+            group={selectedGroup}
+            onLeave={handleLeave}
+            onJoin={handleJoin}
+            isMember={isMember}
+            onEdit={handleEdit} // Pass the edit handler
+          />
+        ) : null} 
+        {/* 그룹 생성인가? 아니면 그룹 수정인가? 아니면 그룹 상세인가? */}
       </div>
     </div>
   );
