@@ -11,16 +11,20 @@ const ButtonPanel = () => {
         navigate("/");
     }
 
+    const handleGroupClick = () => {
+        navigate("/group");
+    }
+
 
     return (
         <div className="button-panel">
             <Button icon={<SmileOutlined style={{ fontSize: '30px' }} />} className="button disappointment">
                 <div>친구</div>
             </Button>
-            <Button icon={<SearchOutlined style={{ fontSize: '30px' }} />} className="button green-color">
+            <Button icon={<SearchOutlined style={{ fontSize: '30px' }} />} className="button green-color" onClick={handleGroupClick}>
                 <div>그룹검색</div>
             </Button>
-            <Button icon={<StarOutlined style={{ fontSize: '30px' }} />} className="button violet">
+            <Button icon={<StarOutlined style={{ fontSize: '30px' }} />} className="button violet" >
                 <div>빈일정</div>
             </Button>
             <Button icon={<SettingOutlined style={{ fontSize: '30px' }} />} className="button navy-blue" onClick={handleLogOut}>

@@ -1,0 +1,126 @@
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px; /* 타이틀과 검색창 사이의 간격 조정 */
+  }
+  
+/* 전체 컨테이너 스타일 */
+.group-search-container {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0 10px;
+    padding: 20px 60px;
+  }
+  
+  /* 좌측 컬럼 스타일 */
+  .left-column {
+    width: calc(50% - 20px);
+    padding: 20px;
+    margin: 10px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+/* 뒤로가기 버튼 스타일 */
+.back-button {
+    background-color: #41ADCA;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  /* 그룹 검색 타이틀 스타일 */
+  .group-search-title {
+    color: #41ADCA;
+    font-weight: bold;
+    font-size: 24px;
+  }
+  
+  /* 우측 주요 색상 설정 */
+.primary-color {
+    color: #D06B74;
+  }
+  
+  /* 참가 버튼 스타일 */
+  .join-button {
+    background-color: #D06B74;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  /* 흰색 박스 스타일 */
+  .white-box {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  input[type="text"], .tags, .group-list, .group-details {
+    background-color: #fff; /* 흰색 배경 */
+    padding: 10px;
+    border: 2px solid #41ADCA;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .tags span {
+    display: inline-block;
+    background-color: #41ADCA;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  
+  .group-list {
+    list-style: none;
+    overflow-y: auto;
+    max-height: 400px;
+    padding: 0;
+    margin-bottom: 10px; /* 마진 추가 */
+  }
+  
+  .group-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .group-name {
+    color: #41ADCA;
+  }
+  
+  .group-members {
+    color: #333;
+  }
+  
+/* 우측 컬럼 스타일 */
+.right-column {
+    width: calc(50% - 20px);
+    padding: 20px;
+    margin: 10px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .group-details {
+    background-color: #f7f7f7; /* 상세 정보 배경색 변경 */
+    padding: 15px;
+    margin-bottom: 10px; /* 하단 마진 추가 */
+    border-radius: 5px; /* 모서리 둥글게 */
+  }
