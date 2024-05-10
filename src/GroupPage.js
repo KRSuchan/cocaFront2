@@ -1,63 +1,58 @@
-// React 코드
 import React, { useState } from 'react';
 import './css/GroupPage.css';
 
 const GroupPage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGroup, setSelectedGroup] = useState(null); // selectedGroup 상태 추가
+  const [hashtags, setHashtags] = useState(['#해시태그1', '#해시태그2', '#해시태그3']);
   const [groups, setGroups] = useState([
-    { id: 1, name: '그룹명1', members: 1009, admin: '관리자1', description: '설명1' },
-    { id: 2, name: '그룹명2', members: 1009, admin: '관리자2', description: '설명2' },
-    { id: 3, name: '그룹명3', members: 1009, admin: '관리자3', description: '설명3' },
-    // ...더 많은 그룹 데이터
+    { name: '재수생 스터디그룹', members: 1009 },
+    { name: '리액트 개발자그룹', members: 5388 },
+    { name: 'Vue.js 개발자그룹', members: 891 }
   ]);
+  const [selectedGroup, setSelectedGroup] = useState(null);
 
-  const handleTagClick = (tag) => {
-    setSearchTerm(tag);
-  };
-
-  const handleGroupClick = (group) => {
-    setSelectedGroup(group); // 그룹을 클릭했을 때 선택된 그룹을 설정하는 함수
+  const handleSelectGroup = (group) => {
+    setSelectedGroup(group);
   };
 
   return (
-    <div className="group-search-container">
-      <div className="left-column">
-        <div className='row'>
-            <button className="back-button">◁</button>
-            <p className="group-search-title">그룹검색</p>
+    <div className="group-page">
+      <div className="left-panel">
+        <div className="header">
+          <button className="back-button">뒤로가기</button>
+          <h1 className="group-search">그룹검색</h1>
         </div>
-        <input
-          type="text"
-          placeholder="#IT #스터디 #웹개발 #파이썬"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <div className="tags">
-          <span onClick={() => handleTagClick('#IT')}>#IT</span>
-          <span onClick={() => handleTagClick('#스터디')}>#스터디</span>
-          <span onClick={() => handleTagClick('#웹개발')}>#웹개발</span>
-          <span onClick={() => handleTagClick('#파이썬')}>#파이썬</span>
+        <div className="search-box">
+          <i className="search-icon">🔍</i>
+          <input type="text" className="search-editor" placeholder="검색..." />
         </div>
-        <ul className="group-list">
-          {groups.map((group) => (
-            <li key={group.id} onClick={() => handleGroupClick(group)}>
+        <div className="hashtags">
+          {hashtags.map((tag, index) => (
+            <span key={index} className="hashtag">{tag}</span>
+          ))}
+        </div>
+        <div className="group-list">
+          {groups.map((group, index) => (
+            <div key={index} className="group-item" onClick={() => handleSelectGroup(group)}>
               <span className="group-name">{group.name}</span>
               <span className="group-members">{group.members}명</span>
-            </li>
+            </div>
           ))}
-        </ul>
-      </div>
-      <div className="right-column">
-        <div className="group-details">
-            {selectedGroup && (
-            <>
-                <h2>{selectedGroup.name}</h2>
-                <p>관리자: {selectedGroup.admin}</p>
-                <p>{selectedGroup.description}</p>
-            </>
-            )}
         </div>
+      </div>
+      
+      <div className="right-panel">
+        {selectedGroup && (
+          <>
+            <div className="group-info">
+              <h2 className="group-name">{selectedGroup.name}</h2>
+              <span className="member-count">{selectedGroup.members}명</span>
+            </div>
+            <div className="group-details">
+              {/* 여기에 관리자명, 해시태그, 그룹설명을 렌더링하는 코드가 들어갑니다 */}
+            </div>
+            <button className="join-button">참가하기</button>
+          </>
+        )}
       </div>
     </div>
   );
