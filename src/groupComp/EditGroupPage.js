@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import styles from '../css/GroupPage.module.css';
 
-const EditGroupPage = ({ group, onSave }) => {
+const EditGroupPage = ({ group, onSave, onDelete }) => {
   // Initialize state only if group properties are defined
   const [groupName, setGroupName] = useState(group?.name || '');
   const [groupDescription, setGroupDescription] = useState(group?.description || '');
@@ -50,6 +50,12 @@ const EditGroupPage = ({ group, onSave }) => {
     ));
   };
 
+    // Add a new handler for the delete action
+    const handleDelete = () => {
+        // Call the onDelete prop with the group's identifier
+        onDelete(group.id);
+      };
+
   return (
     <div className={styles.createGroupPageBox}>
       <span className={styles.groupNameTitle}>그룹 수정</span>
@@ -76,6 +82,9 @@ const EditGroupPage = ({ group, onSave }) => {
       <button onClick={() => onSave(groupName, groupDescription, managerIds, interests)} className={styles.joinButton}>
         저장
       </button>
+      <button onClick={handleDelete} className={styles.joinButton}>
+          삭제
+        </button>
     </div>
   );
 };

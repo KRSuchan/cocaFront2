@@ -6,6 +6,10 @@ import SelectedGroupInfo from './groupComp/selectedGroupInfo';
 import CreateGroupPage from './groupComp/CreateGroupPage';
 import EditGroupPage from './groupComp/EditGroupPage';
 
+//✨ 이 페이지 컴포넌트는 모두 groupComp에 있음
+//✨ 아직 다듬거나 백엔드 코드가 없으므로 아직 건들이지 않으셔도 됨
+//✨ 작업 전에 프론트코드 수정,보완용 피드백 해주세용!!!! ✨
+
 const GroupPage = () => {
 
     const navigate = useNavigate(); 
@@ -29,6 +33,7 @@ const GroupPage = () => {
   const [hashtags, setHashtags] = useState(['#IT', '#스터디', '#웹개발', '#파이썬']);
   const [selectedGroup, setSelectedGroup] = useState(null); //목록에서 선택된 그룹
   const [isMember, setIsMember] = useState(false); // 이미 참가된 그룹인지 여부
+  const [deletingGroup, setDeletingGroup] = useState(false);
 
 
   const handleBackClick = () => { // 뒤로가기 버튼
@@ -62,7 +67,8 @@ const GroupPage = () => {
   };
 
   const handleEdit = () => { // 수정 버튼 [그룹 상세 페이지]
-    setEditingGroup(true); // 수정 페이지 띄움
+    setEditingGroup(true);
+    setCreateGroupPage(false); // Ensure createGroupPage is false when editing
   };
 
   const handleSaveEdit = (updatedGroup) => { // ✅ 그룹 수정 페이지에서 저장 할때
@@ -84,11 +90,16 @@ const GroupPage = () => {
   };
 
 // 참가 핸들러
-const handleJoin = () => { // ✅ 참가버튼 눌렀을때
+    const handleJoin = () => { // ✅ 참가버튼 눌렀을때 [그룹 상세 페이지]
     // 백엔드에 참가 요청을 보내는 로직
     console.log('Joining group:', selectedGroup.name);
     };
 
+    const handleDeleteGroup = (groupId) => { //✅ 삭제버튼 눌렀을때 [그룹 수정 페이지]
+        console.log('Deleting group with ID:', groupId);
+        // Make a backend call to delete the group
+        setDeletingGroup(false); // Reset the deleting state
+      };
     
 
 
@@ -134,19 +145,19 @@ const handleJoin = () => { // ✅ 참가버튼 눌렀을때
       <div className={styles.rightPanel}>
 
         {/* 우측 판넬의 내용 */}
-        {createGroupPage ? (
+        {createGroupPage && !editingGroup ? (
           <CreateGroupPage onCreate={handleCreateGroup} />
         ) : editingGroup ? (
-          <EditGroupPage group={selectedGroup} onSave={handleSaveEdit} />
+          <EditGroupPage group={selectedGroup} onSave={handleSaveEdit} onDelete={handleDeleteGroup} />
         ) : selectedGroup ? (
           <SelectedGroupInfo
             group={selectedGroup}
             onLeave={handleLeave}
             onJoin={handleJoin}
             isMember={isMember}
-            onEdit={handleEdit} // Pass the edit handler
+            onEdit={handleEdit}
           />
-        ) : null} 
+        ) : null}
         {/* 그룹 생성인가? 아니면 그룹 수정인가? 아니면 그룹 상세인가? */}
       </div>
     </div>
