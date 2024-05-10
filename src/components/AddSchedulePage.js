@@ -45,7 +45,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     );
     const [location, setLocation] = useState(editingSchedule ? editingSchedule.location : '');
     const [isPrivate, setIsPrivate] = useState(editingSchedule ? editingSchedule.isPrivate : false);
-    const [attachments, setAttachments] = useState(editingSchedule ? editingSchedule.attachments : []);
+    const [attachments, setAttachments] = useState(editingSchedule ? editingSchedule.attachments : [null, null]);
     
     const [showColorPicker, setShowColorPicker] = useState(false); // Color Picker 표시 여부를 관리하는 state
 
@@ -55,11 +55,14 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
         const newAttachments = [...attachments];
         newAttachments[index] = event.target.files[0];
         setAttachments(newAttachments);
+        
     };
 
-    // 첨부파일 추가 함수
-    const addAttachmentField = () => {
-        setAttachments([...attachments, null]); // 새로운 첨부파일 필드를 위한 null 값 추가
+    // 첨부파일 삭제 처리 함수
+    const handleAttachmentDelete = (index) => {
+        const newAttachments = [...attachments];
+        newAttachments[index] = null; // 인덱스에 해당하는 첨부파일을 null로 설정
+        setAttachments(newAttachments);
     };
 
     // 일정 추가 또는 수정 로직
@@ -138,11 +141,14 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                     <div className="form-group" key={index}>
                         <label htmlFor={`attachment-${index}`}>첨부파일 {index + 1}</label>
                         <input type="file" id={`attachment-${index}`} onChange={(e) => handleAttachmentChange(e, index)} />
+                        {attachment && (
+                            <div>
+                                <a href={attachment.filePath} target="_blank" rel="noopener noreferrer">{attachment.fileName}</a>
+                                <span style={{ marginLeft: '10px', color: 'red', cursor: 'pointer' }} onClick={() => handleAttachmentDelete(index)}>삭제</span>
+                            </div>
+                        )}
                     </div>
                 ))}
-                {attachments.length < 2 && (
-                    <button onClick={addAttachmentField}>첨부파일 추가</button>
-                )}
                 <button style= {{ height : '40px', color : colorCode, backgroundColor : colorCode}} onClick={() => setShowColorPicker(show => !show)}> {/* 색상 박스 클릭 시 Color Picker 표시 여부 토글 */}
                         <div style={{ background: colorCode }} /> {/* 선택된 색상 표시 */}
                         {showColorPicker && <SketchPicker color={colorCode} onChangeComplete={(color) => { setColorCode(color.hex); setShowColorPicker(false); }} />} {/* Color Picker */}
