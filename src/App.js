@@ -13,6 +13,7 @@ function App() {
       <Helmet>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend+Zetta&display=swap" />
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" />
       </Helmet>
       <Routes>
         <Route path="/main" element={<MainPage />} />

@@ -1,0 +1,169 @@
+.groupPageContainer {
+  display: flex;
+  padding: 50px;
+  font-family: 'Noto Sans KR';
+  background-color: #EFEFF0;
+}
+
+.leftPanel, .rightPanel {
+  width: 50%;
+}
+
+.leftPanel{
+  padding-right: 30px;
+}
+
+.row{
+  display: flex;
+  flex-direction: row;
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: start; /* 가로 시작점 정렬 */
+}
+
+.row button {
+  font-size: 35pt;
+  font-weight: bold;
+  margin-right: 20px;
+  color: #41ADCA;
+  background-color: #DEDEDE;
+  border-radius: 10px;
+  border-width: 0;
+  padding: 0 10px;
+  font-family: 'Black Han Sans';
+}
+
+.row .groupSearchTitle{
+  font-size: 35pt;
+  font-weight: 400;
+  color: #41ADCA;
+  font-family: 'Black Han Sans';
+}
+
+.searchBox{
+  width: 100%;
+  padding: 20px;
+  border-radius: 15px;
+  background-color: white;
+  box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.searchInput{
+  width: 100%;
+  border: 0;
+  font-size: 15pt;
+  font-weight: 600;
+  color: black;
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+.searchInput ::placeholder{
+  color: #B4B4AA;
+}
+
+.hashtags {
+  color: #41ADCA;
+  /* font-weight: bold; */
+  font-size: 13pt;
+}
+
+.hashtag{
+  margin-right: 5px;
+
+}
+
+.groupList{
+  width: 100%;
+  padding: 30px;
+  border-radius: 15px;
+  background-color: white;
+  box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
+}
+
+.groupItem{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-top: 5px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #EFEFF0;
+}
+
+.groupName{
+  font-size: 18pt;
+  font-weight: bold;
+  color: #41ADCA;
+
+}
+
+.memberCount{
+  font-size: 18pt;
+  font-weight: bold;
+  color: #A0D6E5;
+}
+
+.groupCreateButton{
+  background-color: #DEDEDE;
+  color: #41ADCA;
+  font-weight: bold;
+  font-size: 20pt;
+  padding: 7px 20px;
+  border: 0;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.groupNameTitle{
+  font-size: 30pt;
+  font-weight: 500;
+  color: #D06B74;
+  font-family: 'Black Han Sans';
+}
+
+.memberCountInfo{
+  font-size: 25pt;
+  font-weight: 500;
+  color: #E0ADB2;
+  font-family: 'Black Han Sans';
+
+}
+
+.selectedGroupInfo{
+  color: #D06B74;
+}
+
+.groupInfoBox{
+  background-color: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.groupInfoBox .adminName{
+  font-weight: bold;
+  font-size: 15pt;
+}
+
+.groupInfoBox .groupDescription{
+  font-weight: bold;
+  font-size: 13pt
+}
+
+.groupHashtags .hashtag{
+  font-size: 13pt;
+}
+
+.joinButton{
+  background-color: #DEDEDE;
+  color: #D06B74;
+  font-weight: bold;
+  font-size: 20pt;
+  padding: 7px 20px;
+  border: 0;
+  border-radius: 5px;
+  margin-top: 20px;
+}
