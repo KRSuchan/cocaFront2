@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './LoginPage'; // 로그인 페이지 컴포넌트
 import MainPage from './MainPage'; // 메인 페이지 컴포넌트
+import SignUp from './SignupPage'; //회원가입 페이지
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/main" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
+        <Route path='/signup' element={<SignUp/>}/>
       </Routes>
     </Router>
   );

@@ -51,12 +51,38 @@ const MainCalendar = ({onSlotSelect}) => {
         {
             start: new Date(2024, 4, 1), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
             end: new Date(2024, 4, 1),
+            description: "임시 내용1",
             title: '코딩',
+
         },
         {
             start: new Date(2024, 4, 17), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
             end: new Date(2024, 4, 20),
             title: '일본여행',
+                id: '141',
+                color: '#479950',
+                isPrivate: true,        
+                description: "임시 내용1Smarthome(App) Product Owner 직군 Product planning경력 10년 이상, 근무지 soma",
+        },
+        {
+            start: new Date(2024, 3, 29), // 5월 1일 (월은 0부터 시작하므로 4가 5월을 의미합니다)
+            end: new Date(2024, 3, 30),
+            title: '호주여행',
+            id: '142',
+            color: '#D7AA66',
+            isPrivate: true, 
+            description: "임시 내용1",
+            location: "집1",
+            attachments: [
+                {
+                    "fileName": "testName1",
+                    "filePath": "testUrl1"
+                },
+                {
+                    "fileName": "testName2",
+                    "filePath": "testUrl2"
+                }
+            ]
         },
     ]);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -101,15 +127,17 @@ const MainCalendar = ({onSlotSelect}) => {
                 id: item.id,
                 color: item.color,
                 isPrivate: item.isPrivate,
+                style: { backgroundColor: item.color }, // 이벤트의 배경색을 설정
             }));
-
+    
             console.log("format : ", formattedEvents);
-
+    
             setEvents(formattedEvents);
-
+    
             console.log("handle : ", events);
         }
     }
+    
 
     useEffect(() => {
         const currentDate = savedDate;
@@ -165,6 +193,15 @@ const MainCalendar = ({onSlotSelect}) => {
                 onSelectSlot={handleSelectSlot} // 빈 슬롯 선택 시 handleSelectSlot 함수 호출
                 onNavigate={handleNavigate}
                 defaultDate={savedDate == null ? new Date() : savedDate}
+                eventPropGetter={(event, start, end, isSelected) => { //이벤트 스타일 바꾸는 함수 호출
+                    return {
+                        style: {
+                            backgroundColor: event.color, //이벤트의 색상을 통신에서 받아온 색상으로
+                            color: 'white', //이벤트 폰트색 검정으로
+                            fontFamily : 'Noto Sans KR',
+                        },
+                    };
+                }}
             />
         </div>
     );
