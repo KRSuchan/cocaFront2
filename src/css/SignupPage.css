@@ -1,58 +1,78 @@
 .signup-container {
-    margin-top: 100px;
+    margin-top: 50px;
     max-width: 400px;
     margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-  
-  .signup-form h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
-  }
-  
-  .signup-button {
-    width: 100%;
-    padding: 10px;
+    padding: 30px;
     border: none;
-    border-radius: 4px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.signup-container:hover {
+    transform: translateY(-5px);
+}
+
+.signup-form h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-weight: 300;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #666;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #5cb85c;
+    outline: none;
+}
+
+.signup-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
     background-color: #5cb85c;
     color: white;
     font-size: 16px;
     cursor: pointer;
-  }
-  
-  .signup-button:hover {
+    transition: background-color 0.3s;
+}
+
+.signup-button:hover {
     background-color: #4cae4c;
-  }
-  
-  .policy-container {
-    margin-top: 20px;
-  }
-  
-  .policy-box {
-    height: 150px; /* 원하는 높이 설정 */
-    overflow-y: scroll; /* 세로 스크롤 활성화 */
+}
+
+.policy-container {
+    margin-top: 30px;
+}
+
+.policy-box {
+    height: 150px;
+    overflow-y: scroll;
     border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #f8f8f8;
+    border-radius: 6px;
+}
+  
