@@ -18,7 +18,7 @@ function LoginPage() {
   };
 
   const login = () => {
-    axios.post("http://localhost:8080/api/member/loginReq", {
+    axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/loginReq", {
       id: userId,
       password: password
     })
