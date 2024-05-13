@@ -118,17 +118,53 @@ const MainCalendar = ({onSlotSelect}) => {
         handleData(data);
     }
 
+    const darkenColor = (color) => {
+        // color 값이 #으로 시작하는지 확인
+        if (color.startsWith('#')) {
+            console.log('darkenStart', color);
+            // 시작하면 진행
+            var rgb = color.substring(1) // # 제거
+                .match(/.{1,2}/g) // 2자리씩 나눔
+                .map(component => parseInt(component, 16)); // 16진수로 변환
+    
+            // 어두운 색상을 위해 RGB 값에 각각 20씩 감소시킴
+            var darkerRgb = rgb.map(component => Math.max(component - 20, 0));
+    
+            // 감소된 RGB 값을 다시 16진수로 변환하여 새로운 색상 생성
+            var darkerColor = '#' + darkerRgb.map(component => component.toString(16).padStart(2, '0')).join('');
+            
+            console.log('darkenFinish', darkerColor);
+            return darkerColor;
+        } else {
+            return color;
+        }
+    }
+
     const handleData = (data) => {
         if (data) {
-            const formattedEvents = data.map(item => ({
-                start: new Date(item.startTime),
-                end: new Date(item.endTime),
-                title: item.title,
-                id: item.id,
-                color: item.color,
-                isPrivate: item.isPrivate,
-                style: { backgroundColor: item.color }, // 이벤트의 배경색을 설정
-            }));
+            const formattedEvents = data.map(item => {
+                const eventStartMonth = new Date(item.startTime).getMonth();
+                const eventEndMonth = new Date(item.endTime).getMonth();
+                const savedMonth = new Date(localStorageDate).getMonth();
+                console.log('data : ' + eventStartMonth + ' : es ' + eventEndMonth + ' : ee ' + savedMonth + ' : sm')
+                // 특정 일정 색상 어둡게 하기 시도 중
+                let backgroundColor = item.color;
+                if(eventStartMonth !== savedMonth && eventEndMonth !== savedMonth) {
+                    backgroundColor = darkenColor(item.color);
+                }
+
+                console.log("darken", backgroundColor);
+
+                return {
+                    start: new Date(item.startTime),
+                    end: new Date(item.endTime),
+                    title: item.title,
+                    id: item.id,
+                    color: item.color,
+                    isPrivate: item.isPrivate,
+                    style: { backgroundColor: item.color }, // 이벤트의 배경색을 설정
+                }
+            });
     
             console.log("format : ", formattedEvents);
     
@@ -179,6 +215,21 @@ const MainCalendar = ({onSlotSelect}) => {
 
     // let initTime = can
 
+    function getTextColorByBackgroundColor(hexColor) {
+        if(!hexColor || !hexColor.startsWith('#')){
+            return 'white'
+        }
+
+        const c = hexColor.substring(1)      // 색상 앞의 # 제거
+        const rgb = parseInt(c, 16)   // rrggbb를 10진수로 변환
+        const r = (rgb >> 16) & 0xff  // red 추출
+        const g = (rgb >>  8) & 0xff  // green 추출
+        const b = (rgb >>  0) & 0xff  // blue 추출
+        const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b // per ITU-R BT.709
+        // 색상 선택
+        return luma < 127.5 ? "white" : "black" // 글자색이
+    }
+
     return (
         <div className="calendar-component-main">
             <Calendar 
@@ -197,7 +248,7 @@ const MainCalendar = ({onSlotSelect}) => {
                     return {
                         style: {
                             backgroundColor: event.color, //이벤트의 색상을 통신에서 받아온 색상으로
-                            color: 'white', //이벤트 폰트색 검정으로
+                            color: getTextColorByBackgroundColor(event.color), //이벤트 폰트색 검정으로
                             fontFamily : 'Noto Sans KR',
                         },
                     };

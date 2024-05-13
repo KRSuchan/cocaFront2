@@ -33,7 +33,7 @@ const getPersonalDetailSchedule = async (id, startDate, endDate) => {
     console.log(id, startDate, endDate);
 
     try {
-        const res = axios.get(process.env.REACT_APP_SERVER_URL + `/api/personal-schedule/detail/between-dates?memberId=${id}&startDate=${startDate}&endDate=${endDate}`);
+        const res = axios.get(process.env.REACT_APP_SERVER_URL + `/api/personal-schedule/detail/date?memberId=${id}&date=${startDate}`);
 
         console.log(res);
 
@@ -132,7 +132,7 @@ function MainPage() {
         
         console.log(date);
         try {
-            const res = await getPersonalDetailSchedule(localStorage.getItem('userId'), date, date);
+            const res = await getPersonalDetailSchedule(localStorage.getItem('userId'), date);
 
             if(res && res.code == 200) {
                 setSchedule(res.data);

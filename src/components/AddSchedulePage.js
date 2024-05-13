@@ -25,11 +25,16 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     // const [scheduleDescription, setScheduleDescription] = useState('');
 
     const formatDate = (date) => {
-    
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        const tmpDate = new Date(date);
+
+        const year = tmpDate.getFullYear();
+        const month = String(tmpDate.getMonth() + 1).padStart(2, '0');
+        const day = String(tmpDate.getDate()).padStart(2, '0');
+        const hours = String(tmpDate.getHours()).padStart(2, '0');
+        const minutes = String(tmpDate.getMinutes()).padStart(2, '0');
+        const seconds = String(tmpDate.getSeconds()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
 
@@ -68,46 +73,67 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     // 일정 추가 또는 수정 로직
     const saveSchedule = async () => { //✅ 저장버튼 혹은 수정버튼을 눌렀을때 
         const url = editingSchedule
-            ? `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/update/`
+            ? `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/update`
             : `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/add`;
 
         const method = editingSchedule ? 'put' : 'post';
+        
         // ... 요청 데이터 구성 및 axios 요청
+        if(method === 'post') {
+            await postSchedule(url);
+        } else {
+            await postSchedule(url);
+        }
+
     };
     // 일정 삭제 로직
     const deleteSchedule = async () => { // ✅ 삭제버튼을 눌렀을때
         // ... axios delete 요청
     };
 
-
-    
-    const postSchedule = async () => {
+    const updateSchedule = async (url) => {
         try {
-            const url = process.env.REACT_APP_SERVER_URL + '/api/personal-schedule/add';
+
+        } catch (error) {
+            console.error("일정 등록 에러: ", error);
+            throw error; // 에러를 상위로 전파
+        }
+    }
+    
+    const postSchedule = async (url) => {
+        try {
+            // const url = process.env.REACT_APP_SERVER_URL + '/api/personal-schedule/add';
     
             console.log(startDate);
             console.log(typeof startDate);
             console.log(scheduleName);
-    
+            
+            let tmpAttachments = attachments;
+            if(attachments[0] === null && attachments[1] === null) {
+                tmpAttachments = null;
+            }
+
             const requestData = {
                 personalSchedule: {
                     title: scheduleName,
                     description: scheduleDescription,
                     location: location,
-                    startTime: startDate,
-                    endTime: endDate,
+                    startTime: formatDate(startDate),
+                    endTime: formatDate(endDate),
                     color: colorCode,
                     isPrivate: isPrivate
                 },
                 member: {
                     id: localStorage.getItem('userId')
                 },
-                attachments: attachments || null // attachments가 존재하지 않으면 null로 설정
+                attachments: tmpAttachments || null // attachments가 존재하지 않으면 null로 설정
             };
+
+            console.log('rd', requestData);
     
             const response = await axios.post(url, requestData);
     
-            console.log(response.data.message);
+            console.log(response);
     
             // MainCalendar.handleNavigate(startDate); 
             // post 후 화면에 내용 뿌려주기 필요.
