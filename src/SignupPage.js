@@ -31,6 +31,18 @@ const handleSignUp = async (e) => {
     }
     // 회원가입 API 호출
     try {
+      const memberData = {
+        id: userId,
+        password: password,
+        userName: nickname,
+        interest: interest,
+        profilePhoto: profilePhoto || null
+      };
+
+      const response = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/joinReq", memberData);
+
+      console.log("reg : ", response);
+
       navigate('/'); // 회원가입 성공 시 홈페이지로 이동
     } catch (error) {
       console.error('회원가입 실패:', error);

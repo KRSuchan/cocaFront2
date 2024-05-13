@@ -68,8 +68,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     // 일정 추가 또는 수정 로직
     const saveSchedule = async () => { //✅ 저장버튼 혹은 수정버튼을 눌렀을때 
         const url = editingSchedule
-            ? `http://localhost:8080/api/personal-schedule/update/`
-            : 'http://localhost:8080/api/personal-schedule/add';
+            ? `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/update/`
+            : `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/add`;
 
         const method = editingSchedule ? 'put' : 'post';
         // ... 요청 데이터 구성 및 axios 요청
@@ -83,7 +83,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     
     const postSchedule = async () => {
         try {
-            const url = 'http://localhost:8080/api/personal-schedule/add';
+            const url = process.env.REACT_APP_SERVER_URL + '/api/personal-schedule/add';
     
             console.log(startDate);
             console.log(typeof startDate);

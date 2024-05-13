@@ -17,7 +17,7 @@ const getPersonalSchedule = async (id,  startDate, endDate) => {
     console.log(id, startDate, endDate);
 
     try {
-        const res = axios.get(`http://localhost:8080/api/personal-schedule/summary/between-dates?memberId=${id}&startDate=${startDate}&endDate=${endDate}`);
+        const res = axios.get(process.env.REACT_APP_SERVER_URL + `/api/personal-schedule/summary/between-dates?memberId=${id}&startDate=${startDate}&endDate=${endDate}`);
 
         console.log(res);
 
