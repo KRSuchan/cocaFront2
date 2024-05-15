@@ -23,7 +23,7 @@ const SelectedGroupInfo = ({ groupId, onEdit }) => {
   const [isManager, setIsManager] = useState(true); // 관리자 여부를 상태로 관리
 
   // 컴포넌트 마운트 시 백엔드에서 데이터를 가져오는 효과
-  useEffect(() => {
+  useEffect(() => { //✅ 그룹 상세정보 가져오면됨, 해당그룹 가입여부와 관리자여부는 백엔드측에서 추가해야 할듯
     // TODO: 백엔드에서 그룹 정보를 가져오는 로직 구현
     // fetchGroupInfo().then(data => setGroup(data));
     console.log('그룹 선택2:', groupId);

@@ -53,7 +53,7 @@ const GroupPage = () => {
   };
 
     // 그룹 선택 핸들러
-    const handleGroupSelect = (group) => { //23✅ 그룹 선택 했을때 [그룹 페이지]
+    const handleGroupSelect = (group) => { // 그룹선택시
         setSelectedGroup(group); 
         console.log('그룹 선택:', group.groupId);
       };
@@ -67,34 +67,8 @@ const GroupPage = () => {
     setEditingGroup(true);
     setCreateGroupPage(false); // Ensure createGroupPage is false when editing
   };
-
-  // 탈퇴 핸들러
-  const handleLeave = () => { // ✅ 탈퇴버튼 눌렀을때 [그룹 상세 페이지]
-    // 백엔드에 탈퇴 요청을 보내는 로직
-    console.log('Leaving group:', selectedGroup.name);
-    // 예시로 console.log를 사용했습니다. 실제로는 여기에 API 호출을 넣으세요.
-  };
-
-// 참가 핸들러
-    const handleJoin = () => { // ✅ 참가버튼 눌렀을때 [그룹 상세 페이지]
-    // 백엔드에 참가 요청을 보내는 로직
-    console.log('Joining group:', selectedGroup.name);
-    };
-
-    const handleDeleteGroup = (groupId) => { //✅ 삭제버튼 눌렀을때 [그룹 수정 페이지]
-        console.log('Deleting group with ID:', groupId);
-        // Make a backend call to delete the group
-        // setDeletingGroup(false); // Reset the deleting state
-        setEditingGroup(false); // Exit edit mode after saving 
-      };
-
-    const handleSaveEdit = (updatedGroup) => { // ✅ 저장버튼 눌렀을때 [그룹 수정 페이지]
-      console.log('Saving edited group:', updatedGroup);
-      // Send the updated group data to the backend
-      setEditingGroup(false); // Exit edit mode after saving
-    };
   
-    const closeEditingGroup = () => {
+    const closeEditingGroup = () => { //수정페이지 닫기
       setEditingGroup(false);
     }
 

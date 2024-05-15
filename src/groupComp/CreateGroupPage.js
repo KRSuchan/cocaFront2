@@ -9,8 +9,8 @@ const CreateGroupPage = () => {
   const [interests, setInterests] = useState(['', '', '']);
   const interestOptions = ['Technology', 'Education', 'Health', 'Art', 'Sports']; // Example interests
 
-  const handleCreateGroup = () => {
-    // 백엔드에서 그룹 생성 로직을 구현할 예정입니다.
+  const handleCreateGroup = () => { //✅ 추가버튼
+    
   };
 
   

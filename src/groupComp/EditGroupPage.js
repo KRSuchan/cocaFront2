@@ -38,9 +38,8 @@ const EditGroupPage = ({ closeEditingGroup, groupId }) => {
   };
 
       // Add a new handler for the delete action
-      const handleDelete = () => { //✅ 삭제버튼
+      const handleDelete = () => { //✅ 삭제버튼, 구현하시면 됨
         closeEditingGroup();
-
       };
 
       const handleSave = () => { //✅ 저장버튼
