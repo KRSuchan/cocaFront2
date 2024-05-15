@@ -39,6 +39,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
 
 
     // 상태 초기화를 editingSchedule이 있을 경우 해당 데이터로 설정
+    const [scheduleId, setScheduleId] = useState(editingSchedule ? editingSchedule.id : null);
     const [scheduleName, setScheduleName] = useState(editingSchedule ? editingSchedule.title : '');
     const [scheduleDescription, setScheduleDescription] = useState(editingSchedule ? editingSchedule.description : '');
     const [colorCode, setColorCode] = useState(editingSchedule ? editingSchedule.color : '#000000');
@@ -89,16 +90,11 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     // 일정 삭제 로직
     const deleteSchedule = async () => { // ✅ 삭제버튼을 눌렀을때
         // ... axios delete 요청
+        const userId = localStorage.getItem('userId');
+        const res = await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/delete?memberId=${userId}&personalScheduleId=${scheduleId}`);
+
+        console.log(res);
     };
-
-    const updateSchedule = async (url) => {
-        try {
-
-        } catch (error) {
-            console.error("일정 등록 에러: ", error);
-            throw error; // 에러를 상위로 전파
-        }
-    }
     
     const postSchedule = async (url) => {
         try {
