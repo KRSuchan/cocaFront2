@@ -1,18 +1,58 @@
-// EditGroupPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../css/GroupPage.module.css';
 
-const EditGroupPage = ({ group, onSave, onDelete }) => {
-  // Initialize state only if group properties are defined
-  const [groupName, setGroupName] = useState(group?.name || '');
-  const [groupDescription, setGroupDescription] = useState(group?.description || '');
-  const [managerIds, setManagerIds] = useState(group?.admins || ['', '']);
-  const [interests, setInterests] = useState(group?.interests || ['', '', '']);
-  const interestOptions = ['Technology', 'Education', 'Health', 'Art', 'Sports']; // Example interests
+const EditGroupPage = ({ closeEditingGroup, groupId }) => {
+  // 기본값으로 설정할 그룹 정보
+  const defaultGroup = {
+    id: 11,
+    name: '수정NAME',
+    admin: {
+      id: 'TESTID1',
+      userName: 'TESTNAME1',
+      profileImgPath: 'TESTURL1'
+    },
+    description: '테스트그룹 설명5',
+    isPrivate: false,
+    hashtags: [
+      { id: 1, field: 'IT', name: '스프링' },
+      { id: 2, field: 'IT', name: '리크' },
+      { id: 3, field: 'IT', name: '자바' },
+    ],
+    memberCount: 2
+  };
+
+  // useState를 사용하여 기본값 설정
+  const [groupName, setGroupName] = useState(defaultGroup.name);
+  const [groupDescription, setGroupDescription] = useState(defaultGroup.description);
+  const [managerIds, setManagerIds] = useState([defaultGroup.admin.id]);
+  const [interests, setInterests] = useState(defaultGroup.hashtags.map(tag => tag.name));
+  const interestOptions = ['Technology', 'Education', 'Health', 'Art', 'Sports']; // 예시 관심분야
+
+  useEffect(() => {
+    // TODO: 백엔드에서 groupId를 사용하여 그룹 정보를 가져오는 로직 구현
+
+  }, [groupId]);
 
   const handleInterestChange = (index, value) => {
     setInterests(interests.map((interest, i) => (i === index ? value : interest)));
   };
+
+      // Add a new handler for the delete action
+      const handleDelete = () => { //✅ 삭제버튼, 구현하시면 됨
+        closeEditingGroup();
+      };
+
+      const handleSave = () => { //✅ 저장버튼
+        // TODO: 백엔드에 그룹 정보를 저장하는 로직 구현
+        // saveGroupInfo({ groupName, groupDescription, managerIds, interests }).then(() => {
+        //   // 성공적으로 저장되었을 때의 처리
+        // });
+        closeEditingGroup();
+      };
+
+      const handleCancel = () => { 
+        closeEditingGroup();
+      };
 
   // Ensure group properties are arrays before mapping
   const renderManagerInputs = () => {
@@ -50,11 +90,7 @@ const EditGroupPage = ({ group, onSave, onDelete }) => {
     ));
   };
 
-    // Add a new handler for the delete action
-    const handleDelete = () => {
-        // Call the onDelete prop with the group's identifier
-        onDelete(group.id);
-      };
+
 
   return (
     <div className={styles.createGroupPageBox}>
@@ -79,11 +115,14 @@ const EditGroupPage = ({ group, onSave, onDelete }) => {
         <span className={styles.title2}>관심분야</span>
         {renderInterestSelects()}
       </div>
-      <button onClick={() => onSave(groupName, groupDescription, managerIds, interests)} className={styles.joinButton}>
+      <button onClick={() => handleSave(groupName, groupDescription, managerIds, interests)} className={styles.joinButton}>
         저장
       </button>
       <button onClick={handleDelete} className={styles.joinButton}>
           삭제
+        </button>
+        <button onClick={handleCancel} className={styles.joinButton}>
+          취소
         </button>
     </div>
   );
