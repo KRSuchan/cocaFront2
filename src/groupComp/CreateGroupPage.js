@@ -2,13 +2,18 @@
 import React, { useState } from 'react';
 import styles from '../css/GroupPage.module.css';
 
-const CreateGroupPage = ({ onCreate }) => {
+const CreateGroupPage = () => {
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
   const [managerIds, setManagerIds] = useState(['', '']);
   const [interests, setInterests] = useState(['', '', '']);
   const interestOptions = ['Technology', 'Education', 'Health', 'Art', 'Sports']; // Example interests
 
+  const handleCreateGroup = () => {
+    // 백엔드에서 그룹 생성 로직을 구현할 예정입니다.
+  };
+
+  
   const handleInterestChange = (index, value) => {
     setInterests(interests.map((interest, i) => (i === index ? value : interest)));
   };
@@ -64,7 +69,7 @@ const CreateGroupPage = ({ onCreate }) => {
             ))}
             
             </div>
-            <button onClick={() => onCreate(groupName, groupDescription, managerIds, interests)} className={styles.joinButton}>
+            <button onClick={handleCreateGroup} className={styles.joinButton}>
                 추가
             </button>
     </div>

@@ -32,7 +32,7 @@ const GroupPage = () => {
   // 해시태그 상태
   const [hashtags, setHashtags] = useState(['#IT', '#스터디', '#웹개발', '#파이썬']);
   const [selectedGroup, setSelectedGroup] = useState(null); //목록에서 선택된 그룹
-  const [isMember, setIsMember] = useState(false); // 이미 참가된 그룹인지 여부
+  // const [isMember, setIsMember] = useState(false); // 이미 참가된 그룹인지 여부
   // const [deletingGroup, setDeletingGroup] = useState(false);
 
 
@@ -54,12 +54,8 @@ const GroupPage = () => {
 
     // 그룹 선택 핸들러
     const handleGroupSelect = (group) => { //23✅ 그룹 선택 했을때 [그룹 페이지]
-        setSelectedGroup(group);
-        // 백엔드에 이미 참가된 그룹인지 확인하는 요청을 보내고
-        // 결과에 따라 setIsMember를 업데이트하는 로직
-        // 예시로 false를 설정했습니다. 실제로는 여기에 API 호출을 넣으세요.
+        setSelectedGroup(group); 
         console.log('그룹 선택:', group.groupId);
-        setIsMember(true);
       };
 
   // 생성 버튼 핸들러
@@ -70,13 +66,6 @@ const GroupPage = () => {
   const handleEdit = () => { // 수정 버튼 [그룹 상세 페이지]
     setEditingGroup(true);
     setCreateGroupPage(false); // Ensure createGroupPage is false when editing
-  };
-
-
-
-  const handleCreateGroup = (name, description, managers, interests) => { // ✅ 추가 버튼 눌렀을떄 [그룹 생성 페이지]
-    console.log('Creating group with:', { name, description, managers, interests });
-    // Here you would send the data to the backend to create the group
   };
 
   // 탈퇴 핸들러
@@ -105,6 +94,10 @@ const GroupPage = () => {
       setEditingGroup(false); // Exit edit mode after saving
     };
   
+    const closeEditingGroup = () => {
+      setEditingGroup(false);
+    }
+
 
 
   return (
@@ -150,16 +143,12 @@ const GroupPage = () => {
 
         {/* 우측 판넬의 내용 */}
         {createGroupPage && !editingGroup ? (
-          <CreateGroupPage onCreate={handleCreateGroup} />
+          <CreateGroupPage />
         ) : editingGroup ? (
-          <EditGroupPage group={selectedGroup} onSave={handleSaveEdit} onDelete={handleDeleteGroup} />
+          <EditGroupPage groupId={selectedGroup.groupId} closeEditingGroup={closeEditingGroup} />
         ) : selectedGroup ? (
           <SelectedGroupInfo
-            group={selectedGroup}
             groupId={selectedGroup.groupId}
-            onLeave={handleLeave}
-            onJoin={handleJoin}
-            isMember={isMember}
             onEdit={handleEdit}
           />
         ) : null}

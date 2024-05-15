@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../css/GroupPage.module.css';
 
-const SelectedGroupInfo = ({ groupId, onLeave, onJoin, onEdit }) => {
+const SelectedGroupInfo = ({ groupId, onEdit }) => {
   // 상태 관리를 위한 기본값 설정
   const [group, setGroup] = useState({
     id: 11,
