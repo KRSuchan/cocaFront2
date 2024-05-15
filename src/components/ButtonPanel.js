@@ -15,6 +15,9 @@ const ButtonPanel = () => {
         navigate("/group");
     }
 
+    const handleSettingClick = () => {
+        navigate("/setting");
+    }
 
     return (
         <div className="button-panel">
@@ -24,10 +27,10 @@ const ButtonPanel = () => {
             <Button icon={<SearchOutlined style={{ fontSize: '30px' }} />} className="button green-color" onClick={handleGroupClick}>
                 <div>그룹검색</div>
             </Button>
-            <Button icon={<StarOutlined style={{ fontSize: '30px' }} />} className="button violet" >
+            <Button icon={<StarOutlined style={{ fontSize: '30px' }} />} className="button violet" onClick={handleLogOut}>
                 <div>빈일정</div>
             </Button>
-            <Button icon={<SettingOutlined style={{ fontSize: '30px' }} />} className="button navy-blue" onClick={handleLogOut}>
+            <Button icon={<SettingOutlined style={{ fontSize: '30px' }} />} className="button navy-blue" onClick={handleSettingClick}>
                 <div>내설정</div>
             </Button>
         </div>

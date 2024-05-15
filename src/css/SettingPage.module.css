@@ -1,0 +1,107 @@
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px;
+  font-family: 'Noto Sans KR';
+}
+
+.header {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: start; /* 가로 시작점 정렬 */
+}
+
+.title{
+    font-size: 35pt;
+    font-weight: 400;
+    color: #41ADCA;
+    font-family: 'Black Han Sans';
+}
+
+.backButton {
+    font-size: 35pt;
+    font-weight: bold;
+    margin-right: 20px;
+    color: #41ADCA;
+    background-color: #DEDEDE;
+    border-radius: 10px;
+    border-width: 0;
+    padding: 0 20px; 
+    font-family: 'Black Han Sans';
+}
+
+.content{
+    width: 35%;
+    padding: 30px;
+    border-radius: 15px;
+    background-color: white;
+    box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.profileImageContainer {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileImage {
+  width: 150px;
+  height: 150px;
+  border-radius: 75px;
+}
+.inputContainer {
+  width: 100%;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e1e1e1;
+  font-size: 15pt;
+  font-weight: 600;
+  outline: none;
+}
+
+.inputContainer label {
+  font-weight: bold; /* 라벨 굵게 */
+  color: #41ADCA; /* 라벨 색상 설정 */
+  font-size: 16pt;
+  margin-right: 12px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.buttonContainer button {
+  font-size: 15pt;
+  font-weight: bold;
+  padding: 10px 40px;
+  border-radius: 30px;
+  border-width: 0;
+}
+
+.buttonContainer .updateButton {
+    background-color: #41ADCA;
+    color: white;
+}
+
+.buttonContainer .deleteButton {
+    background-color: #D06B74;
+    color: white;
+}
