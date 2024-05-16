@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './css/LoginPage.css';
+import Swal from 'sweetalert2';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -32,7 +33,14 @@ function LoginPage() {
       navigate('/main');
       } else {
         console.log("로그인 실패 : ", res.data); 
-        alert("로그인 실패에요!");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "로그인 실패!",
+          text: "아이디 또는 비밀번호가 달라요!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       }
 
       

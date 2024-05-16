@@ -84,7 +84,7 @@
 
 .buttonContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   width: 100%;
 }
 
@@ -104,4 +104,9 @@
 .buttonContainer .deleteButton {
     background-color: #D06B74;
     color: white;
+}
+
+.buttonContainer .loginButton {
+  background-color: #41ADCA;
+  color: white;
 }

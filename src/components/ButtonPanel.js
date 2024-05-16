@@ -16,7 +16,7 @@ const ButtonPanel = () => {
     }
 
     const handleSettingClick = () => {
-        navigate("/setting");
+        navigate("/check");
     }
 
     return (

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './css/SignupPage.css'; // 스타일시트 임포트
+import Swal from 'sweetalert2';
 
 function SignUpPage() {
   const navigate = useNavigate();
@@ -22,11 +23,21 @@ function SignUpPage() {
 const handleSignUp = async (e) => {
     e.preventDefault();
     if (!isPasswordMatch()) {
-      alert('비밀번호가 일치하지 않습니다.');
+      Swal.fire({
+        icon: "error",
+        title: "비밀번호가 일치하지 않아요!",
+        confirmButtonText: "확인"
+      });
+      // alert('비밀번호가 일치하지 않습니다.');
       return;
     }
     if (!agreeToPolicy) {
-      alert('정책에 동의해주세요.');
+      Swal.fire({
+        icon: "error",
+        title: "정책에 동의 해 주셔야 해요!",
+        confirmButtonText: "확인"
+      });
+      // alert('정책에 동의해주세요.');
       return;
     }
     // 회원가입 API 호출
