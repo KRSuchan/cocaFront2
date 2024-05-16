@@ -7,6 +7,7 @@ import MainPage from './MainPage'; // 메인 페이지 컴포넌트
 import SignUp from './SignupPage'; //회원가입 페이지
 import GroupPage from './GroupPage' // 그룹페이지
 import SettingPage from './SettingPage'; // 설정페이지
+import LoginCheckPage from './LoginCheckPage';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path='/signup' element={<SignUp/>}/>
         <Route path='/group' element={<GroupPage/>}/>
         <Route path='/setting' element={<SettingPage/>}/>
+        <Route path='/check' element={<LoginCheckPage/>}/>
       </Routes>
     </Router>
   );

@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { UserOutlined, LeftOutlined } from '@ant-design/icons'; // 아이콘 추가
 import styles from './css/SettingPage.module.css'; // 스타일 시트 임포트
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const SettingPage = () => {
+    let { state } = useLocation();
+    console.log(state);
+
     const [userInfo, setUserInfo] = useState({
         id: 'defaultUser',
         password: 'defaultPassword',
@@ -11,26 +17,174 @@ const SettingPage = () => {
         profileImgPath: ''
     });
 
+    console.log(userInfo);
+
+    const navigate = useNavigate();
+
     // 백엔드 API 호출을 위한 함수 선언 (현재는 더미 데이터 사용)
     const fetchUserInfo = async () => {
         // 백엔드에서 사용자 정보를 불러오는 로직 구현 예정
-        console.log("백엔드에서 사용자 정보를 불러오는 로직 구현 예정");
+        // console.log("백엔드에서 사용자 정보를 불러오는 로직 구현 예정");
+        try {
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/memberInfoInquiryReq", {
+                id: state.id,
+                password: state.password,
+            });
+
+            console.log(res);
+
+            return res.data;
+        } catch (error) {
+            console.log(error);
+        }
     };
+
+    const updateMember = async () => {
+        try {
+            let data = userInfo;
+
+            if(userInfo.password === '') {
+                console.log("pw blanked");
+                data = {
+                    id: userInfo.id,
+                    password: state.password,
+                    userName: userInfo.userName,
+                    profileImgPath: userInfo.profileImgPath
+                };
+                console.log("data", data);
+            }
+
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/memberInfoUpdateReq", data);
+            console.log(res);
+
+            state.password = data.password;
+
+            setUserInfo({...userInfo, password: ''});
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const handleUpdate = async () => {
         // 백엔드에 사용자 정보를 업데이트하는 로직 구현 예정
-        console.log("백엔드에 사용자 정보를 업데이트하는 로직 구현 예정");
+        // console.log("백엔드에 사용자 정보를 업데이트하는 로직 구현 예정");
+        Swal.fire({
+            icon: "question",
+            title: "정보를 수정하시겠나요?",
+            showCancelButton: true,
+            confirmButtonText: "수정",
+            cancelButtonText: "취소"
+        }).then(async (res) => {
+            if(res.isConfirmed) {
+                await updateMember();
+
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "정상적으로 변경되었어요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+            else {
+                Swal.fire({
+                    position: "center",
+                    icon: "info",
+                    title: "수정을 취소했어요.",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
+
+        
+        
     };
+
+    const deleteMember = async (password) => {
+        console.log("탈퇴 처리");
+        const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/withdrawalReq", 
+            {
+                id: userInfo.id,
+                password: password
+            }
+        )
+
+        console.log(res);
+
+        return res.data;
+    }
 
     const handleDelete = async () => {
         // 백엔드에 사용자 탈퇴 요청하는 로직 구현 예정
-        console.log("백엔드에 사용자 탈퇴 요청하는 로직 구현 예정");
+        // console.log("백엔드에 사용자 탈퇴 요청하는 로직 구현 예정");
+        Swal.fire({
+            icon: "warning",
+            title: "회원탈퇴",
+            html: `정말로 탈퇴할거에요?<br>탈퇴 시, 모든 정보가 사라져요!`,
+            input: 'password',
+            inputPlaceholder: '비밀번호',
+            showCancelButton: true,
+            confirmButtonText: "탈퇴",
+            cancelButtonText: "취소",
+            showLoaderOnConfirm: true,
+            preConfirm: async (password) => {
+                const res = await deleteMember(password);
+                if(!res) {
+                    return Swal.showValidationMessage('비밀번호가 달라요!');
+                }
+
+                return res;
+            }
+        }).then(async (res) => {
+            if(res.isConfirmed) {
+                localStorage.clear();
+
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "탈퇴완료",
+                    text: "다음에 또 방문해주세요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                navigate("/");
+            }
+            else {
+                Swal.fire({
+                    position: "center",
+                    icon: "info",
+                    title: "탈퇴를 취소했어요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
     };
+
+    const handleBack = () => {
+        navigate(-2);
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await fetchUserInfo();
+            setUserInfo({ 
+                id: res.id, 
+                password: '', 
+                userName: res.userName, 
+                profileImgPath: res.profileImgPath 
+            });
+        }
+
+        fetchData();
+    }, []);
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <button className={styles.backButton}>{'<'}</button>
+                <button className={styles.backButton} onClick={handleBack}>{'<'}</button>
                 <h1 className={styles.title}>내정보</h1>
             </div>
             <div className={styles.content}>
