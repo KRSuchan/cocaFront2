@@ -2,16 +2,22 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ListGroup } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { SettingOutlined } from '@ant-design/icons';
 
 const GroupsList = () => {
-    // Assume groups is an array of group names
     const groups = useSelector(state => state.groups);
+    const [selectedGroup, setSelectedGroup] = useState(groups[0].groupName);
+    const navigate = useNavigate();
 
-    const [selectedGroup, setSelectedGroup] = useState('내 캘린더'); // 선택된 그룹을 추적하는 상태 변수를 추가합니다.
-
-    // ✅ 그룹 선택시!
     const handleClick = (group) => {
-        setSelectedGroup(group); // 클릭한 그룹을 선택된 그룹으로 설정합니다.
+        setSelectedGroup(group.groupName);
+    };
+
+    const handleSettingsClick = (group) => {
+        if (group.isAdmin) {
+            navigate(`/editgroup/${group.groupId}`);
+        }
     };
 
     return (
@@ -19,20 +25,27 @@ const GroupsList = () => {
             <ListGroup variant="flush">
                 {groups.map(group => (
                     <ListGroup.Item 
+                        key={group.groupId}
                         style={{ 
                             borderRadius: '15px', 
-                            backgroundColor: group === selectedGroup ? '#4CB3FF' : '#f8f9fa', // 선택된 그룹이면 배경색을 변경합니다.
-                            color: group === selectedGroup ? 'white' : 'black', // 선택된 그룹이면 글자색을 변경합니다.
+                            backgroundColor: group.groupName === selectedGroup ? '#4CB3FF' : '#f8f9fa',
+                            color: group.groupName === selectedGroup ? 'white' : 'black',
                             marginBottom: '10px', 
                             padding: '15px',
                             paddingLeft: '25px',
                             fontSize: '15pt',
-                            fontFamily: 'Noto Sans KR', // 폰트를 설정합니다.
-                            fontWeight: group === selectedGroup ? 'bold' : 'normal' // 선택된 그룹이면 글자를 굵게 합니다.
+                            fontFamily: 'Noto Sans KR',
+                            fontWeight: group.groupName === selectedGroup ? 'bold' : 'normal',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
                         }} 
                         onClick={() => handleClick(group)}
                     >
-                        {group}
+                        <span>{group.groupName}</span>
+                        {group.isAdmin && (
+                            <SettingOutlined onClick={(e) => { e.stopPropagation(); handleSettingsClick(group); }} style={{ color: 'gray', fontSize: '20px' }} />
+                        )}
                     </ListGroup.Item>
                 ))}
             </ListGroup>

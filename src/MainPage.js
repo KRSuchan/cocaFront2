@@ -56,7 +56,12 @@ const updateDate = (newDate) => {
 // ✅ 그룹 목록 불러오기!
 const initialState = {
     date: moment(),
-    groups: ['내 캘린더', '앱 개발자 취뽀그룹', '플러터 개발자그룹', '재수생 스터디그룹'] // 더미 데이터 추가
+    groups: [
+        { groupId: 1, groupName: '내 캘린더', isAdmin: false },
+        { groupId: 13, groupName: '앱 개발자 취뽀그룹', isAdmin: false },
+        { groupId: 16, groupName: '플러터 개발자그룹', isAdmin: true },
+        { groupId: 20, groupName: '재수생 스터디그룹', isAdmin: true },
+    ] // 더미 데이터 추가
   };
   
   const reducer = (state = initialState, action) => {

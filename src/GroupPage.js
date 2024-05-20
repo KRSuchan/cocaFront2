@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 import SelectedGroupInfo from './groupComp/selectedGroupInfo';
 import CreateGroupPage from './groupComp/CreateGroupPage';
-import EditGroupPage from './groupComp/EditGroupPage';
 
 //✨ 이 페이지 컴포넌트는 모두 groupComp에 있음
 //✨ 관심분야 설정 -> PM에게 확인 예정임
@@ -19,9 +18,6 @@ const GroupPage = () => {
   // 생성 페이지 상태
   const [createGroupPage, setCreateGroupPage] = useState(false);
 
-  // 수정 페이지 상태
-  const [editingGroup, setEditingGroup] = useState(false); 
-
   // 그룹 목록 상태
   const [groups, setGroups] = useState([
     { groupId: 1, name: '재생산 스타디그룹', memberCount: 1009, admin: '니이모를찾아서', description: '이 스터디그룹에서 여러분의 공부를 더욱 북돋을 동료 재수생들과 함께 할 수 있어요!', hashtags: ['#IT', '#스터디'] },
@@ -32,9 +28,6 @@ const GroupPage = () => {
   // 해시태그 상태
   const [hashtags, setHashtags] = useState(['#IT', '#스터디', '#웹개발', '#파이썬']);
   const [selectedGroup, setSelectedGroup] = useState(null); //목록에서 선택된 그룹
-  // const [isMember, setIsMember] = useState(false); // 이미 참가된 그룹인지 여부
-  // const [deletingGroup, setDeletingGroup] = useState(false);
-
 
   const handleBackClick = () => { // 뒤로가기 버튼
     navigate("/main");
@@ -62,17 +55,6 @@ const GroupPage = () => {
   const handleCreate = () => { // 생성 버튼 [그룹 페이지]
     setCreateGroupPage(!createGroupPage); //그룹 생성 페이지 띄움
   };
-
-  const handleEdit = () => { // 수정 버튼 [그룹 상세 페이지]
-    setEditingGroup(true);
-    setCreateGroupPage(false); // Ensure createGroupPage is false when editing
-  };
-  
-    const closeEditingGroup = () => { //수정페이지 닫기
-      setEditingGroup(false);
-    }
-
-
 
   return (
     <div className={styles.groupPageContainer}>
@@ -116,17 +98,14 @@ const GroupPage = () => {
       <div className={styles.rightPanel}>
 
         {/* 우측 판넬의 내용 */}
-        {createGroupPage && !editingGroup ? (
+        {createGroupPage ? (
           <CreateGroupPage />
-        ) : editingGroup ? (
-          <EditGroupPage groupId={selectedGroup.groupId} closeEditingGroup={closeEditingGroup} />
         ) : selectedGroup ? (
           <SelectedGroupInfo
             groupId={selectedGroup.groupId}
-            onEdit={handleEdit}
           />
         ) : null}
-        {/* 그룹 생성인가? 아니면 그룹 수정인가? 아니면 그룹 상세인가? */}
+        {/* 그룹 생성인가? 아니면 그룹 상세인가? */}
       </div>
     </div>
   );
