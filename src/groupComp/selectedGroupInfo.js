@@ -1,8 +1,9 @@
 // SelectedGroupInfo.js
 import React, { useState, useEffect } from 'react';
+import { UserOutlined } from '@ant-design/icons'; // 사람 아이콘을 위한 import
 import styles from '../css/GroupPage.module.css';
 
-const SelectedGroupInfo = ({ groupId, onEdit }) => {
+const SelectedGroupInfo = ({ groupId }) => {
   // 상태 관리를 위한 기본값 설정
   const [group, setGroup] = useState({
     id: 11,
@@ -10,7 +11,7 @@ const SelectedGroupInfo = ({ groupId, onEdit }) => {
     admin: {
       id: 'TESTID1',
       userName: 'TESTNAME1',
-      profileImgPath: 'TESTURL1'
+      profileImgPath: 'https://file.instiz.net/data/file/20130117/a/6/e/a6e5e3521b4a120d81940cb69638c54b'
     },
     description: '테스트그룹 설명5',
     isPrivate: false,
@@ -29,13 +30,29 @@ const SelectedGroupInfo = ({ groupId, onEdit }) => {
     console.log('그룹 선택2:', groupId);
   }, []);
 
+  // 백엔드와 통신하여 그룹 참가 처리
+  const handleJoinGroup = () => {
+    // TODO: 백엔드에 그룹 참가 요청 로직 구현
+    setIsMember(true);
+  };
+
+  // 백엔드와 통신하여 그룹 탈퇴 처리
+  const handleLeaveGroup = () => {
+    // TODO: 백엔드에 그룹 탈퇴 요청 로직 구현
+    setIsMember(false);
+  };
+
   return (
     <div className={styles.selectedGroupInfo}>
       <span className={styles.groupNameTitle}>{group.name}</span>
       <span className={styles.memberCountInfo}>{group.memberCount}명</span>
-      <div className={styles.groupInfoBox}>
+      <div className={styles.groupInfoBox} style={{ display: 'flex', alignItems: 'center' }}>
+        {group.admin.profileImgPath ? (
+          <img src={group.admin.profileImgPath} alt="관리자 사진" className={styles.adminProfileImage} style={{ borderRadius: '50%', width: '50px', height: '50px', marginRight: '10px' }} />
+        ) : (
+          <UserOutlined style={{ fontSize: '50px', marginRight: '10px' }} />
+        )}
         <p className={styles.adminName}>[관리자] {group.admin.userName}</p>
-        {/* 관리자 프로필 이미지 추가 예정임*/}
       </div>
       <div className={styles.groupInfoBox}>
         <p className={styles.groupDescription}>{group.description}</p>
@@ -47,12 +64,9 @@ const SelectedGroupInfo = ({ groupId, onEdit }) => {
         </div>
       </div>
       {isMember ? (
-        <button className={styles.joinButton} onClick={() => setIsMember(false)}>탈퇴</button>
+        <button className={styles.joinButton} onClick={handleLeaveGroup}>탈퇴</button>
       ) : (
-        <button className={styles.joinButton} onClick={() => setIsMember(true)}>참가</button>
-      )}
-      {isManager && (
-        <button className={styles.joinButton} onClick={onEdit}>수정</button>
+        <button className={styles.joinButton} onClick={handleJoinGroup}>참가</button>
       )}
     </div>
   );
