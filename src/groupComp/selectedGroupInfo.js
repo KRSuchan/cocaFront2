@@ -1,5 +1,6 @@
 // SelectedGroupInfo.js
 import React, { useState, useEffect } from 'react';
+import { UserOutlined } from '@ant-design/icons'; // 사람 아이콘을 위한 import
 import styles from '../css/GroupPage.module.css';
 
 const SelectedGroupInfo = ({ groupId }) => {
@@ -10,7 +11,7 @@ const SelectedGroupInfo = ({ groupId }) => {
     admin: {
       id: 'TESTID1',
       userName: 'TESTNAME1',
-      profileImgPath: 'TESTURL1'
+      profileImgPath: 'https://file.instiz.net/data/file/20130117/a/6/e/a6e5e3521b4a120d81940cb69638c54b'
     },
     description: '테스트그룹 설명5',
     isPrivate: false,
@@ -45,9 +46,13 @@ const SelectedGroupInfo = ({ groupId }) => {
     <div className={styles.selectedGroupInfo}>
       <span className={styles.groupNameTitle}>{group.name}</span>
       <span className={styles.memberCountInfo}>{group.memberCount}명</span>
-      <div className={styles.groupInfoBox}>
+      <div className={styles.groupInfoBox} style={{ display: 'flex', alignItems: 'center' }}>
+        {group.admin.profileImgPath ? (
+          <img src={group.admin.profileImgPath} alt="관리자 사진" className={styles.adminProfileImage} style={{ borderRadius: '50%', width: '50px', height: '50px', marginRight: '10px' }} />
+        ) : (
+          <UserOutlined style={{ fontSize: '50px', marginRight: '10px' }} />
+        )}
         <p className={styles.adminName}>[관리자] {group.admin.userName}</p>
-        {/* 관리자 프로필 이미지 추가 예정임*/}
       </div>
       <div className={styles.groupInfoBox}>
         <p className={styles.groupDescription}>{group.description}</p>
