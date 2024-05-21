@@ -9,6 +9,7 @@ import GroupPage from './GroupPage' // 그룹페이지
 import SettingPage from './SettingPage'; // 설정페이지
 import LoginCheckPage from './LoginCheckPage';
 import EditGroupPage from './groupComp/EditGroupPage';
+import NoticePage from './NoticePage';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path='/check' element={<LoginCheckPage/>}/>
         <Route path='/editgroup' element={<EditGroupPage/>}/>
         <Route path='/editgroup/:groupId' element={<EditGroupPage/>}/>
+        <Route path='/notice' element={<NoticePage/>}/>
       </Routes>
     </Router>
   );
