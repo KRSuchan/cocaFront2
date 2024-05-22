@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
 
 moment.locale('ko');
 
@@ -28,7 +29,28 @@ const getPersonalSchedule = async (id,  startDate, endDate) => {
     }
 }
 
+const getGroupScehdule = async(groupId, memberId, startDate, endDate) => {
+    try {
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleSummaryReq`, {
+            params: {
+                groupId: groupId,
+                memberId: memberId,
+                startDate: startDate,
+                endDate: endDate
+            }
+        });
+
+        return res.data.data;
+    } catch (error) {
+        console.error("그룹 일정 불러오기 에러 :", error);
+        throw error;
+    }
+}
+
 const MainCalendar = ({onSlotSelect}) => {
+    const selectedGroup = useSelector(state => state.selectedGroup);
+    const [currentGroup, setCurrentGroup] = useState(selectedGroup || {groupId: -1});
+    
     const localStorageDate = localStorage.getItem('savedDate');
     let savedDate = null;
     if(localStorageDate) {
@@ -111,7 +133,13 @@ const MainCalendar = ({onSlotSelect}) => {
         // return { startDate: finalStartDate, endDate: finalEndDate };
 
         // const data = await getPersonalSchedule(localStorage.getItem('userId'), finalStartDate, finalEndDate);
-        const data = await getPersonalSchedule(localStorage.getItem('userId'), newStartDate, newEndDate);
+        let data;
+        console.log("sel", currentGroup);
+        if(currentGroup.groupId === -1) {
+            data = await getPersonalSchedule(localStorage.getItem('userId'), newStartDate, newEndDate);
+        } else {
+            data = await getGroupScehdule(currentGroup.groupId, localStorage.getItem('userId'), newStartDate, newEndDate);
+        }
 
         console.log("tmp : ", data);
 
@@ -183,6 +211,19 @@ const MainCalendar = ({onSlotSelect}) => {
     useEffect(() => {
         console.log("handle : ", events)
     }, [events]);
+
+    useEffect(() => {
+        if(selectedGroup) {
+            console.log('sel2', selectedGroup);
+            setCurrentGroup(selectedGroup);
+        }
+    }, [selectedGroup]);
+
+    useEffect(() => {
+        console.log('cur', currentGroup);
+        const currentDate = savedDate;
+        handleNavigate(currentDate);
+    }, [currentGroup])
     
 
     // 선택한 날짜에 대한 이벤트를 찾는 함수

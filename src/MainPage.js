@@ -35,11 +35,28 @@ const getPersonalDetailSchedule = async (id, startDate, endDate) => {
     try {
         const res = axios.get(process.env.REACT_APP_SERVER_URL + `/api/personal-schedule/detail/date?memberId=${id}&date=${startDate}`);
 
-        console.log(res);
+        console.log("res", res);
 
         return (await res).data;
     } catch (error) {
         console.error("유저 상세 일정 불러오기 에러 : ", error);
+        return null;
+    }
+}
+
+const getGroupDetailSchedule = async (groupId, memberId, inquiryDate) => {
+    try {
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleSpecificReq`, {
+            params: {
+                groupId: groupId,
+                memberId: memberId,
+                inquiryDate: inquiryDate
+            }
+        });
+
+        return res.data;
+    } catch (error) {
+        console.error("그룹 상세 일정 불러오기 에러 :", error);
         return null;
     }
 }
@@ -52,29 +69,55 @@ const updateDate = (newDate) => {
   };
 };
 
+const setGroups = (groups) => {
+    return {
+        type: 'SET_GROUPS',
+        payload: groups
+    };
+};
+
+const getGroupList = async (id) => {
+    try {
+        const res = axios.get(process.env.REACT_APP_SERVER_URL + `/api/calendar/member/${id}`);
+
+        console.log("list", res);
+
+        return (await res).data.data;
+    } catch (error) {
+        console.error(error);
+    }
+
+    return [];
+}
+
+// const res2 = await getGroupList(localStorage.getItem('userId'));
+// console.log("list2", res2);
+
 // Define your reducer
 // ✅ 그룹 목록 불러오기!
-const initialState = {
-    date: moment(),
-    groups: [
-        { groupId: 1, groupName: '내 캘린더', isAdmin: false },
-        { groupId: 13, groupName: '앱 개발자 취뽀그룹', isAdmin: false },
-        { groupId: 16, groupName: '플러터 개발자그룹', isAdmin: true },
-        { groupId: 20, groupName: '재수생 스터디그룹', isAdmin: true },
-    ] // 더미 데이터 추가
-  };
+// const initialState = {
+//     date: moment(),
+//     groups: [
+//         { groupId: 1, groupName: '내 캘린더', isAdmin: false },
+//         { groupId: 13, groupName: '앱 개발자 취뽀그룹', isAdmin: false },
+//         { groupId: 16, groupName: '플러터 개발자그룹', isAdmin: true },
+//         { groupId: 20, groupName: '재수생 스터디그룹', isAdmin: true },
+//     ] // 더미 데이터 추가
+//   };
   
-  const reducer = (state = initialState, action) => {
-    switch (action.type) {
-      case 'UPDATE_DATE':
-        return { ...state, date: action.payload };
-      default:
-        return state;
-    }
-  };
+//   const reducer = (state = initialState, action) => {
+//     switch (action.type) {
+//       case 'UPDATE_DATE':
+//         return { ...state, date: action.payload };
+//       case 'SET_GROUPS':
+//         return { ...state, groups: action.payload };
+//       default:
+//         return state;
+//     }
+//   };
   
-  // Create your Redux store
-  const store = createStore(reducer);
+//   // Create your Redux store
+//   const store = createStore(reducer);
 
 const Logo= () => {
     return(
@@ -130,6 +173,23 @@ function MainPage() {
         }
     ]);
 
+    const dispatch = useDispatch();
+    const groups = useSelector(state => state.groups);
+
+    useEffect(() => {
+        const fetchGroups = async () => {
+            const userId = localStorage.getItem('userId');
+            if(userId) {
+                const res = await getGroupList(userId);
+                dispatch(setGroups(res));
+            }
+        };
+
+        fetchGroups();
+    }, [dispatch]);
+
+    const selectedGroup = useSelector(state => state.selectedGroup);
+
         
        // ✅ 캘린더 슬롯 선택시!
        const onSlotSelect = async (date) => {
@@ -137,12 +197,22 @@ function MainPage() {
         
         console.log(date);
         try {
-            const res = await getPersonalDetailSchedule(localStorage.getItem('userId'), date);
+            let res;
+
+            console.log('selGId', selectedGroup);
+
+            if(selectedGroup.groupId === -1) {
+                res = await getPersonalDetailSchedule(localStorage.getItem('userId'), date);
+            } else {
+                res = await getGroupDetailSchedule(selectedGroup.groupId, localStorage.getItem('userId'), date);
+            }
+
+            console.log('res3', res);
 
             if(res && res.code == 200) {
                 setSchedule(res.data);
             } else {
-                console.error("상세 일정 불러오기 실패")
+                console.error("상세 일정 불러오기 실패", res);
             }
         } catch (error) {
             console.error("상세 일정 불러오기 에러 : ", error);
@@ -152,7 +222,6 @@ function MainPage() {
     };
 
     return (
-        <Provider store={store}>
             <div className="App">
                 <div className="left-panel">
                     {activePanel === 'default' ? (
@@ -189,7 +258,6 @@ function MainPage() {
                     <Logo/>
                 </div>
             </div>
-        </Provider>
     );
 }
 
