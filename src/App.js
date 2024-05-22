@@ -9,9 +9,15 @@ import GroupPage from './GroupPage' // 그룹페이지
 import SettingPage from './SettingPage'; // 설정페이지
 import LoginCheckPage from './LoginCheckPage';
 import EditGroupPage from './groupComp/EditGroupPage';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import reducer from './reducer';
+
+const store = createStore(reducer);
 
 function App() {
   return (
+    <Provider store={store}>
     <Router>
       <Helmet>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend+Zetta&display=swap" />
@@ -30,6 +36,7 @@ function App() {
         <Route path='/editgroup/:groupId' element={<EditGroupPage/>}/>
       </Routes>
     </Router>
+    </Provider>
   );
 }
 
