@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { SketchPicker } from 'react-color'; // Color Picker를 위한 라이브러리
+import { useSelector } from 'react-redux';
 // import * as MainCalendar from './MainCalendar';
 
 // const formatDate = (date) => {
@@ -55,6 +56,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     
     const [showColorPicker, setShowColorPicker] = useState(false); // Color Picker 표시 여부를 관리하는 state
 
+    const selectedGroup = useSelector(state => state.selectedGroup);
+
     // 첨부파일 변경 처리 함수
     const handleAttachmentChange = (event, index) => {
         // 선택된 파일을 attachments 배열에 설정
@@ -73,20 +76,30 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
 
     // 일정 추가 또는 수정 로직
     const saveSchedule = async () => { //✅ 저장버튼 혹은 수정버튼을 눌렀을때 
-        const url = editingSchedule
-            ? `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/update`
-            : `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/add`;
-
+        let url;
         const method = editingSchedule ? 'put' : 'post';
-        
-        // ... 요청 데이터 구성 및 axios 요청
-        if(method === 'post') {
-            await postSchedule(url);
-        } else {
-            await postSchedule(url);
-        }
 
+        if(selectedGroup.groupId === -1) {
+            url = editingSchedule
+                ? `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/update`
+                : `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/add`;
+
+            // ... 요청 데이터 구성 및 axios 요청
+            if(method === 'post') {
+                await postSchedule(url, method);
+            } else {
+                await postSchedule(url, method);
+            }
+
+        } else {
+            url = editingSchedule
+                ? `${process.env.REACT_APP_SERVER_URL}/api/group-schedule/groupScheduleUpdateReq`
+                : `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/groupScheduleRegistrationReq`;
+            
+            await postGroupSchedule(url);
+        }
     };
+
     // 일정 삭제 로직
     const deleteSchedule = async () => { // ✅ 삭제버튼을 눌렀을때
         // ... axios delete 요청
@@ -96,7 +109,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
         console.log(res);
     };
     
-    const postSchedule = async (url) => {
+    // 개인
+    const postSchedule = async (url, method) => {
         try {
             // const url = process.env.REACT_APP_SERVER_URL + '/api/personal-schedule/add';
     
@@ -111,6 +125,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
 
             const requestData = {
                 personalSchedule: {
+                    id: scheduleId,
                     title: scheduleName,
                     description: scheduleDescription,
                     location: location,
@@ -121,13 +136,47 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                 },
                 member: {
                     id: localStorage.getItem('userId')
-                },
-                attachments: tmpAttachments || null // attachments가 존재하지 않으면 null로 설정
+                }
+                // attachments: tmpAttachments || null // attachments가 존재하지 않으면 null로 설정
             };
 
-            console.log('rd', requestData);
-    
-            const response = await axios.post(url, requestData);
+            const formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(requestData)], { type: 'application/json' } ));
+
+            if (tmpAttachments && tmpAttachments.length > 0) {
+                tmpAttachments.forEach((attachment, index) => {
+                    if (attachment) {
+                        formData.append('attachments', attachment);
+                    }
+                });
+            } else {
+                formData.append('attachments', "[]");
+            }
+
+            // Log the FormData contents
+            for (let pair of formData.entries()) {
+                console.log(pair[0]+ ', ' + pair[1]);
+            }
+
+            console.log('fd', formData);
+        
+            let response;
+
+            console.log("edit?", editingSchedule);
+
+            if(method === 'post') {
+                response = await axios.post(url, formData
+                    , {headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }}
+                );
+            } else {
+                response = await axios.put(url, formData
+                    , {headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }}
+                );
+            }
     
             console.log(response);
     
@@ -135,13 +184,82 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             // post 후 화면에 내용 뿌려주기 필요.
 
             // 일단 임시방편
-            window.location.reload();
+            // window.location.reload();
 
             // return response.data;
     
         } catch (error) {
             console.error("일정 등록 에러: ", error);
             throw error; // 에러를 상위로 전파
+        }
+    }
+
+    const postGroupSchedule = async (url) => {
+        try {
+            let tmpAttachments = attachments;
+            if(attachments[0] === null && attachments[1] === null) {
+                tmpAttachments = null;
+            }
+
+            const requestData = {
+                personalSchedule: {
+                    id: scheduleId,
+                    title: scheduleName,
+                    description: scheduleDescription,
+                    location: location,
+                    startTime: formatDate(startDate),
+                    endTime: formatDate(endDate),
+                    color: colorCode,
+                    isPrivate: isPrivate
+                },
+                member: {
+                    id: localStorage.getItem('userId')
+                }
+                // attachments: tmpAttachments || null // attachments가 존재하지 않으면 null로 설정
+            };
+
+            const formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(requestData)], { type: 'application/json' } ));
+
+            if (tmpAttachments && tmpAttachments.length > 0) {
+                tmpAttachments.forEach((attachment, index) => {
+                    if (attachment) {
+                        formData.append('attachments', attachment);
+                    }
+                });
+            } else {
+                formData.append('attachments', "[]");
+            }
+
+            // Log the FormData contents
+            for (let pair of formData.entries()) {
+                console.log(pair[0]+ ', ' + pair[1]);
+            }
+
+            console.log('fd', formData);
+        
+            let response;
+
+            console.log("edit?", editingSchedule);
+
+            // if(method === 'post') {
+            //     response = await axios.post(url, formData
+            //         , {headers: {
+            //             'Content-Type': 'multipart/form-data'
+            //         }}
+            //     );
+            // } else {
+            //     response = await axios.put(url, formData
+            //         , {headers: {
+            //             'Content-Type': 'multipart/form-data'
+            //         }}
+            //     );
+            // }
+    
+            console.log(response);
+    
+        } catch (error) {
+            console.error(error);
         }
     }
 

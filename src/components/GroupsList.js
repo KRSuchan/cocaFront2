@@ -1,17 +1,26 @@
 // GroupsList.js
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { SettingOutlined } from '@ant-design/icons';
 
 const GroupsList = () => {
     const groups = useSelector(state => state.groups);
-    const [selectedGroup, setSelectedGroup] = useState(groups[0].groupName);
+    const [selectedGroup, setSelectedGroup] = useState(useSelector(state => state.selectedGroup));
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if(selectedGroup.groupId === -1) {
+            setSelectedGroup(groups[0]);
+        }
+        console.log("groups444", groups);
+    }, [groups])
 
     const handleClick = (group) => {
-        setSelectedGroup(group.groupName);
+        setSelectedGroup(group);
+        dispatch({ type: 'SELECT_GROUP', payload: group });
     };
 
     const handleSettingsClick = (group) => {
@@ -28,14 +37,14 @@ const GroupsList = () => {
                         key={group.groupId}
                         style={{ 
                             borderRadius: '15px', 
-                            backgroundColor: group.groupName === selectedGroup ? '#4CB3FF' : '#f8f9fa',
-                            color: group.groupName === selectedGroup ? 'white' : 'black',
+                            backgroundColor: group === selectedGroup ? '#4CB3FF' : '#f8f9fa',
+                            color: group === selectedGroup ? 'white' : 'black',
                             marginBottom: '10px', 
                             padding: '15px',
                             paddingLeft: '25px',
                             fontSize: '15pt',
                             fontFamily: 'Noto Sans KR',
-                            fontWeight: group.groupName === selectedGroup ? 'bold' : 'normal',
+                            fontWeight: group === selectedGroup ? 'bold' : 'normal',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center'
