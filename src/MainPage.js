@@ -21,6 +21,7 @@ import MainCalendar from './components/MainCalendar';
 import NewPage from './components/NewPage';
 import ButtonPanel from './components/ButtonPanel';
 import AddSchedulePage from './components/AddSchedulePage';
+import MainLogo from './components/MainLogo';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -91,64 +92,6 @@ const getGroupList = async (id) => {
     return [];
 }
 
-// const res2 = await getGroupList(localStorage.getItem('userId'));
-// console.log("list2", res2);
-
-// Define your reducer
-// ✅ 그룹 목록 불러오기!
-// const initialState = {
-//     date: moment(),
-//     groups: [
-//         { groupId: 1, groupName: '내 캘린더', isAdmin: false },
-//         { groupId: 13, groupName: '앱 개발자 취뽀그룹', isAdmin: false },
-//         { groupId: 16, groupName: '플러터 개발자그룹', isAdmin: true },
-//         { groupId: 20, groupName: '재수생 스터디그룹', isAdmin: true },
-//     ] // 더미 데이터 추가
-//   };
-  
-//   const reducer = (state = initialState, action) => {
-//     switch (action.type) {
-//       case 'UPDATE_DATE':
-//         return { ...state, date: action.payload };
-//       case 'SET_GROUPS':
-//         return { ...state, groups: action.payload };
-//       default:
-//         return state;
-//     }
-//   };
-  
-//   // Create your Redux store
-//   const store = createStore(reducer);
-
-const Logo = () => {
-    const [showNotification, setShowNotification] = useState(true);
-    const navigate = useNavigate();
-
-    const handleLogOut = () => {
-        localStorage.clear();
-        navigate("/");
-    }
-    
-    const handleNotificationClick = () => {
-        navigate('/notice');
-    };
-
-    return (
-        <div className="logo-container" style={{ display: 'flex', alignItems: 'center' }}>
-            {showNotification && (
-                <div style={{ marginLeft: '20px',marginRight: '10px', cursor: 'pointer' }} onClick={handleNotificationClick}>
-                    <BellOutlined style={{ color: 'gray', fontSize: '24px' }} />
-                </div>
-            )}
-            <div style={{ marginLeft: '10px', cursor: 'pointer' }} onClick={handleLogOut}>
-                <LogoutOutlined style={{ color: 'gray', fontSize: '24px' }} />
-            </div>
-            <div style={{ flexGrow: 1 }}></div>
-            <div className="logo-text">COCA</div>
-        </div>
-    );
-}
-
 function MainPage() {
     // 'default'와 'newPanel' 중 하나를 값으로 가질 수 있는 activePanel 상태 추가
     // 'default': 기본 left-panel을 보여줌, 'newPanel': 새로운 페이지를 left-panel에 보여줌
@@ -164,8 +107,8 @@ function MainPage() {
             isPrivate: true, 
             description: "임시 내용1Smarthome(App) Product Owner 직군 Product planning경력 10년 이상, 근무지 soma",
             location: "토스본사",
-            start: '2024-04-17T00:00', 
-            end: '2024-04-20T00:00',
+            start: '2024-04-17 00:00:01', 
+            end: '2024-04-20 00:00:01',
             attachments: [
                 {
                     "fileName": "관련서류",
@@ -276,7 +219,7 @@ function MainPage() {
                 </div>
                 <div className="right-panel">
                     <MainCalendar onSlotSelect={onSlotSelect} />
-                    <Logo/>
+                    <MainLogo/>
                 </div>
             </div>
     );
