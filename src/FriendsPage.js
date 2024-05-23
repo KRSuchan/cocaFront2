@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, List, Avatar } from 'antd';
+import { Button, List, Avatar, Modal, Input } from 'antd'; // Modal, Input 추가
 import { useNavigate } from 'react-router-dom';
 import styles from './css/FriendsPage.module.css';
 import { UserOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons';
@@ -22,6 +22,8 @@ const FriendsPage = () => {
     const [friends, setFriends] = useState([]);
     const [events, setEvents] = useState([]);
     const [calendarVisible, setCalendarVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false); // 수정 모달창 visible 상태 추가
+    const [selectedFriend, setSelectedFriend] = useState(null); // 선택된 친구 상태 추가
 
     useEffect(() => {
         const response = {
@@ -80,9 +82,9 @@ const FriendsPage = () => {
         setCalendarVisible(true);
     };
 
-    const handleEditClick = (friendId) => {
-        console.log(friendId);
-        // 편집 버튼 클릭 이벤트
+    const handleEditClick = (friend) => { // 수정 버튼 클릭 시 선택된 친구 정보 설정 및 모달창 열기
+        setSelectedFriend(friend);
+        setEditModalVisible(true);
     };
 
     const handleFriendClick = (friendId) => {
@@ -106,9 +108,27 @@ const FriendsPage = () => {
             ...event,
             start: new Date(event.startDateTime),
             end: new Date(event.endDateTime),
-            title: event.title,
+            title: event.isPrivate ? "비공개 일정" : event.title, // isPrivate이면 제목을 "비공개 일정"으로 변경
             allDay: true
         }));
+    
+        // 이벤트 스타일 동적 설정
+        const eventPropGetter = (event, start, end, isSelected) => {
+            let newStyle = {
+                backgroundColor: "#87CEEB",
+                color: 'black',
+                borderRadius: "0px",
+                border: "none"
+            };
+    
+            if (event.isPrivate) {
+                newStyle.backgroundColor = "lightgrey";
+            }
+    
+            return {
+                style: newStyle
+            };
+        };
     
         return (
             <div>
@@ -128,11 +148,12 @@ const FriendsPage = () => {
                 style={{ height: 500 }}
                 views={['week']}
                 defaultView="week"
-                
+                eventPropGetter={eventPropGetter} // 이벤트 스타일 설정 함수 적용
               />
             </div>
           );
     };
+    
 
     return (
         <div className={styles.container} style={{ fontFamily: 'Noto Sans KR' }}>
@@ -161,7 +182,7 @@ const FriendsPage = () => {
                             </div>
                             <div className={styles.icons}>
                                 <Button type="primary" size="medium" style={{ marginRight: 12, backgroundColor: 'skyblue', color: 'white' }} onClick={handleCalendarClick}><CalendarOutlined /></Button>
-                                <Button type="danger" size="medium" style={{ backgroundColor: 'salmon', color: 'white' }} onClick={() => handleEditClick(friend.friendId)}><EditOutlined /></Button>
+                                <Button type="danger" size="medium" style={{ backgroundColor: 'salmon', color: 'white' }} onClick={() => handleEditClick(friend)}><EditOutlined /></Button>
                             </div>
                         </div>
                     ))}
@@ -177,6 +198,16 @@ const FriendsPage = () => {
                     <CalendarPanel events={events} />
                 </div>
             </div>
+            {editModalVisible && (
+                <Modal
+                    title="친구 닉네임 수정"
+                    visible={editModalVisible}
+                    onOk={() => setEditModalVisible(false)}
+                    onCancel={() => setEditModalVisible(false)}
+                >
+                    <Input defaultValue={selectedFriend ? selectedFriend.friendName : ''} /> {/* 기존 닉네임 표시 */}
+                </Modal>
+            )}
         </div>
     );
 }
