@@ -3,6 +3,15 @@ import { Button, List, Avatar } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import styles from './css/FriendsPage.module.css';
 import { UserOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import format from 'date-fns/format';
+import parse from 'date-fns/parse';
+import startOfWeek from 'date-fns/startOfWeek';
+import getDay from 'date-fns/getDay';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 
 const FriendsPage = () => {
     const navigate = useNavigate();
@@ -49,13 +58,13 @@ const FriendsPage = () => {
                 },
                 {
                     "title": "임시 제목100",
-                    "startDateTime": "2024-05-24T00:00:00",
+                    "startDateTime": "2024-05-23T00:00:00",
                     "endDateTime": "2024-06-01T23:59:59",
                     "isPrivate": false
                 },
                 {
                     "title": "새로운 일정",
-                    "startDateTime": "2024-06-02T00:00:00",
+                    "startDateTime": "2024-05-02T00:00:00",
                     "endDateTime": "2024-06-10T23:59:59",
                     "isPrivate": false
                 },
@@ -80,28 +89,50 @@ const FriendsPage = () => {
         console.log(friendId);
     };
 
-    const CalendarPanel = ({ events }) => (
-        <div style={{ backgroundColor: 'lightgray', padding: '10px', borderRadius: '5px', margin: '10px', overflowX: 'auto' }}>
-            <table style={{ width: '110%', borderCollapse: 'collapse' }}>
-                <thead>
-                    <tr>
-                        {[...Array(7)].map((_, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '10px' }}>{new Date(Date.now() + index * 24 * 60 * 60 * 1000).toLocaleDateString()}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        {[...Array(7)].map((_, index) => (
-                            <td key={index} style={{ border: '1px solid black', padding: '10px' }}>
-                                {events.find(event => new Date(event.startDateTime).toLocaleDateString() === new Date(Date.now() + index * 24 * 60 * 60 * 1000).toLocaleDateString())?.title}
-                            </td>
-                        ))}
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    );
+    const locales = {
+        'en-US': require('date-fns/locale/en-US'),
+    };
+    const localizer = dateFnsLocalizer({
+        format,
+        parse,
+        startOfWeek,
+        getDay,
+        locales,
+    });
+    
+    const CalendarPanel = ({ events }) => {
+        // 'events' 배열을 'react-big-calendar'에서 사용할 수 있는 형태로 변환
+        const myEvents = events.map(event => ({
+            ...event,
+            start: new Date(event.startDateTime),
+            end: new Date(event.endDateTime),
+            title: event.title,
+            allDay: true
+        }));
+    
+        return (
+            <div>
+              <style>
+                {`
+                  /* 시간표 숨기기 */
+                  .rbc-time-content {
+                    display: none !important;
+                  }
+                `}
+              </style>
+              <Calendar
+                localizer={localizer}
+                events={myEvents}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 500 }}
+                views={['week']}
+                defaultView="week"
+                
+              />
+            </div>
+          );
+    };
 
     return (
         <div className={styles.container} style={{ fontFamily: 'Noto Sans KR' }}>
