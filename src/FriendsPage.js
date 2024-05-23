@@ -71,8 +71,13 @@ const FriendsPage = () => {
         setCalendarVisible(true);
     };
 
-    const handleEditClick = () => {
+    const handleEditClick = (friendId) => {
+        console.log(friendId);
         // 편집 버튼 클릭 이벤트
+    };
+
+    const handleFriendClick = (friendId) => {
+        console.log(friendId);
     };
 
     const CalendarPanel = ({ events }) => (
@@ -114,16 +119,18 @@ const FriendsPage = () => {
                 }}>
                     {/* 좌측패널 - 친구 목록 */}
                     {friends.map(friend => (
-                        <div key={friend.friendId} className={styles.friendItem}>
-                            {friend.friendProfileImagePath ? (
-                                <Avatar src={friend.friendProfileImagePath} size={40} />
-                            ) : (
-                                <Avatar icon={<UserOutlined />} size={40} />
-                            )}
-                            <span style={{ fontSize: '16px', fontWeight: 'bold', marginLeft: 10 }}>{friend.friendName}</span>
-                            <div className={styles.icons} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                <Button type="primary" size="small" style={{ marginRight: 8 }} onClick={handleCalendarClick}><CalendarOutlined /></Button>
-                                <Button type="danger" size="small" onClick={handleEditClick}><EditOutlined /></Button>
+                        <div key={friend.friendId} className={styles.friendItem} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', border: '1px solid lightgray', borderRadius: '10px', padding: '15px', backgroundColor: 'aliceblue' }} onClick={() => handleFriendClick(friend.friendId)}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                {friend.friendProfileImagePath ? (
+                                    <Avatar src={friend.friendProfileImagePath} size={40} style={{ marginRight: '15px' }} />
+                                ) : (
+                                    <Avatar icon={<UserOutlined />} size={40} style={{ marginRight: '15px' }} />
+                                )}
+                                <span style={{ fontFamily: 'Noto Sans Kr', fontSize: '24px', fontWeight: 'bold', color: 'navy' }}>{friend.friendName}</span>
+                            </div>
+                            <div className={styles.icons}>
+                                <Button type="primary" size="medium" style={{ marginRight: 12, backgroundColor: 'skyblue', color: 'white' }} onClick={handleCalendarClick}><CalendarOutlined /></Button>
+                                <Button type="danger" size="medium" style={{ backgroundColor: 'salmon', color: 'white' }} onClick={() => handleEditClick(friend.friendId)}><EditOutlined /></Button>
                             </div>
                         </div>
                     ))}
