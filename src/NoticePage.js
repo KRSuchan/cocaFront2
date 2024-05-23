@@ -68,47 +68,71 @@ const NoticePage = () => {
         navigate(-1);
     };
 
+    const handleScheduleApproval = () => {
+        // 승인 버튼에 대한 함수
+    };
+
+    const handleScheduleRejection = () => {
+        // 거절 버튼에 대한 함수
+    };
+
+    const handleFriendAcceptance = () => {
+        // 친구 수락 버튼에 대한 함수
+    };
+
+    const handleFriendRejection = () => {
+        // 친구 거절 버튼에 대한 함수
+    };
+
+    const handleGroupAcceptance = () => {
+        // 그룹 수락 버튼에 대한 함수
+    };
+
+    const handleGroupRejection = () => {
+        // 그룹 거절 버튼에 대한 함수
+    };
+
     const TabContent = () => (
         <Tabs activeKey={tab} onChange={key => setTab(key)}>
-            <TabPane tab="일정" key="일정">
+            <TabPane tab={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>일정</span>} key="일정">
                 {schedules.map(schedule => (
                     <Card key={schedule.requestedScheduleId} style={{ width: '100%', marginTop: 16 }}>
                         <Card.Meta
                             avatar={<Avatar src={schedule.sender.profileImagePath || <UserOutlined />} />}
-                            title={`${schedule.sender.name}님 / ${schedule.title}`}
+                            title={<span style={{ fontSize: '16px', fontWeight: 'bold' }}>{schedule.sender.name}님 / {schedule.title}</span>}
                             description={`${schedule.start} - ${schedule.end}`}
                         />
                         <div style={{ marginTop: '10px' }}>
-                            <Button type="primary" style={{ marginRight: '8px' }}>승인</Button>
-                            <Button type="danger">거절</Button>
+                            <Button type="primary" style={{ marginRight: '8px' }} onClick={handleScheduleApproval}>승인</Button>
+                            <Button type="danger" onClick={handleScheduleRejection}>거절</Button>
                         </div>
                     </Card>
                 ))}
             </TabPane>
-            <TabPane tab="친구" key="친구">
+            <TabPane tab={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>친구</span>} key="친구">
                 {friends.map(friend => (
                     <Card key={friend.friendRequestId} style={{ width: '100%', marginTop: 16 }}>
                         <Card.Meta
                             avatar={<Avatar src={friend.sender.profileImagePath || <UserOutlined />} />}
-                            title={<span style={{ color: '#41ADCA' }}>{friend.sender.name}</span>}
+                            title={<span style={{ fontSize: '16px', fontWeight: 'bold', color: '#41ADCA' }}>{friend.sender.name}</span>}
                         />
                         <div style={{ marginTop: '10px' }}>
-                            <Button type="primary" style={{ marginRight: '8px' }}>수락</Button>
-                            <Button type="danger">거절</Button>
+                            <Button type="primary" style={{ marginRight: '8px' }} onClick={handleFriendAcceptance}>수락</Button>
+                            <Button type="danger" onClick={handleFriendRejection}>거절</Button>
                         </div>
                     </Card>
                 ))}
             </TabPane>
-            <TabPane tab="그룹" key="그룹">
+            <TabPane tab={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>그룹</span>} key="그룹">
                 {groups.map(group => (
                     <Card key={group.groupRequestId} style={{ width: '100%', marginTop: 16 }}>
                         <Card.Meta
                             avatar={<Avatar src={group.sender.profileImagePath || <UserOutlined />} />}
-                            title={group.groupName}
+                            title={<span style={{ fontSize: '16px', fontWeight: 'bold' }}>{group.groupName}</span>}
                         />
                         <div style={{ marginTop: '10px' }}>
-                            <Button type="primary" style={{ marginRight: '8px' }}>수락</Button>
-                            <Button type="danger">거절</Button>
+                            <Button type="primary" style={{ marginRight: '8px' }} onClick={handleGroupAcceptance}>수락</Button>
+                            <Button type="danger" onClick={handleGroupRejection}>거절</Button>
                         </div>
                     </Card>
                 ))}
@@ -117,7 +141,7 @@ const NoticePage = () => {
     );
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} style={{ fontFamily: 'Noto Sans KR' }}>
             <div className={styles.header}>
                 <button className={styles.backButton} onClick={handleBack}>{'<'}</button>
                 <h1 className={styles.title}>알림</h1>
@@ -130,4 +154,3 @@ const NoticePage = () => {
 };
 
 export default NoticePage;
-
