@@ -5,7 +5,7 @@ import { DatePicker, List } from 'antd';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { CalendarOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { CalendarOutlined, LeftOutlined, RightOutlined, BellOutlined } from '@ant-design/icons';
 import { Calendar as AntCalendar } from 'antd';
 import './css/MainPage.css'
 import 'moment/locale/ko';  // Import Korean locale
@@ -13,7 +13,7 @@ import { useState, useEffect } from 'react';
 import RCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Button } from 'antd';
-import { SmileOutlined, SearchOutlined, StarOutlined, SettingOutlined } from '@ant-design/icons';
+import { SmileOutlined, SearchOutlined, StarOutlined, SettingOutlined,LogoutOutlined } from '@ant-design/icons';
 import { ListGroup } from 'react-bootstrap'; // React Bootstrap 라이브러리에서 ListGroup 컴포넌트를 가져옵니다.
 import MiniCalendar from './components/MiniCalendar';
 import GroupsList from './components/GroupsList';
@@ -22,6 +22,7 @@ import NewPage from './components/NewPage';
 import ButtonPanel from './components/ButtonPanel';
 import AddSchedulePage from './components/AddSchedulePage';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 moment.locale('ko');
 
@@ -119,14 +120,34 @@ const getGroupList = async (id) => {
 //   // Create your Redux store
 //   const store = createStore(reducer);
 
-const Logo= () => {
-    return(
-        <div className="logo-container">
-                    <div style={{flexGrow: 1}}></div> 
-                    <div className="logo-text">COCA</div> 
+const Logo = () => {
+    const [showNotification, setShowNotification] = useState(true);
+    const navigate = useNavigate();
+
+    const handleLogOut = () => {
+        localStorage.clear();
+        navigate("/");
+    }
+    
+    const handleNotificationClick = () => {
+        navigate('/notice');
+    };
+
+    return (
+        <div className="logo-container" style={{ display: 'flex', alignItems: 'center' }}>
+            {showNotification && (
+                <div style={{ marginLeft: '20px',marginRight: '10px', cursor: 'pointer' }} onClick={handleNotificationClick}>
+                    <BellOutlined style={{ color: 'gray', fontSize: '24px' }} />
                 </div>
+            )}
+            <div style={{ marginLeft: '10px', cursor: 'pointer' }} onClick={handleLogOut}>
+                <LogoutOutlined style={{ color: 'gray', fontSize: '24px' }} />
+            </div>
+            <div style={{ flexGrow: 1 }}></div>
+            <div className="logo-text">COCA</div>
+        </div>
     );
-} 
+}
 
 function MainPage() {
     // 'default'와 'newPanel' 중 하나를 값으로 가질 수 있는 activePanel 상태 추가
