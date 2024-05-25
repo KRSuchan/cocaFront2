@@ -37,7 +37,7 @@ const GroupsList = () => {
                         key={group.groupId}
                         style={{ 
                             borderRadius: '15px', 
-                            backgroundColor: group === selectedGroup ? '#4CB3FF' : '#f8f9fa',
+                            background: group === selectedGroup ? 'linear-gradient(to right, #2d69f4, #125BDC)' : '#f8f9fa',
                             color: group === selectedGroup ? 'white' : 'black',
                             marginBottom: '10px', 
                             padding: '15px',
@@ -63,3 +63,8 @@ const GroupsList = () => {
 };
 
 export default GroupsList;
+
+
+
+
+

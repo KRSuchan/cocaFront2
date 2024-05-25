@@ -19,9 +19,13 @@ const ButtonPanel = () => {
         navigate("/check");
     }
 
+    const handleFriendsClick = () => {
+        navigate("/friends")
+    }
+
     return (
         <div className="button-panel">
-            <Button icon={<SmileOutlined style={{ fontSize: '30px' }} />} className="button disappointment">
+            <Button icon={<SmileOutlined style={{ fontSize: '30px' }} />} className="button disappointment" onClick={handleFriendsClick}>
                 <div>친구</div>
             </Button>
             <Button icon={<SearchOutlined style={{ fontSize: '30px' }} />} className="button green-color" onClick={handleGroupClick}>
