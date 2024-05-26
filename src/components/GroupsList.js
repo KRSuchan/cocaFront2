@@ -15,6 +15,11 @@ const GroupsList = () => {
         if(selectedGroup.groupId === -1) {
             setSelectedGroup(groups[0]);
         }
+
+        // TODO:
+        // Redux로 상태관리 시 새로고침하면 정보가 날아감.
+        // 선택된 그룹 부분을 일정 등록 후 새로고침을 하더라도 어떻게 유지할지 고민.
+        // localStorage.. 는 만능이 아닌데...
         console.log("groups444", groups);
     }, [groups])
 
