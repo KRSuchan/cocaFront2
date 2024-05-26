@@ -7,10 +7,11 @@ import { useNavigate } from 'react-router-dom';
 const CreateGroupPage = () => {
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
-  const [managerIds, setManagerIds] = useState(['', '']);
+  // const [managerIds, setManagerIds] = useState(['', '']); // 매니저 관련 코드 주석 처리
   const [interests, setInterests] = useState(['', '', '']);
   const [interestOptions, setInterestOptions] = useState([]); // 관심분야 옵션을 상태로 관리
   const [tags, setTags] = useState([]);
+  const [isPrivate, setIsPrivate] = useState(false); // 그룹의 비공개 여부 상태
 
   const navigate = useNavigate();
 
@@ -117,6 +118,7 @@ const CreateGroupPage = () => {
                 onChange={(e) => setGroupDescription(e.target.value)}
                 className={styles.textarea}
             />
+            {/* 매니저 입력 필드 주석 처리
             <span className={styles.title2}>관리자</span>
             {managerIds.map((id, index) => (
                 <input
@@ -132,6 +134,7 @@ const CreateGroupPage = () => {
                 className={styles.input}
                 />
             ))}
+            */}
             <span className={styles.title2}>관심분야</span>
             {interests.map((interest, index) => (
                 <select
@@ -148,11 +151,22 @@ const CreateGroupPage = () => {
                 ))}
                 </select>
             ))}
-            
+            <span className={styles.title2}>비공개 여부</span>
+            <div style={{ backgroundColor: '#f2f2f2', padding: '10px', borderRadius: '5px' }}>
+                <input
+                    type="checkbox"
+                    checked={isPrivate}
+                    onChange={(e) => setIsPrivate(e.target.checked)}
+                    style={{ marginLeft: '10px', width: '20px', height: '20px', cursor: 'pointer' }}
+                />
+                <label style={{ fontWeight: 'bold', fontSize: '16px', color: '#333' }}>
+                    {isPrivate ? '  비공개 그룹🔒' : '  공개 그룹🔓'}으로 그룹을 생성합니다.
+                </label>
             </div>
-            <button onClick={handleCreateGroup} className={styles.joinButton}>
-                그룹생성
-            </button>
+        </div>
+        <button onClick={handleCreateGroup} className={styles.joinButton}>
+            그룹생성
+        </button>
     </div>
     
   );

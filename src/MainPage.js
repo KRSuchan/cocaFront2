@@ -108,8 +108,8 @@ function MainPage() {
             isPrivate: true, 
             description: "임시 내용1Smarthome(App) Product Owner 직군 Product planning경력 10년 이상, 근무지 soma",
             location: "토스본사",
-            start: '2024-04-17 00:00:01', 
-            end: '2024-04-20 00:00:01',
+            startTime: "2024-04-17 00:00:01", 
+            endTime: "2024-04-20 00:00:01",
             attachments: [
                 {
                     "fileName": "관련서류",
