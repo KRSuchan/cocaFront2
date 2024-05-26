@@ -30,31 +30,6 @@ const EditGroupPage = () => {
       console.error(error);
       return null;
     }
-    // 아래는 임시 응답 데이터
-    // return {
-    //   code: 200,
-    //   message: "OK",
-    //   data: {
-    //     groupId: 11,
-    //     name: "수정NAME",
-    //     description: "테스트그룹 설명5",
-    //     privatePassword: null,
-    //     groupTags: [
-    //       { id: 1, field: "IT", name: "스프링" },
-    //       { id: 2, field: "IT", name: "리액트" },
-    //       { id: 3, field: "IT", name: "자바" }
-    //     ],
-    //     groupMembers: [
-    //       { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" },
-    //       { id: "TESTID2", userName: "TESTNAME2", profileImgPath: "TESTURL2" }
-    //     ],
-    //     groupManagers: [
-    //       { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/35/23dc85ac1d8c845da121c12ff644d920_res.jpeg" },
-    //       { id: "TESTID2", userName: "TESTNAME2", profileImgPath: null }
-    //     ],
-    //     groupNotice: "초기 공지사항"
-    //   }
-    // };
   };
 
   // 백엔드에서 태그 목록을 가져오는 함수
@@ -70,27 +45,14 @@ const EditGroupPage = () => {
       console.error(error);
       return null;
     }
-
-    // 아래는 임시 응답 데이터
-    // return {
-    //   code: 200,
-    //   message: "OK",
-    //   data: [
-    //     { id: 1, field: "IT", name: "스프링" },
-    //     { id: 2, field: "IT", name: "자바" },
-    //     { id: 3, field: "IT", name: "리액트" },
-    //     { id: 4, field: "IT", name: "자바스크립트" },
-    //     { id: 5, field: "여행", name: "일본" },
-    //     { id: 6, field: "여행", name: "미국" },
-    //     { id: 7, field: "여행", name: "영국" },
-    //     { id: 8, field: "여행", name: "호주" }
-    //   ]
-    // };
   };
 
   // useState를 사용하여 그룹 정보 상태 관리
   const [groupDetails, setGroupDetails] = useState(null);
   const [availableTags, setAvailableTags] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentManagerIndex, setCurrentManagerIndex] = useState(null);
+  const [newManagerId, setNewManagerId] = useState("");
 
   useEffect(() => {
     if (groupId) {
@@ -172,6 +134,35 @@ const EditGroupPage = () => {
     navigate(-1);
   };
 
+  const handleManagerChange = (index, newManager) => {
+    if (!groupDetails) return;
+    const newManagers = [...groupDetails.groupManagers];
+    newManagers[index] = newManager;
+    setGroupDetails({ ...groupDetails, groupManagers: newManagers });
+  };
+
+  const handleManagerDelete = (index) => {
+    const newManagers = [...groupDetails.groupManagers];
+    newManagers.splice(index, 1);
+    setGroupDetails({ ...groupDetails, groupManagers: newManagers });
+  };
+
+  const openModal = (index) => {
+    setCurrentManagerIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setNewManagerId("");
+  };
+
+  const handleModalSave = () => {
+    if (currentManagerIndex === null) return;
+    handleManagerChange(currentManagerIndex, { id: newManagerId, userName: `NEWNAME${currentManagerIndex}`, profileImgPath: null });
+    closeModal();
+  };
+  
   if (!groupDetails) {
     return <div>Loading...</div>;
   }
@@ -203,16 +194,27 @@ const EditGroupPage = () => {
           />
           <p className={styles.title2}>그룹 매니저</p>
           <div className={styles.managersContainer} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'start', gap: '20px' }}>
-            {groupDetails.groupManagers.map(manager => (
-              <div key={manager.id} className={styles.managerInfo} style={{ textAlign: 'center', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '10px', padding: '10px', backgroundColor: '#f0f0f0' }}>
-                {manager.profileImgPath ? (
-                  <img src={manager.profileImgPath} alt="매니저 사진" className={styles.managerImage} style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
-                ) : (
-                  <UserOutlined style={{ fontSize: '80px' }} />
-                )}
-                <span style={{ display: 'block', marginTop: '8px', fontWeight: 'bold', color: '#333' }}>{manager.userName}</span>
-              </div>
-            ))}
+            {[...Array(3)].map((_, index) => {
+              const manager = groupDetails.groupManagers[index];
+              return (
+                <div key={index} className={styles.managerInfo} style={{ textAlign: 'center', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '10px', padding: '10px', backgroundColor: '#f0f0f0' }}>
+                  {manager ? (
+                    <>
+                      {manager.profileImgPath ? (
+                        <img src={manager.profileImgPath} alt="매니저 사진" className={styles.managerImage} style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
+                      ) : (
+                        <UserOutlined style={{ fontSize: '80px' }} />
+                      )}
+                      <span style={{ display: 'block', marginTop: '8px', fontWeight: 'bold', color: '#333' }}>{manager.userName}</span>
+                      <button onClick={() => openModal(index)} className={styles.joinButton}>수정</button>
+                      <button onClick={() => handleManagerDelete(index)} className={styles.joinButton}>삭제</button>
+                    </>
+                  ) : (
+                    <button onClick={() => openModal(index)} className={styles.joinButton}>추가</button>
+                  )}
+                </div>
+              );
+            })}
           </div>
           <p className={styles.title2}>그룹분야</p>
           {groupDetails.groupTags.map((tag, index) => (
@@ -243,8 +245,45 @@ const EditGroupPage = () => {
           취소
         </button>
       </div>
+      {isModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: 'white',
+          padding: '20px',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+          borderRadius: '10px',
+          zIndex: 1000
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <span style={{ cursor: 'pointer' }} onClick={closeModal}>&times;</span>
+          </div>
+          <p>매니저 ID 수정</p>
+          <input
+            type="text"
+            value={newManagerId}
+            onChange={(e) => setNewManagerId(e.target.value)}
+            className={styles.input}
+          />
+          <button onClick={handleModalSave} className={styles.joinButton}>적용</button>
+        </div>
+      )}
+      {isModalOpen && <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        zIndex: 999
+      }} onClick={closeModal}></div>}
     </div>
   );
 };
 
 export default EditGroupPage;
+
+
+
