@@ -52,7 +52,6 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     );
     const [location, setLocation] = useState(editingSchedule ? editingSchedule.location : '');
     const [isPrivate, setIsPrivate] = useState(editingSchedule ? editingSchedule.isPrivate : false);
-    // const [attachments, setAttachments] = useState(editingSchedule ? editingSchedule.attachments : [null, null]);
     const [attachments, setAttachments] = useState(editingSchedule ? [editingSchedule.attachments[0] || null, editingSchedule.attachments[1] || null] : [null, null]);
 
     
@@ -74,6 +73,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
         const newAttachments = [...attachments];
         newAttachments[index] = null; // 인덱스에 해당하는 첨부파일을 null로 설정
         setAttachments(newAttachments);
+        document.getElementById(`attachment-${index}`).value = ""; // input 필드를 초기화
     };
 
     // 일정 추가 또는 수정 로직
