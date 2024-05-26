@@ -11,6 +11,7 @@ import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import axios from 'axios';
 
 
 const FriendsPage = () => {
@@ -25,7 +26,20 @@ const FriendsPage = () => {
     const [editModalVisible, setEditModalVisible] = useState(false); // 수정 모달창 visible 상태 추가
     const [selectedFriend, setSelectedFriend] = useState(null); // 선택된 친구 상태 추가
 
-    useEffect(() => {
+    const fetchFriendList = async () => {
+        try {
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/friend/list/memberId/${localStorage.getItem("userId")}`);
+            console.log(res);
+            
+            return res.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(async () => {
+        const res = await fetchFriendList();
+        // TODO :: 목록 연동
         const response = {
             "code": 200,
             "message": "OK",

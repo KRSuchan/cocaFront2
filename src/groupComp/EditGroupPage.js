@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
 import styles from '../css/GroupPage.module.css';
+import axios from 'axios';
 
 const EditGroupPage = () => {
   const { groupId } = useParams();
@@ -11,51 +12,80 @@ const EditGroupPage = () => {
   // 백엔드에서 그룹 정보를 가져오는 함수 (미구현 상태)
   const fetchGroupDetails = async (groupId) => { 
     // TODO: 백엔드 API 호출 로직 구현
-    // 아래는 임시 응답 데이터
-    return {
-      code: 200,
-      message: "OK",
-      data: {
-        groupId: 11,
-        name: "수정NAME",
-        description: "테스트그룹 설명5",
-        privatePassword: null,
-        groupTags: [
-          { id: 1, field: "IT", name: "스프링" },
-          { id: 2, field: "IT", name: "리액트" },
-          { id: 3, field: "IT", name: "자바" }
-        ],
-        groupMembers: [
-          { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" },
-          { id: "TESTID2", userName: "TESTNAME2", profileImgPath: "TESTURL2" }
-        ],
-        groupManagers: [
-          { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/35/23dc85ac1d8c845da121c12ff644d920_res.jpeg" },
-          { id: "TESTID2", userName: "TESTNAME2", profileImgPath: null }
-        ],
-        groupNotice: "초기 공지사항"
+    const data = {
+      member: {
+        id: localStorage.getItem("userId"),
+        password: "a"
+      },
+      group: {
+        id: groupId
       }
     };
+
+    try {
+      const res = await axios.post(process.env.REACT_APP_SERVER_URL + `/api/group/admin`, data);
+      console.log(res);
+      return res.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+    // 아래는 임시 응답 데이터
+    // return {
+    //   code: 200,
+    //   message: "OK",
+    //   data: {
+    //     groupId: 11,
+    //     name: "수정NAME",
+    //     description: "테스트그룹 설명5",
+    //     privatePassword: null,
+    //     groupTags: [
+    //       { id: 1, field: "IT", name: "스프링" },
+    //       { id: 2, field: "IT", name: "리액트" },
+    //       { id: 3, field: "IT", name: "자바" }
+    //     ],
+    //     groupMembers: [
+    //       { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" },
+    //       { id: "TESTID2", userName: "TESTNAME2", profileImgPath: "TESTURL2" }
+    //     ],
+    //     groupManagers: [
+    //       { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/35/23dc85ac1d8c845da121c12ff644d920_res.jpeg" },
+    //       { id: "TESTID2", userName: "TESTNAME2", profileImgPath: null }
+    //     ],
+    //     groupNotice: "초기 공지사항"
+    //   }
+    // };
   };
 
   // 백엔드에서 태그 목록을 가져오는 함수
   const fetchTags = async () => {
     // TODO: 백엔드 API 호출 로직 구현
+    try {
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + "/api/tag/all");
+
+      console.log("tag", res.data);
+
+      return res.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+
     // 아래는 임시 응답 데이터
-    return {
-      code: 200,
-      message: "OK",
-      data: [
-        { id: 1, field: "IT", name: "스프링" },
-        { id: 2, field: "IT", name: "자바" },
-        { id: 3, field: "IT", name: "리액트" },
-        { id: 4, field: "IT", name: "자바스크립트" },
-        { id: 5, field: "여행", name: "일본" },
-        { id: 6, field: "여행", name: "미국" },
-        { id: 7, field: "여행", name: "영국" },
-        { id: 8, field: "여행", name: "호주" }
-      ]
-    };
+    // return {
+    //   code: 200,
+    //   message: "OK",
+    //   data: [
+    //     { id: 1, field: "IT", name: "스프링" },
+    //     { id: 2, field: "IT", name: "자바" },
+    //     { id: 3, field: "IT", name: "리액트" },
+    //     { id: 4, field: "IT", name: "자바스크립트" },
+    //     { id: 5, field: "여행", name: "일본" },
+    //     { id: 6, field: "여행", name: "미국" },
+    //     { id: 7, field: "여행", name: "영국" },
+    //     { id: 8, field: "여행", name: "호주" }
+    //   ]
+    // };
   };
 
   // useState를 사용하여 그룹 정보 상태 관리
@@ -81,13 +111,29 @@ const EditGroupPage = () => {
     }
   }, [groupId]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // TODO: 백엔드에 그룹 정보를 저장하는 로직 구현
-    navigate(-1);
+      console.log(groupDetails);
+    try {
+
+    } catch (error) {
+      console.error(error);
+    }
+    // navigate(-1);
   };
 
-  const handleDelete = () => {
-    navigate(-1);
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(process.env.REACT_APP_SERVER_URL + `/api/group/delete?adminId=${localStorage.getItem("userId")}&groupId=${groupId}`);
+      console.log('del', res);
+
+      navigate(-1);
+
+      return res;
+    } catch (error) {
+      console.error(error);
+
+    }
   };
 
   const handleCancel = () => {
