@@ -24,7 +24,9 @@ const FriendsPage = () => {
     const [events, setEvents] = useState([]);
     const [calendarVisible, setCalendarVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false); // 수정 모달창 visible 상태 추가
+    const [addModalVisible, setAddModalVisible] = useState(false); // 추가 모달창 visible 상태 추가
     const [selectedFriend, setSelectedFriend] = useState(null); // 선택된 친구 상태 추가
+    const [newFriendId, setNewFriendId] = useState(''); // 새로운 친구 아이디 상태 추가
 
     const fetchFriendList = async () => {
         try {
@@ -38,6 +40,7 @@ const FriendsPage = () => {
     }
 
     useEffect(async () => {
+        
         const res = await fetchFriendList();
         // TODO :: 목록 연동
         const response = {
@@ -96,13 +99,27 @@ const FriendsPage = () => {
         setCalendarVisible(true);
     };
 
-    const handleEditClick = (friend) => { // 수정 버튼 클릭 시 선택된 친구 정보 설정 및 모달창 열기
+    const handleEditClick = (friend) => {
         setSelectedFriend(friend);
         setEditModalVisible(true);
     };
 
     const handleFriendClick = (friendId) => {
         console.log(friendId);
+    };
+
+    const handleAddFriend = () => {
+        setAddModalVisible(true);
+    };
+
+    const addFriend = async () => {
+        try {
+            await axios.post(process.env.REACT_APP_SERVER_URL + `/api/friend/add`, { memberId: newFriendId });
+            setAddModalVisible(false);
+            setNewFriendId(""); // 입력 필드 초기화
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const locales = {
@@ -122,7 +139,7 @@ const FriendsPage = () => {
             ...event,
             start: new Date(event.startDateTime),
             end: new Date(event.endDateTime),
-            title: event.isPrivate ? "비공개 일정" : event.title, // isPrivate이면 제목을 "비공개 일정"으로 변경
+            title: event.isPrivate ? "비공개 일정" : event.title,
             allDay: true
         }));
     
@@ -174,6 +191,7 @@ const FriendsPage = () => {
             <div className={styles.header}>
                 <button className={styles.backButton} onClick={handleBack}>{'<'}</button>
                 <h1 className={styles.title}>친구</h1>
+                <button className={styles.addButton} onClick={handleAddFriend} style={{ marginLeft:'10px', backgroundColor: '#41ADCA', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 20px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}>친구 추가</button>
             </div>
             <div className={styles.panelContainer} style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
                 <div className={styles.leftPanel} style={{
@@ -220,6 +238,16 @@ const FriendsPage = () => {
                     onCancel={() => setEditModalVisible(false)}
                 >
                     <Input defaultValue={selectedFriend ? selectedFriend.friendName : ''} /> {/* 기존 닉네임 표시 */}
+                </Modal>
+            )}
+            {addModalVisible && (
+                <Modal
+                    title="친구 추가"
+                    visible={addModalVisible}
+                    onOk={addFriend} // 추가 버튼 클릭 시 친구 추가
+                    onCancel={() => setAddModalVisible(false)} // 취소 버튼 클릭 시 모달창 닫기
+                >
+                    <Input placeholder="친구 아이디 입력" value={newFriendId} onChange={e => setNewFriendId(e.target.value)} />
                 </Modal>
             )}
         </div>

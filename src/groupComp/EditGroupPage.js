@@ -95,17 +95,49 @@ const EditGroupPage = () => {
   useEffect(() => {
     if (groupId) {
       fetchGroupDetails(groupId).then(response => {
-        if (response.code === 200) {
+        if (response && response.code === 200) {
           setGroupDetails(response.data);
         } else {
-          console.error('그룹 정보를 가져오는데 실패했습니다.');
+          // 백엔드에서 데이터를 가져오지 못했을 때 더미 데이터 사용
+          console.error('그룹 정보를 가져오는데 실패했습니다. 더미 데이터를 사용합니다.');
+          setGroupDetails({
+            groupId: 11,
+            name: "수정NAME",
+            description: "테스트그룹 설명5",
+            privatePassword: null,
+            groupTags: [
+              { id: 1, field: "IT", name: "스프링" },
+              { id: 2, field: "IT", name: "리액트" },
+              { id: 3, field: "IT", name: "자바" }
+            ],
+            groupMembers: [
+              { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" },
+              { id: "TESTID2", userName: "TESTNAME2", profileImgPath: "TESTURL2" }
+            ],
+            groupManagers: [
+              { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/35/23dc85ac1d8c845da121c12ff644d920_res.jpeg" },
+              { id: "TESTID2", userName: "TESTNAME2", profileImgPath: null }
+            ],
+            groupNotice: "초기 공지사항"
+          });
         }
       });
       fetchTags().then(response => {
-        if (response.code === 200) {
+        if (response && response.code === 200) {
           setAvailableTags(response.data);
         } else {
           console.error('태그 정보를 가져오는데 실패했습니다.');
+          // 태그 정보를 가져오지 못했을 때 더미 데이터 사용
+          setAvailableTags([
+            { id: 1, field: "IT", name: "스프링" },
+            { id: 2, field: "IT", name: "자바" },
+            { id: 3, field: "IT", name: "리액트" },
+            { id: 4, field: "IT", name: "자바스크립트" },
+            { id: 5, field: "여행", name: "일본" },
+            { id: 6, field: "여행", name: "미국" },
+            { id: 7, field: "여행", name: "영국" },
+            { id: 8, field: "여행", name: "호주" }
+          ]);
         }
       });
     }

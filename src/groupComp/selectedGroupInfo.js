@@ -37,10 +37,10 @@ const SelectedGroupInfo = ({ groupId }) => {
   };
 
   // 백엔드와 통신하여 그룹 탈퇴 처리
-  const handleLeaveGroup = () => {
-    // TODO: 백엔드에 그룹 탈퇴 요청 로직 구현
-    setIsMember(false);
-  };
+  // const handleLeaveGroup = () => {
+  //   // TODO: 백엔드에 그룹 탈퇴 요청 로직 구현
+  //   setIsMember(false);
+  // };
 
   return (
     <div className={styles.selectedGroupInfo}>
@@ -64,7 +64,8 @@ const SelectedGroupInfo = ({ groupId }) => {
         </div>
       </div>
       {isMember ? (
-        <button className={styles.joinButton} onClick={handleLeaveGroup}>탈퇴</button>
+        // <button className={styles.joinButton} onClick={handleLeaveGroup}>탈퇴</button>
+        null
       ) : (
         <button className={styles.joinButton} onClick={handleJoinGroup}>참가</button>
       )}
