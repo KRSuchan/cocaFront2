@@ -81,9 +81,9 @@ const setGroups = (groups) => {
 
 const getGroupList = async (id) => {
     try {
-        const res = axios.get(process.env.REACT_APP_SERVER_URL + `/api/calendar/member/${id}`);
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/calendar/member/${id}`);
 
-        console.log("list", res);
+        console.log("list", res.data.data);
 
         return (await res).data.data;
     } catch (error) {
