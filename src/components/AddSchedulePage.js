@@ -108,6 +108,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
         if(selectedGroup.groupId === -1) {
             res = await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/delete?memberId=${userId}&personalScheduleId=${scheduleId}`);
         } else {
+            console.log('del', scheduleId);
+            console.log('delEdit?', editingSchedule);
             res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleDeleteReq`, {
                 params: {
                     groupId: selectedGroup.groupId,
@@ -197,7 +199,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             // post 후 화면에 내용 뿌려주기 필요.
 
             // 일단 임시방편
-            // window.location.reload();
+            window.location.reload();
 
             // return response.data;
     
@@ -216,8 +218,10 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                 tmpAttachments = null;
             }
 
+            console.log(scheduleId);
+            
             const requestData = {
-                    id: scheduleId,
+                    scheduleId: scheduleId,
                     memberId: localStorage.getItem('userId'),
                     groupId: selectedGroup.groupId,
                     title: scheduleName,
@@ -231,6 +235,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             };
 
             const formData = new FormData();
+            // formData.append('scheduleId', {scheduleId}, {type: 'application/json'});
             formData.append('scheduleData', new Blob([JSON.stringify(requestData)], { type: 'application/json' } ));
 
             if (tmpAttachments && tmpAttachments.length > 0) {
@@ -270,6 +275,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             // }
     
             console.log(response);
+
+            // window.location.reload();
     
         } catch (error) {
             console.error(error);
