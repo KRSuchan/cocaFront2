@@ -45,14 +45,16 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     const [scheduleDescription, setScheduleDescription] = useState(editingSchedule ? editingSchedule.description : '');
     const [colorCode, setColorCode] = useState(editingSchedule ? editingSchedule.color : '#000000');
     const [startDate, setStartDate] = useState(
-        editingSchedule && editingSchedule.start ? (editingSchedule.start) : selectedDate
+        editingSchedule && editingSchedule.startTime ? (editingSchedule.startTime) : selectedDate
     );
     const [endDate, setEndDate] = useState(
-        editingSchedule && editingSchedule.end ? (editingSchedule.end) : selectedDate
+        editingSchedule && editingSchedule.endTime ? (editingSchedule.endTime) : selectedDate
     );
     const [location, setLocation] = useState(editingSchedule ? editingSchedule.location : '');
     const [isPrivate, setIsPrivate] = useState(editingSchedule ? editingSchedule.isPrivate : false);
-    const [attachments, setAttachments] = useState(editingSchedule ? editingSchedule.attachments : [null, null]);
+    // const [attachments, setAttachments] = useState(editingSchedule ? editingSchedule.attachments : [null, null]);
+    const [attachments, setAttachments] = useState(editingSchedule ? [editingSchedule.attachments[0] || null, editingSchedule.attachments[1] || null] : [null, null]);
+
     
     const [showColorPicker, setShowColorPicker] = useState(false); // Color Picker 표시 여부를 관리하는 state
 
@@ -265,7 +267,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
 
     return (
         <React.Fragment>
-            <div className='add-schedule-page'>
+            <div className='add-schedule-page' style={{ overflowY: 'scroll', height: '90vh' }}>
                 <div className='col'>
                     <h1>{selectedDate}</h1>
                     <button onClick={() => setActivePanel('newPanel')}>X</button>
