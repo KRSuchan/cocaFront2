@@ -47,8 +47,12 @@ const GroupPage = () => {
 
     // 그룹 선택 핸들러
     const handleGroupSelect = (group) => { // 그룹선택시
-        setSelectedGroup(group); 
-        console.log('그룹 선택:', group.groupId);
+        if(selectedGroup === group) {
+          setSelectedGroup(null);
+        } else {
+          setSelectedGroup(group); 
+          console.log('그룹 선택:', group.groupId);
+        }
       };
 
   // 생성 버튼 핸들러
@@ -93,7 +97,7 @@ const GroupPage = () => {
             </div>
           ))}
         </div>
-        <button className={styles.groupCreateButton} onClick={handleCreate}>생성</button>
+        <button className={styles.groupCreateButton} onClick={handleCreate}>{createGroupPage? "닫기" : "생성"}</button>
       </div>
       <div className={styles.rightPanel}>
 

@@ -55,6 +55,7 @@ const getGroupDetailSchedule = async (groupId, memberId, inquiryDate) => {
                 inquiryDate: inquiryDate
             }
         });
+        console.log("GRes", res);
 
         return res.data;
     } catch (error) {
@@ -169,6 +170,13 @@ function MainPage() {
                 res = await getPersonalDetailSchedule(localStorage.getItem('userId'), date);
             } else {
                 res = await getGroupDetailSchedule(selectedGroup.groupId, localStorage.getItem('userId'), date);
+
+                res.data = res.data.map(item => {
+                    return {
+                        ...item,
+                        id: item.scheduleId
+                    };
+                });
             }
 
             console.log('res3', res);

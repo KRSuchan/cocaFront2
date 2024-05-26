@@ -9,7 +9,7 @@ const EditGroupPage = () => {
   const navigate = useNavigate();
 
   // 백엔드에서 그룹 정보를 가져오는 함수 (미구현 상태)
-  const fetchGroupDetails = async (groupId) => {
+  const fetchGroupDetails = async (groupId) => { 
     // TODO: 백엔드 API 호출 로직 구현
     // 아래는 임시 응답 데이터
     return {

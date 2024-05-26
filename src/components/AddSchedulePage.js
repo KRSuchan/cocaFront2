@@ -96,7 +96,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
         } else {
             url = editingSchedule
                 ? `${process.env.REACT_APP_SERVER_URL}/api/group-schedule/groupScheduleUpdateReq`
-                : `${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/groupScheduleRegistrationReq`;
+                : `${process.env.REACT_APP_SERVER_URL}/api/group-schedule/groupScheduleRegistrationReq`;
             
             await postGroupSchedule(url);
         }
@@ -106,9 +106,24 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     const deleteSchedule = async () => { // ✅ 삭제버튼을 눌렀을때
         // ... axios delete 요청
         const userId = localStorage.getItem('userId');
-        const res = await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/delete?memberId=${userId}&personalScheduleId=${scheduleId}`);
+        let res;
+        if(selectedGroup.groupId === -1) {
+            res = await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/delete?memberId=${userId}&personalScheduleId=${scheduleId}`);
+        } else {
+            console.log('del', scheduleId);
+            console.log('delEdit?', editingSchedule);
+            res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleDeleteReq`, {
+                params: {
+                    groupId: selectedGroup.groupId,
+                    scheduleId: scheduleId,
+                    memberId: userId
+                }
+            });
+        }
+        
 
         console.log(res);
+        // TODO 그룹의 경우 예외처리가 있을 수 있음.
     };
     
     // 개인
@@ -186,7 +201,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             // post 후 화면에 내용 뿌려주기 필요.
 
             // 일단 임시방편
-            // window.location.reload();
+            window.location.reload();
 
             // return response.data;
     
@@ -196,6 +211,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
         }
     }
 
+
+    // 그룹
     const postGroupSchedule = async (url) => {
         try {
             let tmpAttachments = attachments;
@@ -203,34 +220,35 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                 tmpAttachments = null;
             }
 
+            console.log(scheduleId);
+            
             const requestData = {
-                personalSchedule: {
-                    id: scheduleId,
+                    scheduleId: scheduleId,
+                    memberId: localStorage.getItem('userId'),
+                    groupId: selectedGroup.groupId,
                     title: scheduleName,
                     description: scheduleDescription,
                     location: location,
                     startTime: formatDate(startDate),
                     endTime: formatDate(endDate),
-                    color: colorCode,
-                    isPrivate: isPrivate
-                },
-                member: {
-                    id: localStorage.getItem('userId')
-                }
+                    color: colorCode
+                    // isPrivate: isPrivate
                 // attachments: tmpAttachments || null // attachments가 존재하지 않으면 null로 설정
             };
 
             const formData = new FormData();
-            formData.append('data', new Blob([JSON.stringify(requestData)], { type: 'application/json' } ));
+            // formData.append('scheduleId', {scheduleId}, {type: 'application/json'});
+            formData.append('scheduleData', new Blob([JSON.stringify(requestData)], { type: 'application/json' } ));
 
             if (tmpAttachments && tmpAttachments.length > 0) {
                 tmpAttachments.forEach((attachment, index) => {
                     if (attachment) {
-                        formData.append('attachments', attachment);
+                        formData.append('scheduleFiles', attachment);
                     }
                 });
-            } else {
-                formData.append('attachments', "[]");
+            }
+            else {
+                formData.append('scheduleFiles', "[]");
             }
 
             // Log the FormData contents
@@ -245,11 +263,11 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             console.log("edit?", editingSchedule);
 
             // if(method === 'post') {
-            //     response = await axios.post(url, formData
-            //         , {headers: {
-            //             'Content-Type': 'multipart/form-data'
-            //         }}
-            //     );
+                response = await axios.post(url, formData
+                    , {headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }}
+                );
             // } else {
             //     response = await axios.put(url, formData
             //         , {headers: {
@@ -259,6 +277,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             // }
     
             console.log(response);
+
+            // window.location.reload();
     
         } catch (error) {
             console.error(error);
