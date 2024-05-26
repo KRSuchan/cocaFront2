@@ -30,31 +30,6 @@ const EditGroupPage = () => {
       console.error(error);
       return null;
     }
-    // 아래는 임시 응답 데이터
-    // return {
-    //   code: 200,
-    //   message: "OK",
-    //   data: {
-    //     groupId: 11,
-    //     name: "수정NAME",
-    //     description: "테스트그룹 설명5",
-    //     privatePassword: null,
-    //     groupTags: [
-    //       { id: 1, field: "IT", name: "스프링" },
-    //       { id: 2, field: "IT", name: "리액트" },
-    //       { id: 3, field: "IT", name: "자바" }
-    //     ],
-    //     groupMembers: [
-    //       { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" },
-    //       { id: "TESTID2", userName: "TESTNAME2", profileImgPath: "TESTURL2" }
-    //     ],
-    //     groupManagers: [
-    //       { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/35/23dc85ac1d8c845da121c12ff644d920_res.jpeg" },
-    //       { id: "TESTID2", userName: "TESTNAME2", profileImgPath: null }
-    //     ],
-    //     groupNotice: "초기 공지사항"
-    //   }
-    // };
   };
 
   // 백엔드에서 태그 목록을 가져오는 함수
@@ -70,42 +45,61 @@ const EditGroupPage = () => {
       console.error(error);
       return null;
     }
-
-    // 아래는 임시 응답 데이터
-    // return {
-    //   code: 200,
-    //   message: "OK",
-    //   data: [
-    //     { id: 1, field: "IT", name: "스프링" },
-    //     { id: 2, field: "IT", name: "자바" },
-    //     { id: 3, field: "IT", name: "리액트" },
-    //     { id: 4, field: "IT", name: "자바스크립트" },
-    //     { id: 5, field: "여행", name: "일본" },
-    //     { id: 6, field: "여행", name: "미국" },
-    //     { id: 7, field: "여행", name: "영국" },
-    //     { id: 8, field: "여행", name: "호주" }
-    //   ]
-    // };
   };
 
   // useState를 사용하여 그룹 정보 상태 관리
   const [groupDetails, setGroupDetails] = useState(null);
   const [availableTags, setAvailableTags] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentManagerIndex, setCurrentManagerIndex] = useState(null);
+  const [newManagerId, setNewManagerId] = useState("");
 
   useEffect(() => {
     if (groupId) {
       fetchGroupDetails(groupId).then(response => {
-        if (response.code === 200) {
+        if (response && response.code === 200) {
           setGroupDetails(response.data);
         } else {
-          console.error('그룹 정보를 가져오는데 실패했습니다.');
+          // 백엔드에서 데이터를 가져오지 못했을 때 더미 데이터 사용
+          console.error('그룹 정보를 가져오는데 실패했습니다. 더미 데이터를 사용합니다.');
+          setGroupDetails({
+            groupId: 11,
+            name: "수정NAME",
+            description: "테스트그룹 설명5",
+            privatePassword: null,
+            groupTags: [
+              { id: 1, field: "IT", name: "스프링" },
+              { id: 2, field: "IT", name: "리액트" },
+              { id: 3, field: "IT", name: "자바" }
+            ],
+            groupMembers: [
+              { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" },
+              { id: "TESTID2", userName: "TESTNAME2", profileImgPath: "TESTURL2" }
+            ],
+            groupManagers: [
+              { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/35/23dc85ac1d8c845da121c12ff644d920_res.jpeg" },
+              { id: "TESTID2", userName: "TESTNAME2", profileImgPath: null }
+            ],
+            groupNotice: "초기 공지사항"
+          });
         }
       });
       fetchTags().then(response => {
-        if (response.code === 200) {
+        if (response && response.code === 200) {
           setAvailableTags(response.data);
         } else {
           console.error('태그 정보를 가져오는데 실패했습니다.');
+          // 태그 정보를 가져오지 못했을 때 더미 데이터 사용
+          setAvailableTags([
+            { id: 1, field: "IT", name: "스프링" },
+            { id: 2, field: "IT", name: "자바" },
+            { id: 3, field: "IT", name: "리액트" },
+            { id: 4, field: "IT", name: "자바스크립트" },
+            { id: 5, field: "여행", name: "일본" },
+            { id: 6, field: "여행", name: "미국" },
+            { id: 7, field: "여행", name: "영국" },
+            { id: 8, field: "여행", name: "호주" }
+          ]);
         }
       });
     }
@@ -140,6 +134,24 @@ const EditGroupPage = () => {
     navigate(-1);
   };
 
+  const handleManagerChange = (index, newManagerId) => {
+    if (!groupDetails) return;
+    const newManagers = [...groupDetails.groupManagers];
+    newManagers[index] = { ...newManagers[index], id: newManagerId };
+    setGroupDetails({ ...groupDetails, groupManagers: newManagers });
+  };
+
+  const handleManagerDelete = (index) => {
+    const newManagers = [...groupDetails.groupManagers];
+    newManagers.splice(index, 1);
+    setGroupDetails({ ...groupDetails, groupManagers: newManagers });
+  };
+
+  const handleManagerSave = (index) => {
+    // TODO: 백엔드에서 프사 다시 받아오는 기능 구현
+    console.log(`Save manager at index ${index}`);
+  };
+
   if (!groupDetails) {
     return <div>Loading...</div>;
   }
@@ -171,16 +183,37 @@ const EditGroupPage = () => {
           />
           <p className={styles.title2}>그룹 매니저</p>
           <div className={styles.managersContainer} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'start', gap: '20px' }}>
-            {groupDetails.groupManagers.map(manager => (
-              <div key={manager.id} className={styles.managerInfo} style={{ textAlign: 'center', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '10px', padding: '10px', backgroundColor: '#f0f0f0' }}>
-                {manager.profileImgPath ? (
-                  <img src={manager.profileImgPath} alt="매니저 사진" className={styles.managerImage} style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
-                ) : (
-                  <UserOutlined style={{ fontSize: '80px' }} />
-                )}
-                <span style={{ display: 'block', marginTop: '8px', fontWeight: 'bold', color: '#333' }}>{manager.userName}</span>
-              </div>
-            ))}
+            {[...Array(3)].map((_, index) => {
+              const manager = groupDetails.groupManagers[index];
+              return (
+                <div key={index} className={styles.managerInfo} style={{ textAlign: 'center', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '10px', padding: '10px', backgroundColor: '#f0f0f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  {manager ? (
+                    <>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {manager.profileImgPath ? (
+                          <img src={manager.profileImgPath} alt="매니저 사진" className={styles.managerImage} style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
+                        ) : (
+                          <UserOutlined style={{ fontSize: '80px' }} />
+                        )}
+                        <input
+                          type="text"
+                          value={manager.id}
+                          onChange={(e) => handleManagerChange(index, e.target.value)}
+                          className={styles.input}
+                          style={{ marginTop: '8px', fontWeight: 'bold', color: '#333' }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '0px' }}>
+                        <button onClick={() => handleManagerDelete(index)} className={styles.joinButton} style={{ marginBottom: '4px' }}>삭제</button>
+                        <button onClick={() => handleManagerSave(index)} className={styles.joinButton}>저장</button>
+                      </div>
+                    </>
+                  ) : (
+                    <button onClick={() => handleManagerChange(index, "")} className={styles.joinButton}>추가</button>
+                  )}
+                </div>
+              );
+            })}
           </div>
           <p className={styles.title2}>그룹분야</p>
           {groupDetails.groupTags.map((tag, index) => (
