@@ -216,12 +216,12 @@ function MainPage() {
                         </div>
                     ) : activePanel === 'editSchedule' ? (
                         <div className="add-schedule-page-container">
-                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate} editingSchedule={editingSchedule} />
+                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate} editingSchedule={editingSchedule}  />
                         </div>
                     ) : 
                     (
                         <div className="add-schedule-page-container">
-                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate} />
+                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate}  />
                         </div>
                     )}
                 </div>
