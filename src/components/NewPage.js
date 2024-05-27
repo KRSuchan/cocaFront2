@@ -1,9 +1,26 @@
 import React from 'react';
+import Swal from 'sweetalert2';
 
 const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, editingSchedule, selectedGroup }) => {
-    const handleHeartClick = (item) => {
+    const handleHeartClick = (item) => { //✌️ 하트 클릭했을때, 개인일정으로 저장
         // 하트 클릭 핸들러 함수
         console.log(`${item.title}의 하트를 클릭했습니다.`);
+    };
+
+    const handleImportMySchedule = () => {
+        Swal.fire({
+            title: '내일정 가져오기',
+            text: `${selectedDate} 일자에 포함된 내 일정을 모두 가져옵니다`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: '확인',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // 확인 버튼을 눌렀을 때 실행할 핸들러
+                console.log(`${selectedDate} 일자에 포함된 내 일정을 가져옵니다.`);
+            }
+        });
     };
 
     return (
@@ -50,7 +67,7 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
                 {selectedGroup.groupId !== -1 && selectedGroup.isAdmin && (
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <button className="add-schedule-button" onClick={() => setActivePanel('addSchedule')} style={{ marginRight: '10px' }}>일정추가</button>
-                        <button className="add-schedule-button" style={{ fontSize: '19px' }} >내일정가져오기</button>
+                        <button className="add-schedule-button" style={{ fontSize: '19px' }} onClick={handleImportMySchedule}>내일정가져오기</button>
                     </div>
                 )}
             </div>
