@@ -212,16 +212,16 @@ function MainPage() {
                         </React.Fragment>
                     ) : activePanel === 'newPanel' ? (
                         <div className="new-page-container">
-                            <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} schedule={schedule} setEditingSchedule={setEditingSchedule}/>                        
+                            <NewPage setActivePanel={setActivePanel} selectedDate={selectedDate} schedule={schedule} setEditingSchedule={setEditingSchedule} selectedGroup={selectedGroup}/>                        
                         </div>
                     ) : activePanel === 'editSchedule' ? (
                         <div className="add-schedule-page-container">
-                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate} editingSchedule={editingSchedule} />
+                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate} editingSchedule={editingSchedule}  />
                         </div>
                     ) : 
                     (
                         <div className="add-schedule-page-container">
-                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate} />
+                            <AddSchedulePage setActivePanel={setActivePanel} selectedDate={selectedDate}  />
                         </div>
                     )}
                 </div>

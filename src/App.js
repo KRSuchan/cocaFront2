@@ -20,6 +20,7 @@ const store = createStore(reducer);
 
 
 function App() {
+  
   return (
     <Provider store={store}>
     <Router>

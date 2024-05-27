@@ -315,12 +315,14 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                         <div style={{ background: colorCode }} /> {/* 선택된 색상 표시 */}
                         {showColorPicker && <SketchPicker color={colorCode} onChangeComplete={(color) => { setColorCode(color.hex); setShowColorPicker(false); }} />} {/* Color Picker */}
                     </button>
-                <label className='col2'>
-                        <p>비공개일정🔒</p>
-                        <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />
-                    </label>
+                    {selectedGroup.groupId === -1 && (
+                        <label className='col2'>
+                            <p>비공개일정🔒</p>
+                            <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />
+                        </label>
+                    )}
                 {/* <button className="add-schedule-button" onClick={postSchedule}>일정추가</button> */}
-                <button className="add-schedule-button" onClick={saveSchedule}>
+                <button className="add-schedule-button" style={{ marginTop: '10px' }} onClick={saveSchedule}>
                     {editingSchedule ? '수정' : '일정추가'}
                 </button>
                 {editingSchedule && (
