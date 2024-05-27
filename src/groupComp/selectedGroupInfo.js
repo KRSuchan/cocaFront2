@@ -52,7 +52,7 @@ const SelectedGroupInfo = ({ groupId }) => {
     };
 
     setData();
-  }, []);
+  }, [groupId]);
 
   // 백엔드와 통신하여 그룹 참가 처리
   const handleJoinGroup = () => {
