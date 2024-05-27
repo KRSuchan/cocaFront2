@@ -20,7 +20,7 @@ const MainLogo = () => {
 
     useEffect(() => {
         const fetchNotices = async () => {
-            try { //✌️ 공지사항 받아오기 구현
+            try { //✌️ 공지사항 받아오기 구현, 내 캘린더일때는 아래 콘텐츠 띄우게 설정해두었음당
                 const response = await axios.get(''); // 백엔드에서 공지사항을 받아오는 API 엔드포인트
                 setNotices(response.data);
             } catch (error) {
