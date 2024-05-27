@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import SelectedGroupInfo from './groupComp/selectedGroupInfo';
 import CreateGroupPage from './groupComp/CreateGroupPage';
+import axios from 'axios';
 
 //✨ 이 페이지 컴포넌트는 모두 groupComp에 있음
 //✨ 관심분야 설정 -> PM에게 확인 예정임
@@ -11,7 +12,7 @@ import CreateGroupPage from './groupComp/CreateGroupPage';
 
 const GroupPage = () => {
 
-    const navigate = useNavigate(); 
+  const navigate = useNavigate(); 
   // 검색어 상태
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -38,10 +39,53 @@ const GroupPage = () => {
     setSearchTerm(hashtag);
   };
 
+  const searchGroupByTag = async(searchTag) => {
+    const pageNum = 1;
+    try {
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/find/tag/${searchTag}/pageNum/${pageNum}`);
+      console.log(res); 
+
+      return res.data.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  const searchGroupByName = async(searchText) => {
+    const pageNum = 1;
+    try {
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/find/groupName/${searchText}/pageNum/${pageNum}`);
+      console.log(res);
+
+      return res.data.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  const searchGroup = async() => {
+    let res;
+
+    if(searchTerm.includes("#")) { // 태그 검색
+      const match = searchTerm.match(/#([^\s]+)/)[1];
+      console.log("matchText", match);
+      res = await searchGroupByTag(match);
+    } 
+    else { // 일반 검색
+      res = await searchGroupByName(searchTerm);
+    }
+
+    setGroups(res);
+
+  }
+
   const handleSearchEnter = (event) => { // 22✅ 엔터 눌렀을때 [그룹 페이지] 
     if (event.key === 'Enter') {
       console.log('검색어:', searchTerm);
       // 여기에 검색을 처리하는 로직을 추가하세요.
+      searchGroup();
     }
   };
 
@@ -51,7 +95,7 @@ const GroupPage = () => {
           setSelectedGroup(null);
         } else {
           setSelectedGroup(group); 
-          console.log('그룹 선택:', group.groupId);
+          console.log('그룹 선택:', group.id);
         }
       };
 
@@ -106,7 +150,7 @@ const GroupPage = () => {
           <CreateGroupPage />
         ) : selectedGroup ? (
           <SelectedGroupInfo
-            groupId={selectedGroup.groupId}
+            groupId={selectedGroup.id}
           />
         ) : null}
         {/* 그룹 생성인가? 아니면 그룹 상세인가? */}
