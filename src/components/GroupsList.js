@@ -4,12 +4,25 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { SettingOutlined, DeleteOutlined } from '@ant-design/icons';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const GroupsList = () => {
     const groups = useSelector(state => state.groups);
     const [selectedGroup, setSelectedGroup] = useState(useSelector(state => state.selectedGroup));
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const quitGroup = async(group) => {
+        try {
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + `/api/group/leave/member/${localStorage.getItem("userId")}/group/${group.groupId}`);
+            console.log(res);
+            return res.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
 
     useEffect(() => {
         if(selectedGroup.groupId === -1) {
@@ -31,8 +44,47 @@ const GroupsList = () => {
     };
 
     const handleDeleteClick = (group) => {
+        console.log(`Deleting group with ID: ${group.groupId}`);
+
         if (group.groupId !== -1) {
-            console.log(`Deleting group with ID: ${group.groupId}`);
+            Swal.fire({
+                icon: "warning",
+                title: "그룹에서 탈퇴하시려구요?",
+                showCancelButton: true,
+                confirmButtonText: "탈퇴",
+                cancelButtonText: "취소"
+            }).then(async (res) => {
+                if(res.isConfirmed) {
+                    const res = await quitGroup(group);
+                    if(res.code === 200) {
+                        Swal.fire({
+                            position: "center",
+                            icon: "success",
+                            title: "정상적으로 탈퇴되었어요!",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(async (res) => { window.location.reload(); });
+                    } else if (res.code === 400) {
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "그룹 관리자는 탈퇴할 수 없어요!",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(async (res) => { window.location.reload(); });
+                    }
+                }
+                else {
+                    Swal.fire({
+                        position: "center",
+                        icon: "info",
+                        title: "탈퇴를 취소했어요.",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            });
+            // const res = quitGroup(group);
         }
     };
 

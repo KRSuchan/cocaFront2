@@ -278,7 +278,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
     
             console.log(response);
 
-            // window.location.reload();
+            window.location.reload();
     
         } catch (error) {
             console.error(error);
