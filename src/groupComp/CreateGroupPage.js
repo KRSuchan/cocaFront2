@@ -12,6 +12,8 @@ const CreateGroupPage = () => {
   const [interestOptions, setInterestOptions] = useState([]); // 관심분야 옵션을 상태로 관리
   const [tags, setTags] = useState([]);
   const [isPrivate, setIsPrivate] = useState(false); // 그룹의 비공개 여부 상태
+  const [privatePassword, setPrivatePassword] = useState(''); // 비공개 그룹 비밀번호 상태
+  const [isPasswordRequired, setIsPasswordRequired] = useState(false); // 비밀번호 필수 여부 상태
 
   const navigate = useNavigate();
 
@@ -29,22 +31,6 @@ const CreateGroupPage = () => {
       console.error(error);
       return null;
     }
-
-    // 임시 응답 데이터
-    // return {
-    //   code: 200,
-    //   message: "OK",
-    //   data: [
-    //     { id: 1, field: "IT", name: "스프링" },
-    //     { id: 2, field: "IT", name: "자바" },
-    //     { id: 3, field: "IT", name: "리액트" },
-    //     { id: 4, field: "IT", name: "자바스크립트" },
-    //     { id: 5, field: "여행", name: "일본" },
-    //     { id: 6, field: "여행", name: "미국" },
-    //     { id: 7, field: "여행", name: "영국" },
-    //     { id: 8, field: "여행", name: "호주" }
-    //   ]
-    // };
   };
 
   useEffect(() => {
@@ -59,6 +45,11 @@ const CreateGroupPage = () => {
   }, []);
 
   const handleCreateGroup = async () => { //✅ 그룹생성버튼 눌렀을때
+    if (isPrivate && !privatePassword) {
+      setIsPasswordRequired(true);
+      return;
+    }
+
     const groupData = {
       member: {
         id: localStorage.getItem("userId") // TODO : 관리자 두명? -> 일단 처음 생성 시에는 생성하는 본인이 관리자가 되는 게 맞을 듯.
@@ -66,7 +57,7 @@ const CreateGroupPage = () => {
       group: {
         name: groupName,
         description: groupDescription,
-        privatePassword: null // TODO : 비밀번호 추가
+        privatePassword: isPrivate ? privatePassword : null // 비공개 그룹일 경우 비밀번호 추가
       },
       groupTags: interests
         .filter(interest => interest)
@@ -95,7 +86,6 @@ const CreateGroupPage = () => {
     }
   };
 
-  
   const handleInterestChange = (index, value) => {
     setInterests(interests.map((interest, i) => (i === index ? value : interest)));
   };
@@ -156,19 +146,38 @@ const CreateGroupPage = () => {
                 <input
                     type="checkbox"
                     checked={isPrivate}
-                    onChange={(e) => setIsPrivate(e.target.checked)}
+                    onChange={(e) => {
+                      setIsPrivate(e.target.checked);
+                      if (!e.target.checked) {
+                        setPrivatePassword('');
+                        setIsPasswordRequired(false);
+                      }
+                    }}
                     style={{ marginLeft: '10px', width: '20px', height: '20px', cursor: 'pointer' }}
                 />
                 <label style={{ fontWeight: 'bold', fontSize: '16px', color: '#333' }}>
                     {isPrivate ? '  비공개 그룹🔒' : '  공개 그룹🔓'}으로 그룹을 생성합니다.
                 </label>
             </div>
+            {isPrivate && (
+                <input
+                    type="password"
+                    placeholder="비밀번호"
+                    value={privatePassword}
+                    onChange={(e) => {
+                      setPrivatePassword(e.target.value);
+                      setIsPasswordRequired(false);
+                    }}
+                    className={styles.input}
+                    style={{ marginTop: '10px', borderColor: isPasswordRequired ? 'red' : '' }}
+                />
+            )}
+            {isPasswordRequired && <p style={{ color: 'red' }}>비밀번호를 입력해주세요.</p>}
         </div>
         <button onClick={handleCreateGroup} className={styles.joinButton}>
             그룹생성
         </button>
     </div>
-    
   );
 };
 

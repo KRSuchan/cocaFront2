@@ -53,12 +53,14 @@ const EditGroupPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentManagerIndex, setCurrentManagerIndex] = useState(null);
   const [newManagerId, setNewManagerId] = useState("");
+  const [privatePassword, setPrivatePassword] = useState("");
 
   useEffect(() => {
     if (groupId) {
       fetchGroupDetails(groupId).then(response => {
         if (response && response.code === 200) {
           setGroupDetails(response.data);
+          setPrivatePassword(response.data.privatePassword || "");
         } else {
           // 백엔드에서 데이터를 가져오지 못했을 때 더미 데이터 사용
           console.error('그룹 정보를 가져오는데 실패했습니다. 더미 데이터를 사용합니다.');
@@ -66,7 +68,7 @@ const EditGroupPage = () => {
             groupId: 11,
             name: "수정NAME",
             description: "테스트그룹 설명5",
-            privatePassword: null,
+            privatePassword: "1234",
             groupTags: [
               { id: 1, field: "IT", name: "스프링" },
               { id: 2, field: "IT", name: "리액트" },
@@ -82,6 +84,7 @@ const EditGroupPage = () => {
             ],
             groupNotice: "초기 공지사항"
           });
+          setPrivatePassword("1234");
         }
       });
       fetchTags().then(response => {
@@ -233,6 +236,20 @@ const EditGroupPage = () => {
               ))}
             </select>
           ))}
+          {privatePassword !== null && (
+            <>
+              <p className={styles.title2}>비밀번호</p>
+              <input
+                type="password"
+                placeholder="비밀번호"
+                value={privatePassword}
+                onChange={(e) => setPrivatePassword(e.target.value)}
+                className={styles.input}
+                style={{ marginTop: '8px', fontWeight: 'bold', color: '#333', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+                required
+              />
+            </>
+          )}
         </div>
         <button onClick={handleSave} className={styles.joinButton}>
           저장
