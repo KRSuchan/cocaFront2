@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './css/SignupPage.css'; // 스타일시트 임포트
@@ -10,17 +10,109 @@ function SignUpPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [interest, setInterest] = useState(''); // 단일 선택을 위해 배열에서 문자열로 변경
+  // const [interest, setInterest] = useState(['', '', '']); // 단일 선택을 위해 배열에서 문자열로 변경
+  const [interest, setInterest] = useState('');
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [agreeToPolicy, setAgreeToPolicy] = useState(false);
+  const [isDupchecked, setIsDupChecked] = useState(false);
+  const [tagList, setTagList] = useState([
+    {
+        "id": 1,
+        "field": "IT",
+        "name": "스프링"
+    },
+    {
+        "id": 2,
+        "field": "IT",
+        "name": "자바"
+    },
+    {
+        "id": 3,
+        "field": "IT",
+        "name": "리액트"
+    }
+  ]);
+
+  const handleDuplicateCheck = () => {
+    // 통신 구현 필요
+    const res = {code : 200};
+    
+    if(res.code === 200) {
+      setIsDupChecked(true);
+    }
+  }
 
   // 비밀번호 일치 확인
   const isPasswordMatch = () => {
     return password === confirmPassword;
   };
 
+  const fetchTagList = async () => {
+    try {
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + "/api/tag/all");
+      console.log(res.data);
+
+      return res.data;
+    } catch(error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchTagList().then(res => {
+      if(res.code === 200) {
+        setTagList(res.data.map(option => option));
+      } else {
+        console.error('태그 정보 가져오기 실패');
+      }
+    })
+  }, []);
+
+  const signUp = async () => {
+    try {
+      // const interestId = interest
+      // .filter(interestItem => interestItem !== '')
+      // .map(interestItem => {
+      //   const tag = tagList.find(tag => tag.name === interestItem);
+      //   return tag ? { tagId: tag.id, TagName: tag.name } : null;
+      // })
+      // .filter(tag => tag !== null);
+
+      const requestData = {
+        id: userId,
+        password: password,
+        userName: nickname,
+        isDefaultImage: profilePhoto === null ? true : false,
+        interestId: interest ? [{ tagId: tagList.find(tag => tag.name === interest).id, TagName: interest }] : []
+        // interestId: interestId
+      };
+
+      const formData = new FormData();
+      formData.append('data', new Blob([JSON.stringify(requestData)], { type: 'application/json' } ));
+
+      if(profilePhoto) {
+        formData.append('profileImage', profilePhoto);
+      } else {
+        formData.append('profileImage', '[]');
+      }
+
+      const res = await axios.post(process.env.REACT_APP_SERVER_URL + '/api/member/joinReq', formData,
+      {
+        headers: {
+        'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      console.log(res);
+
+      return res.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   // 회원가입 처리 함수
-const handleSignUp = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     if (!isPasswordMatch()) {
       Swal.fire({
@@ -42,19 +134,29 @@ const handleSignUp = async (e) => {
     }
     // 회원가입 API 호출
     try {
-      const memberData = {
-        id: userId,
-        password: password,
-        userName: nickname,
-        interest: interest,
-        profilePhoto: profilePhoto || null
-      };
+      // const memberData = {
+      //   id: userId,
+      //   password: password,
+      //   userName: nickname,
+      //   interest: interest,
+      //   profilePhoto: profilePhoto || null
+      // };
 
-      const response = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/joinReq", memberData);
+      // const response = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/joinReq", memberData);
+
+      const response = await signUp();
 
       console.log("reg : ", response);
 
-      navigate('/'); // 회원가입 성공 시 홈페이지로 이동
+      if(response.code === 200) {
+        navigate('/'); // 회원가입 성공 시 홈페이지로 이동
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "회원가입이 정상적으로 이루어지지 않았어요!",
+          confirmButtonText: "확인"
+        });
+      }
     } catch (error) {
       console.error('회원가입 실패:', error);
     }
@@ -94,9 +196,12 @@ const handleSignUp = async (e) => {
           <label htmlFor="interest">관심사</label>
           <select id="interest" value={interest} onChange={handleInterestChange} required>
             <option value="">선택하세요</option>
-            <option value="computer">컴퓨터</option>
+            {/* <option value="computer">컴퓨터</option>
             <option value="anime">애니</option>
-            <option value="employment">취업</option>
+            <option value="employment">취업</option> */}
+            {tagList.map(tag => (
+              <option key={tag.id} value={tag.name}>{tag.name}</option>
+            ))}
           </select>
         </div>
         <div className="form-group">
