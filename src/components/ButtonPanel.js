@@ -2,13 +2,15 @@ import React from 'react';
 import { Button } from 'antd';
 import { SmileOutlined, SearchOutlined, StarOutlined, SettingOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { logout } from '../security/TokenManage';
 
 const ButtonPanel = () => {
     const navigate = useNavigate(); // 임시 로그아웃
 
     const handleLogOut = () => {
-        localStorage.clear();
-        navigate("/");
+        logout(navigate);
+        // localStorage.clear();
+        // navigate("/");
     }
 
     const handleGroupClick = () => {
