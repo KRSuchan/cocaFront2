@@ -24,7 +24,7 @@ const CreateGroupPage = () => {
     try {
       const res = await axios.get(process.env.REACT_APP_SERVER_URL + "/api/tag/all");
 
-      console.log("tag", res.data.data);
+      console.log("tag", res.data);
 
       return res.data;
     } catch (error) {
