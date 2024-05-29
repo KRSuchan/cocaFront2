@@ -23,6 +23,10 @@ const ButtonPanel = () => {
         navigate("/friends")
     }
 
+    const handleEmptyScheduleClick = () => {
+        navigate("/emptyschedule");
+    }
+
     return (
         <div className="button-panel">
             <Button icon={<SmileOutlined style={{ fontSize: '30px' }} />} className="button disappointment" onClick={handleFriendsClick}>
@@ -31,7 +35,7 @@ const ButtonPanel = () => {
             <Button icon={<SearchOutlined style={{ fontSize: '30px' }} />} className="button green-color" onClick={handleGroupClick}>
                 <div>그룹검색</div>
             </Button>
-            <Button icon={<StarOutlined style={{ fontSize: '30px' }} />} className="button violet" onClick={handleLogOut}>
+            <Button icon={<StarOutlined style={{ fontSize: '30px' }} />} className="button violet" onClick={handleEmptyScheduleClick}>
                 <div>빈일정</div>
             </Button>
             <Button icon={<SettingOutlined style={{ fontSize: '30px' }} />} className="button navy-blue" onClick={handleSettingClick}>

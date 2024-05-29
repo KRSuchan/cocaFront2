@@ -10,6 +10,7 @@ import SettingPage from './SettingPage'; // 설정페이지
 import LoginCheckPage from './LoginCheckPage';
 import EditGroupPage from './groupComp/EditGroupPage';
 import FriendsPage from './FriendsPage';
+import PowerEmptySchedule from './PowerEmptySchedule';
 
 import NoticePage from './NoticePage';
 import { createStore } from 'redux';
@@ -41,6 +42,7 @@ function App() {
         <Route path='/editgroup/:groupId' element={<EditGroupPage/>}/>
         <Route path='/notice' element={<NoticePage/>}/>
         <Route path='/friends' element={<FriendsPage/>}/>
+        <Route path='/emptyschedule' element={<PowerEmptySchedule/>}/>
       </Routes>
     </Router>
     </Provider>
