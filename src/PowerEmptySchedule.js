@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styles from './css/PowerEmptySchedule.module.css';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, DatePicker, InputNumber, Select } from 'antd';
-import ScheduleSearch from './emptyComp/ScheduleSearch';
+import FullCalendar from '@fullcalendar/react';
+import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import moment from 'moment';
 
 const { TabPane } = Tabs;
@@ -35,8 +36,7 @@ const PowerEmptySchedule = () => {
                     { startTime: "2024-10-21", endTime: "2025-01-31" },
                     { startTime: "2025-02-01", endTime: "2025-04-30" },
                     { startTime: "2025-05-01", endTime: "2025-07-30" }
-                ]
-                ,
+                ],
                 [
                     { startTime: "2024-06-01", endTime: "2024-08-01" },
                     { startTime: "2024-08-11", endTime: "2024-10-20" },
@@ -88,39 +88,38 @@ const PowerEmptySchedule = () => {
     };
 
     const ScheduleSearch = () => {
-        const startDate = moment("2024-05-01");
-        const endDate = moment("2025-09-30");
-        const dateArray = [];
-        let currentDate = startDate;
+        const events = schedules.flatMap((scheduleList, listIdx) =>
+            scheduleList.map((schedule, idx) => ({
+                id: `${listIdx}-${idx}`,
+                resourceId: `member-${listIdx}`,
+                start: schedule.startTime,
+                end: schedule.endTime,
+                title: `일정 ${listIdx + 1}-${idx + 1}`
+            }))
+        );
 
-        while (currentDate <= endDate) {
-            dateArray.push(currentDate.format("M/D"));
-            currentDate = currentDate.add(1, 'days');
-        }
+        const resources = schedules.map((_, idx) => ({
+            id: `member-${idx}`,
+            title: `멤버 ${idx + 1}`
+        }));
 
         return (
-            <div style={{ display: 'flex', height: '100%' }}>
-                <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '17%', height: '100%' }}>
-                    왼쪽판넬
-                </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '83%', height: '100%', marginLeft: '2%', overflowX: 'scroll' }}>
-                    <div style={{ display: 'flex', width: `${dateArray.length * 50}px` }}>
-                        {dateArray.map((date, index) => (
-                            <div key={index} style={{ width: '50px', textAlign: 'center', border: '0px solid gray' }}>
-                                {date}
-                                {schedules.map((scheduleList, listIdx) => (
-                                    scheduleList.map((schedule, idx) => (
-                                        moment(date, "M/D").isBetween(moment(schedule.startTime, "YYYY-MM-DD"), moment(schedule.endTime, "YYYY-MM-DD"), null, '[]') && (
-                                            <div key={`${listIdx}-${idx}`} style={{ backgroundColor: listIdx % 2 === 0 ? 'gray' : 'blue', margin: '5px', padding: '10px', borderRadius: '5px' }}>
-                                            </div>
-                                        )
-                                    ))
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            <FullCalendar
+                plugins={[resourceTimelinePlugin]}
+                initialView="resourceTimelineDay"
+                headerToolbar={{
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth'
+                }}
+                resources={resources}
+                events={events}
+                editable={true}
+                selectable={true}
+                eventOverlap={false}
+                resourceAreaWidth="20%"
+                slotMinWidth={100}
+            />
         );
     };
 
@@ -164,3 +163,5 @@ const PowerEmptySchedule = () => {
 };
 
 export default PowerEmptySchedule;
+
+
