@@ -5,31 +5,50 @@
     align-items: center;
     padding: 50px;
     font-family: 'Noto Sans KR';
-  }
+}
   
-  .header {
+.header {
     display: flex;
     width: 100%;
     flex-direction: row;
     align-items: center; /* 세로 중앙 정렬 */
     justify-content: start; /* 가로 시작점 정렬 */
-  }
+    height: auto; /* 자식 요소만큼 높이 차지 */
+}
   
-  .title{
-      font-size: 35pt;
-      font-weight: 400;
-      color: #41ADCA;
-      font-family: 'Black Han Sans';
-  }
+.title {
+    font-size: 35pt;
+    font-weight: 400;
+    color: #41ADCA;
+    font-family: 'Black Han Sans';
+    line-height: 1; /* 타이틀 높이 줄이기 */
+}
   
-  .backButton {
-      font-size: 35pt;
-      font-weight: bold;
-      margin-right: 20px;
-      color: #41ADCA;
-      background-color: #DEDEDE;
-      border-radius: 10px;
-      border-width: 0;
-      padding: 0 20px; 
-      font-family: 'Black Han Sans';
-  }
+.backButton {
+    font-size: 35pt;
+    font-weight: bold;
+    margin-right: 20px;
+    color: #41ADCA;
+    background-color: #DEDEDE;
+    border-radius: 10px;
+    border-width: 0;
+    padding: 0 20px; 
+    font-family: 'Black Han Sans';
+}
+
+.tabContainer {
+    width: 100%; /* 탭이 전체 너비를 차지하도록 설정 */
+}
+
+.mainPanel {
+    width: 100%; /* 메인 패널이 전체 너비를 차지하도록 설정 */
+}
+
+.subPanel {
+    width: 100%; /* 서브 패널이 전체 너비를 차지하도록 설정 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
