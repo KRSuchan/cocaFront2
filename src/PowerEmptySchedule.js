@@ -16,6 +16,7 @@ const PowerEmptySchedule = () => {
     const [unit, setUnit] = useState('일'); // '일', '시간', '십분'
     const [range, setRange] = useState(null); //시작일 끝일
     const [schedules, setSchedules] = useState([]);
+    const [emptySchedules, setEmptySchedules] = useState([]); // 빈일정
 
     useEffect(() => {
         // 일정 데이터를 받아오는 함수
@@ -23,7 +24,7 @@ const PowerEmptySchedule = () => {
             const data = [
                 [
                     { startTime: "2024-05-01", endTime: "2024-07-01" },
-                    { startTime: "2024-07-11", endTime: "2024-09-20" },
+                    { startTime: "2024-07-11", endTime: "2024-08-01" },
                     { startTime: "2024-09-21", endTime: "2024-12-31" },
                     { startTime: "2025-01-01", endTime: "2025-03-31" },
                     { startTime: "2025-04-01", endTime: "2025-06-30" }
@@ -50,6 +51,22 @@ const PowerEmptySchedule = () => {
         fetchSchedules();
     }, []);
 
+    useEffect(() => {
+        // 빈일정 데이터를 받아오는 함수
+        const fetchEmptySchedules = async () => {
+            const emptyData = [
+                { startTime: "2024-08-02", endTime: "2024-08-06" },
+                { startTime: "2024-08-03", endTime: "2024-08-07" },
+                { startTime: "2024-08-04", endTime: "2024-08-08" },
+                { startTime: "2024-08-05", endTime: "2024-08-09" },
+                { startTime: "2024-08-06", endTime: "2024-08-10" }
+            ];
+            setEmptySchedules([emptyData]); // 배열을 한 번 더 감싸서 배열의 배열로 만듭니다.
+        };
+
+        fetchEmptySchedules();
+    }, []);
+
     const handleBack = () => {
         navigate(-1);
     };
@@ -72,7 +89,7 @@ const PowerEmptySchedule = () => {
 
     const ScheduleSearch = () => {
         const startDate = moment("2024-05-01");
-        const endDate = moment("2025-06-30");
+        const endDate = moment("2025-09-30");
         const dateArray = [];
         let currentDate = startDate;
 
