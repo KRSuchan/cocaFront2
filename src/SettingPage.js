@@ -34,7 +34,7 @@ const SettingPage = () => {
                 headers: {
                   Authorization: `Bearer ${accessToken}`,
                 },
-              };
+            };
             const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/memberInfoInquiryReq", {
                 id: state.id,
                 password: state.password,

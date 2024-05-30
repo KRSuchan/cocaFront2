@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './css/LoginPage.css';
@@ -8,6 +8,14 @@ function LoginPage() {
   const navigate = useNavigate();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    const id = localStorage.getItem('userId');
+
+    if(id) {
+      navigate('/main');
+    }
+  })
 
   const handleLogin = () => {
     login();

@@ -24,6 +24,8 @@ import AddSchedulePage from './components/AddSchedulePage';
 import MainLogo from './components/MainLogo';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { refreshAccessToken } from './security/TokenManage';
+import Swal from 'sweetalert2';
 
 moment.locale('ko');
 
@@ -31,35 +33,81 @@ moment.locale('ko');
 const localizer = momentLocalizer(moment);
 
 // 일정 상세 통신
-const getPersonalDetailSchedule = async (id, startDate, endDate) => {
+const getPersonalDetailSchedule = async (id, startDate, endDate, navigate) => {
     console.log(id, startDate, endDate);
 
+    const accessToken = localStorage.getItem('accessToken');
+
     try {
-        const res = axios.get(process.env.REACT_APP_SERVER_URL + `/api/personal-schedule/detail/date?memberId=${id}&date=${startDate}`);
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/personal-schedule/detail/date?memberId=${id}&date=${startDate}`, config);
 
         console.log("res", res);
 
-        return (await res).data;
+        if(res.data.code === 200) {
+            return res.data;
+        } else if (res.data.code === 401) {
+            await refreshAccessToken(navigate);
+            getPersonalDetailSchedule(id, startDate, endDate, navigate);
+        } else {
+            throw new Error('unknown Error');
+        }
+        
     } catch (error) {
         console.error("유저 상세 일정 불러오기 에러 : ", error);
+        Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "에러!",
+            text: "서버와의 통신에 문제가 생겼어요!",
+            showConfirmButton: false,
+            timer: 1500
+        });
         return null;
     }
 }
 
-const getGroupDetailSchedule = async (groupId, memberId, inquiryDate) => {
+const getGroupDetailSchedule = async (groupId, memberId, inquiryDate, navigate) => {
+    const accessToken = localStorage.getItem('accessToken');
+
     try {
-        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleSpecificReq`, {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
             params: {
                 groupId: groupId,
                 memberId: memberId,
                 inquiryDate: inquiryDate
             }
-        });
+        };
+
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleSpecificReq`, config);
         console.log("GRes", res);
 
-        return res.data;
+        if(res.data.code === 200) {
+            return res.data;
+        } else if (res.data.code === 401) {
+            await refreshAccessToken(navigate);
+            getGroupDetailSchedule(groupId, memberId, inquiryDate, navigate);
+        } else {
+            throw new Error('unknown Error');
+        }
     } catch (error) {
         console.error("그룹 상세 일정 불러오기 에러 :", error);
+        Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "에러!",
+            text: "서버와의 통신에 문제가 생겼어요!",
+            showConfirmButton: false,
+            timer: 1500
+        });
         return null;
     }
 }
@@ -79,21 +127,47 @@ const setGroups = (groups) => {
     };
 };
 
-const getGroupList = async (id) => {
+const getGroupList = async (id, navigate) => {
+    const accessToken = localStorage.getItem('accessToken');
+
     try {
-        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/calendar/member/${id}`);
+        const config = {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+        };
+
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/calendar/member/${id}`, config);
 
         console.log("list", res.data.data);
 
-        return (await res).data.data;
+        if(res.data.code === 200) {
+            return res.data.data;
+        } else if (res.data.code === 401) {
+            await refreshAccessToken(navigate);
+            getGroupList(id, navigate);
+        } else {
+            throw new Error('unknown Error');
+        }
+        
     } catch (error) {
         console.error(error);
-    }
+        Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "에러!",
+            text: "서버와의 통신에 문제가 생겼어요!",
+            showConfirmButton: false,
+            timer: 1500
+        });
 
-    return [];
+        return [];
+    }
 }
 
 function MainPage() {
+    const navigate = useNavigate();
+
     // 'default'와 'newPanel' 중 하나를 값으로 가질 수 있는 activePanel 상태 추가
     // 'default': 기본 left-panel을 보여줌, 'newPanel': 새로운 페이지를 left-panel에 보여줌
     const [editingSchedule, setEditingSchedule] = useState(null); // 편집 중인 일정 상태
@@ -145,7 +219,7 @@ function MainPage() {
         const fetchGroups = async () => {
             const userId = localStorage.getItem('userId');
             if(userId) {
-                const res = await getGroupList(userId);
+                const res = await getGroupList(userId, navigate);
                 dispatch(setGroups(res));
             }
         };
@@ -167,9 +241,9 @@ function MainPage() {
             console.log('selGId', selectedGroup);
 
             if(selectedGroup.groupId === -1) {
-                res = await getPersonalDetailSchedule(localStorage.getItem('userId'), date);
+                res = await getPersonalDetailSchedule(localStorage.getItem('userId'), date, navigate);
             } else {
-                res = await getGroupDetailSchedule(selectedGroup.groupId, localStorage.getItem('userId'), date);
+                res = await getGroupDetailSchedule(selectedGroup.groupId, localStorage.getItem('userId'), date, navigate);
 
                 res.data = res.data.map(item => {
                     return {
