@@ -5,6 +5,7 @@ import styles from './css/SettingPage.module.css'; // 스타일 시트 임포트
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { refreshAccessToken } from './security/TokenManage';
 
 const LoginCheckPage = () => {
     const navigate = useNavigate();
@@ -16,19 +17,29 @@ const LoginCheckPage = () => {
 
     const handleLogin = async () => {
         console.log(userInfo);
+        const accessToken = localStorage.getItem('accessToken');
 
         try {
-            const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/loginReq", {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              };
+
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/checkPassword", {
                 id: userInfo.id,
                 password: userInfo.password
-            });
+            }, config);
 
             console.log(res);
 
-            if(res.data) {
+            if(res.data.data) {
                 console.log("success")
                 navigate(`/setting`, { state: userInfo });
-            } else {
+            } else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                handleLogin();
+            } else if (res.data.data === false) {
                 console.log("fail")
                 Swal.fire({
                     position: "center",
@@ -42,6 +53,14 @@ const LoginCheckPage = () => {
 
         } catch (error) {
             console.log(error);
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "에러!",
+                    text: "서버와의 통신에 문제가 생겼어요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
         }
     }
 

@@ -5,6 +5,7 @@ import styles from './css/SettingPage.module.css'; // 스타일 시트 임포트
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { refreshAccessToken } from './security/TokenManage';
 
 const SettingPage = () => {
     let { state } = useLocation();
@@ -25,17 +26,41 @@ const SettingPage = () => {
     const fetchUserInfo = async () => {
         // 백엔드에서 사용자 정보를 불러오는 로직 구현 예정
         // console.log("백엔드에서 사용자 정보를 불러오는 로직 구현 예정");
+
+        const accessToken = localStorage.getItem('accessToken');
+
         try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
             const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/memberInfoInquiryReq", {
                 id: state.id,
                 password: state.password,
-            });
+            }, config);
 
             console.log(res);
 
-            return res.data;
+            if(res.data.code === 200) {
+                return res.data.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                fetchUserInfo();
+            } else {
+                throw new Error('unknown Error');
+            }
         } catch (error) {
             console.log(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
     };
 
@@ -103,16 +128,43 @@ const SettingPage = () => {
 
     const deleteMember = async (password) => {
         console.log("탈퇴 처리");
+
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              };
+
         const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/withdrawalReq", 
             {
                 id: userInfo.id,
                 password: password
-            }
-        )
+            },
+            config
+        );
 
         console.log(res);
 
-        return res.data;
+        if(res.data.data) {
+            return res.data.data;
+        } else if (res.data.code === 401) {
+            await refreshAccessToken(navigate);
+            deleteMember();
+        }
+
+        } catch (error) {
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
     }
 
     const handleDelete = async () => {

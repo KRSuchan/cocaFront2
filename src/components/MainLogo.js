@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { LogoutOutlined, BellOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { logout } from '../security/TokenManage';
 
 const MainLogo = () => {
     const [showNotification, setShowNotification] = useState(true);
@@ -10,8 +11,9 @@ const MainLogo = () => {
     const navigate = useNavigate();
 
     const handleLogOut = () => {
-        localStorage.clear();
-        navigate("/");
+        logout(navigate);
+        // localStorage.clear();
+        // navigate("/");
     }
     
     const handleNotificationClick = () => {

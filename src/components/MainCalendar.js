@@ -4,6 +4,9 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
+import { refreshAccessToken } from '../security/TokenManage';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 moment.locale('ko');
 
@@ -14,40 +17,90 @@ moment.locale('ko');
 const localizer = momentLocalizer(moment);
 
 // 메인페이지 일정 정보 통신
-const getPersonalSchedule = async (id,  startDate, endDate) => {
+const getPersonalSchedule = async (id,  startDate, endDate, navigate) => {
     console.log(id, startDate, endDate);
 
-    try {
-        const res = axios.get(process.env.REACT_APP_SERVER_URL + `/api/personal-schedule/summary/between-dates?memberId=${id}&startDate=${startDate}&endDate=${endDate}`);
+    const accessToken = localStorage.getItem('accessToken');
+
+     try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/personal-schedule/summary/between-dates?memberId=${id}&startDate=${startDate}&endDate=${endDate}`, config);
 
         console.log(res);
 
-        return (await res).data.data;
+        if(res.data.code === 200) {
+            return res.data.data;
+        }
+        else if(res.data.code === 401) {
+            await refreshAccessToken(navigate);
+            getPersonalSchedule(id, startDate, endDate, navigate);
+        } else {
+            throw new Error('unknown Error');
+        }
+        
     } catch (error) {
         console.error("유저 일정 불러오기 에러 : ", error);
+        Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "에러!",
+            text: "서버와의 통신에 문제가 생겼어요!",
+            showConfirmButton: false,
+            timer: 1500
+        });
         return null;
     }
 }
 
-const getGroupScehdule = async(groupId, memberId, startDate, endDate) => {
-    try {
-        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleSummaryReq`, {
+const getGroupScehdule = async(groupId, memberId, startDate, endDate, navigate) => {
+    const accessToken = localStorage.getItem('accessToken');
+
+     try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
             params: {
                 groupId: groupId,
                 memberId: memberId,
                 startDate: startDate,
                 endDate: endDate
             }
-        });
+        };
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleSummaryReq`, config);
 
-        return res.data.data;
+        console.log('gr'. res);
+
+        if(res.data.code === 200) {
+            return res.data.data;
+        }
+        else if(res.data.code === 401) {
+            await refreshAccessToken(navigate);
+            getGroupScehdule(groupId, memberId, startDate, endDate, navigate);
+        } else {
+            throw new Error('unknown Error');
+        }
     } catch (error) {
         console.error("그룹 일정 불러오기 에러 :", error);
-        throw error;
+        Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "에러!",
+            text: "서버와의 통신에 문제가 생겼어요!",
+            showConfirmButton: false,
+            timer: 1500
+        });
+        return null;
     }
 }
 
 const MainCalendar = ({onSlotSelect}) => {
+    const navigate = useNavigate();
     const selectedGroup = useSelector(state => state.selectedGroup);
     const [currentGroup, setCurrentGroup] = useState(selectedGroup || {groupId: -1});
     
@@ -136,9 +189,9 @@ const MainCalendar = ({onSlotSelect}) => {
         let data;
         console.log("sel", currentGroup);
         if(currentGroup.groupId === -1) {
-            data = await getPersonalSchedule(localStorage.getItem('userId'), newStartDate, newEndDate);
+            data = await getPersonalSchedule(localStorage.getItem('userId'), newStartDate, newEndDate, navigate);
         } else {
-            data = await getGroupScehdule(currentGroup.groupId, localStorage.getItem('userId'), newStartDate, newEndDate);
+            data = await getGroupScehdule(currentGroup.groupId, localStorage.getItem('userId'), newStartDate, newEndDate, navigate);
         }
 
         console.log("tmp : ", data);
