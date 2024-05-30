@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { SketchPicker } from 'react-color'; // Color Picker를 위한 라이브러리
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { refreshAccessToken } from '../security/TokenManage';
 // import * as MainCalendar from './MainCalendar';
 
 // const formatDate = (date) => {
@@ -16,7 +19,7 @@ import { useSelector } from 'react-redux';
 // ✨ 기존 저장버튼을 누르면 postSchedule 함수 실행했던 것이 saveSchedule 함수로 가도록 수정함
 
 const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
-    
+    const navigate = useNavigate();
 
     // if(typeof selectedDate === 'string') {
     //     selectedDate = new Date(selectedDate);
@@ -98,36 +101,102 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                 ? `${process.env.REACT_APP_SERVER_URL}/api/group-schedule/groupScheduleUpdateReq`
                 : `${process.env.REACT_APP_SERVER_URL}/api/group-schedule/groupScheduleRegistrationReq`;
             
-            await postGroupSchedule(url);
+            await postGroupSchedule(url, method);
         }
     };
 
     // 일정 삭제 로직
     const deleteSchedule = async () => { // ✅ 삭제버튼을 눌렀을때
-        // ... axios delete 요청
         const userId = localStorage.getItem('userId');
         let res;
-        if(selectedGroup.groupId === -1) {
-            res = await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/delete?memberId=${userId}&personalScheduleId=${scheduleId}`);
-        } else {
-            console.log('del', scheduleId);
-            console.log('delEdit?', editingSchedule);
-            res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleDeleteReq`, {
-                params: {
-                    groupId: selectedGroup.groupId,
-                    scheduleId: scheduleId,
-                    memberId: userId
-                }
-            });
-        }
-        
+        const accessToken = localStorage.getItem('accessToken');
+        try {
+            if(selectedGroup.groupId === -1) {
+                const config = {
+                    headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    },
+                };
 
-        console.log(res);
+                res = await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/personal-schedule/delete?memberId=${userId}&personalScheduleId=${scheduleId}`, config);
+
+            } else {
+                const config = {
+                    headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    },
+                    params: {
+                        groupId: selectedGroup.groupId,
+                        scheduleId: scheduleId,
+                        memberId: userId
+                    }
+                };
+
+                console.log('del', scheduleId);
+                console.log('delEdit?', editingSchedule);
+                res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleDeleteReq`, config);
+            }
+
+            console.log(res);
+
+            if(res.data.code === 200) {
+                return true;
+            } else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                deleteSchedule();
+            } else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+
         // TODO 그룹의 경우 예외처리가 있을 수 있음.
     };
+
+    const handleDelete = () => {
+        Swal.fire({
+            icon: "warning",
+            title: "일정 삭제",
+            html: `정말로 일정을 삭제하시겠나요?<br>삭제 시, 모든 정보가 사라져요!`,
+            showCancelButton: true,
+            confirmButtonText: "삭제",
+            cancelButtonText: "취소",
+        }).then(async (res) => {
+            if(res.isConfirmed) {
+                const res = await deleteSchedule();
+
+                if(res) {
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "삭제 완료",
+                        text: "일정을 정상적으로 삭제했어요!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(res => {
+                        window.location.reload();
+                    });
+                }
+                else {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "에러!",
+                        text: "서버와의 통신에 문제가 생겼어요!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        })
+    }
     
     // 개인
     const postSchedule = async (url, method) => {
+        const accessToken = localStorage.getItem('accessToken');
+
         try {
             // const url = process.env.REACT_APP_SERVER_URL + '/api/personal-schedule/add';
     
@@ -184,36 +253,56 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             if(method === 'post') {
                 response = await axios.post(url, formData
                     , {headers: {
+                        Authorization: `Bearer ${accessToken}`,
                         'Content-Type': 'multipart/form-data'
                     }}
                 );
             } else {
                 response = await axios.put(url, formData
                     , {headers: {
+                        Authorization: `Bearer ${accessToken}`,
                         'Content-Type': 'multipart/form-data'
                     }}
                 );
             }
     
-            console.log(response);
+            console.log('submit', response);
     
-            // MainCalendar.handleNavigate(startDate); 
-            // post 후 화면에 내용 뿌려주기 필요.
-
-            // 일단 임시방편
-            window.location.reload();
-
-            // return response.data;
-    
+            if(response.data.code === 200 || response.data.code === 201) {
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: method === 'post' ? "등록 완료" : "수정 완료",
+                    text: method === 'post' ? "일정을 정상적으로 등록했어요!" : "일정을 정상적으로 수정했어요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(res => {
+                    window.location.reload();
+                });
+            } else if(response.data.code === 401) {
+                await refreshAccessToken(navigate);
+                postSchedule(url, method);
+            } else {
+                throw new Error('unknown Error');
+            } 
         } catch (error) {
             console.error("일정 등록 에러: ", error);
-            throw error; // 에러를 상위로 전파
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
     }
 
 
     // 그룹
-    const postGroupSchedule = async (url) => {
+    const postGroupSchedule = async (url, method) => {
+        const accessToken = localStorage.getItem('accessToken');
+
         try {
             let tmpAttachments = attachments;
             if(attachments[0] === null && attachments[1] === null) {
@@ -257,31 +346,46 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             }
 
             console.log('fd', formData);
-        
-            let response;
 
             console.log("edit?", editingSchedule);
 
-            // if(method === 'post') {
-                response = await axios.post(url, formData
-                    , {headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }}
-                );
-            // } else {
-            //     response = await axios.put(url, formData
-            //         , {headers: {
-            //             'Content-Type': 'multipart/form-data'
-            //         }}
-            //     );
-            // }
+            const response = await axios.post(url, formData
+                , {headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'multipart/form-data'
+                }}
+            );
     
             console.log(response);
 
-            window.location.reload();
+            if(response.data.code === 200 || response.data.code === 201) {
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: method === 'post' ? "등록 완료" : "수정 완료",
+                    text: method === 'post' ? "일정을 정상적으로 등록했어요!" : "일정을 정상적으로 수정했어요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(res => {
+                    window.location.reload();
+                });
+            } else if(response.data.code === 401) {
+                await refreshAccessToken(navigate);
+                postGroupSchedule(url, method);
+            } else {
+                throw new Error('unknown Error');
+            } 
     
         } catch (error) {
             console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
     }
 
@@ -326,7 +430,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                     {editingSchedule ? '수정' : '일정추가'}
                 </button>
                 {editingSchedule && (
-                    <button className="add-schedule-button" onClick={deleteSchedule}>삭제</button>
+                    <button className="add-schedule-button" onClick={handleDelete}>삭제</button>
                 )}
             </div>
         </React.Fragment>

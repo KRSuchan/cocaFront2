@@ -1,24 +1,158 @@
+import axios from 'axios';
 import React from 'react';
 import Swal from 'sweetalert2';
+import { refreshAccessToken } from '../security/TokenManage';
+import { useNavigate } from 'react-router-dom';
 
 const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, editingSchedule, selectedGroup }) => {
+    const navigate = useNavigate();
+    
+    const dateToString = () => {
+        const year = selectedDate.split('-')[0];
+        const month = selectedDate.split('-')[1];
+        const day = selectedDate.split('-')[2];
+
+        return `${year}년 ${month}월 ${day}일`;
+    }
+
+    const addToMySchedule = async (item) => {
+        const accessToken = localStorage.getItem('accessToken');
+        console.log(item);
+        try {
+            const config = {
+                headers: {
+                Authorization: `Bearer ${accessToken}`,
+                },
+                params: {
+                    groupId: item.groupId,
+                    scheduleId: item.scheduleId,
+                    memberId: localStorage.getItem('userId')
+                }
+            };
+
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + '/api/group-schedule/setGroupScheduleToPersonalScheduleReq', config);
+
+            console.log('heart', res);
+
+            if(res.data.code === 200) {
+                return true;
+            } else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                addToMySchedule(item);
+            } else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
     const handleHeartClick = (item) => { //✌️ 하트 클릭했을때, 개인일정으로 저장
         // 하트 클릭 핸들러 함수
         console.log(`${item.title}의 하트를 클릭했습니다.`);
+        Swal.fire({
+            icon: "question",
+            title: "일정 추가",
+            html: `좋아요를 누르고, 이 일정을 내 일정으로 가져올까요?`,
+            showCancelButton: true,
+            confirmButtonText: "확인",
+            cancelButtonText: "취소"
+        }).then(async (res) => {
+            if(res.isConfirmed) {
+                const res = await addToMySchedule(item);
+                if(res) {
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "추가 완료",
+                        text: "일정을 정상적으로 추가했어요!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+                else {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "에러!",
+                        text: "서버와의 통신에 문제가 생겼어요!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        })
+
     };
+
+    const addMyScehduleToGroup = async (date) => {
+        const accessToken = localStorage.getItem('accessToken');
+        try {
+            const config = {
+                headers: {
+                Authorization: `Bearer ${accessToken}`,
+                },
+                params: {
+                    groupId: schedule.groupId,
+                    date: date,
+                    memberId: localStorage.getItem('userId')
+                }
+            };
+
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + '/api/group-schedule/setPersonalScheduleToGroupScheduleReq', config);
+
+            console.log('ms2g', res);
+
+            if(res.data.code === 200) {
+                return true;
+            } else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                addMyScehduleToGroup(date);
+            } else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
 
     const handleImportMySchedule = () => {
         Swal.fire({
-            title: '내일정 가져오기',
-            text: `${selectedDate} 일자에 포함된 내 일정을 모두 가져옵니다`,
-            icon: 'info',
+            title: '내 일정 가져오기',
+            text: `${dateToString(selectedDate)}에 등록된 내 일정을 모두 가져올까요?`,
+            icon: 'question',
             showCancelButton: true,
             confirmButtonText: '확인',
             cancelButtonText: '취소'
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
                 // 확인 버튼을 눌렀을 때 실행할 핸들러
                 console.log(`${selectedDate} 일자에 포함된 내 일정을 가져옵니다.`);
+
+                const res = await addMyScehduleToGroup(selectedDate);
+
+                if(res) {
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "추가 완료",
+                        text: "일정을 정상적으로 추가했어요!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+                else {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "에러!",
+                        text: "서버와의 통신에 문제가 생겼어요!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
             }
         });
     };
@@ -44,7 +178,7 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
                                 <div className="schedule-location">{item.location}</div>
                                 {selectedGroup.groupId !== -1 ? (
                                     <div className="schedule-hearts" onClick={() => handleHeartClick(item)}>
-                                        ❤️ 123개
+                                        ❤️ {item.hearts}
                                     </div>
                                 ) : (
                                     <div className="schedule-privacy">{item.isPrivate ? '비공개일정🔒' : '공개일정🔓'}</div>
