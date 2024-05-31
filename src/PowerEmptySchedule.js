@@ -1,15 +1,17 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './css/PowerEmptySchedule.module.css';
 import { useNavigate } from 'react-router-dom';
-import { DatePicker, InputNumber, Select, Button, Input } from 'antd';
+import { DatePicker, InputNumber, Select, Button, Input, Modal, Tabs, List, Avatar } from 'antd';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import moment from 'moment';
 import koLocale from '@fullcalendar/core/locales/ko'; // 한국어 로케일 추가
 import { UserOutlined } from '@ant-design/icons'; // antd 아이콘 추가
+import Swal from 'sweetalert2'; // Swal 추가
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
+const { TabPane } = Tabs;
 
 const PowerEmptySchedule = () => {
     const navigate = useNavigate();
@@ -21,11 +23,57 @@ const PowerEmptySchedule = () => {
     const [emptySchedules, setEmptySchedules] = useState([]); // 빈일정
     const [members, setMembers] = useState([
         { id: 1, name: '아이유에오', photo: 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/202306/04/138bdfca-3e86-4c09-9632-d22df52a0484.jpg' },
-        { id: 2, name: '푸바오', photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg' },
+        { id: 2, name: '멤브레인', photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg' },
         { id: 3, name: '멤버 3', photo: '' },
         { id: 4, name: '멤버 4', photo: '' },
     ]); // 멤버 목록 상태 추가
     const [newMemberName, setNewMemberName] = useState(''); // 새 멤버 이름 입력을 위한 상태
+    const [isModalVisible, setIsModalVisible] = useState(false); // 모달 상태
+    const [friends, setFriends] = useState([]); // 친구 목록 상태
+    const [selectedFriend, setSelectedFriend] = useState(null); // 선택된 친구 상태
+    const [groups, setGroups] = useState([
+        { groupId: 11, groupName: "수정NAME", isAdmin: true },
+        { groupId: 13, groupName: "테스트그룹7", isAdmin: true }
+    ]); // 내가 가입한 그룹 목록
+    const [groupMembers, setGroupMembers] = useState([]); // 선택된 그룹의 멤버 목록
+    const [selectedGroup, setSelectedGroup] = useState(null); // 선택된 그룹
+
+    useEffect(() => {
+        // 친구 목록을 받아오는 함수
+        const fetchFriends = async () => {
+            const friendData = [
+                {
+                    friendId: 3,
+                    friendMemberId: "TESTID2",
+                    friendName: "TESTNAME2",
+                    friendProfileImagePath: "TESTURL2"
+                },
+                {
+                    friendId: 4,    
+                    friendMemberId: "TESTID3",
+                    friendName: "TESTNAME3",
+                    friendProfileImagePath: "TESTURL3"
+                }
+            ];
+            setFriends(friendData);
+        };
+
+        fetchFriends();
+    }, []);
+
+    useEffect(() => {
+        // 선택된 그룹의 멤버 목록을 받아오는 함수
+        const fetchGroupMembers = async () => {
+            if (selectedGroup) {
+                const membersData = [
+                    { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" }
+                ];
+                setGroupMembers(membersData);
+            }
+        };
+
+        fetchGroupMembers();
+    }, [selectedGroup]);
 
     const handleBack = () => {
         navigate(-1);
@@ -131,20 +179,64 @@ const PowerEmptySchedule = () => {
 
     // 새 멤버 추가 함수
     const handleAddMember = () => {
-        if (newMemberName) {
+        setIsModalVisible(true);
+    };
+
+    const handleModalOk = () => {
+        if (selectedFriend) {
             const newMember = {
                 id: members.length + 1,
-                name: newMemberName,
-                photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg'
+                name: selectedFriend.friendName,
+                photo: selectedFriend.friendProfileImagePath
             };
             setMembers([...members, newMember]);
-            setNewMemberName(''); // 입력 필드 초기화
+            setSelectedFriend(null); // 선택된 친구 초기화
         }
+        setIsModalVisible(false);
+    };
+
+    const handleModalCancel = () => {
+        setIsModalVisible(false);
     };
 
     // 멤버 삭제 함수
     const handleDeleteMember = (id) => {
         setMembers(members.filter(member => member.id !== id));
+    };
+
+    const handleEventClick = (info) => {
+        const event = info.event;
+        const startTime = moment(event.start).format('YYYY-MM-DD HH:mm');
+        const endTime = moment(event.end).format('YYYY-MM-DD HH:mm');
+
+        Swal.fire({
+            title: '일정 수정',
+            html: `
+                <input id="swal-input1" class="swal2-input" placeholder="제목" value="${event.title}">
+                <input id="swal-input2" class="swal2-input" placeholder="내용">
+                <input id="swal-input3" class="swal2-input" type="datetime-local" value="${startTime}">
+                <input id="swal-input4" class="swal2-input" type="datetime-local" value="${endTime}">
+            `,
+            focusConfirm: false,
+            preConfirm: () => {
+                const title = document.getElementById('swal-input1').value;
+                const content = document.getElementById('swal-input2').value;
+                const start = document.getElementById('swal-input3').value;
+                const end = document.getElementById('swal-input4').value;
+
+                if (title && start && end) {
+                    console.log('Title:', title);
+                    console.log('Content:', content);
+                    console.log('Start:', start);
+                    console.log('End:', end);
+
+                    // 멤버들의 id 출력
+                    members.forEach(member => {
+                        console.log('Member ID:', member.id);
+                    });
+                }
+            }
+        });
     };
 
     const ScheduleSearch = () => {
@@ -194,7 +286,6 @@ const PowerEmptySchedule = () => {
                 headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
-                    // right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear,customHourRange,customRange'
                     right: 'customHourRange,customRange'
                 }}
                 views={{
@@ -229,6 +320,7 @@ const PowerEmptySchedule = () => {
                 eventOverlap={false} // 이벤트 겹침 방지
                 resourceAreaWidth="20%"
                 slotMinWidth={100}
+                eventClick={handleEventClick} // 이벤트 클릭 핸들러 추가
             />
         );
     };
@@ -311,6 +403,61 @@ const PowerEmptySchedule = () => {
             <div className={styles.mainPanel} style={{ padding: '20px', backgroundColor: 'white', borderRadius: '15px', marginTop: '10px' }}>
                 <ScheduleSearch />
             </div>
+            <Modal title="멤버 추가" visible={isModalVisible} onOk={handleModalOk} onCancel={handleModalCancel} destroyOnClose>
+                <Tabs defaultActiveKey="1">
+                    <TabPane tab="친구선택" key="1">
+                        <List
+                            itemLayout="horizontal"
+                            dataSource={friends}
+                            renderItem={friend => (
+                                <List.Item
+                                    onClick={() => setSelectedFriend(friend)}
+                                    style={{ cursor: 'pointer', backgroundColor: selectedFriend?.friendId === friend.friendId ? '#e6f7ff' : 'transparent' }}
+                                >
+                                    <List.Item.Meta
+                                        avatar={<Avatar src={friend.friendProfileImagePath} icon={!friend.friendProfileImagePath && <UserOutlined />} />}
+                                        title={friend.friendName}
+                                    />
+                                </List.Item>
+                            )}
+                        />
+                    </TabPane>
+                    <TabPane tab="그룹멤버" key="2">
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ flex: 1, marginRight: '10px' }}>
+                                <List
+                                    itemLayout="horizontal"
+                                    dataSource={groups}
+                                    renderItem={group => (
+                                        <List.Item
+                                            onClick={() => setSelectedGroup(group)}
+                                            style={{ cursor: 'pointer', backgroundColor: selectedGroup?.groupId === group.groupId ? '#e6f7ff' : 'transparent' }}
+                                        >
+                                            <List.Item.Meta
+                                                title={group.groupName}
+                                            />
+                                        </List.Item>
+                                    )}
+                                />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <List
+                                    itemLayout="horizontal"
+                                    dataSource={groupMembers}
+                                    renderItem={member => (
+                                        <List.Item>
+                                            <List.Item.Meta
+                                                avatar={<Avatar src={member.profileImgPath} icon={!member.profileImgPath && <UserOutlined />} />}
+                                                title={member.userName}
+                                            />
+                                        </List.Item>
+                                    )}
+                                />
+                            </div>
+                        </div>
+                    </TabPane>
+                </Tabs>
+            </Modal>
         </div>
     );
 };
