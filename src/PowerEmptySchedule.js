@@ -22,7 +22,7 @@ const PowerEmptySchedule = () => {
     const [emptySchedules, setEmptySchedules] = useState([]); // 빈일정
 
     useEffect(() => {
-        // 일정 데이터를 받��오는 함수
+        // 일정 데이터를 받 
         const fetchSchedules = async () => {
             const data = [
                 [
@@ -63,7 +63,7 @@ const PowerEmptySchedule = () => {
                 { startTime: "2024-08-05", endTime: "2024-08-09" },
                 { startTime: "2024-08-06", endTime: "2024-08-10" }
             ];
-            setEmptySchedules([emptyData]); // 배열을 한 번 더 감싸서 배열의 배열로 만듭니다.
+            setEmptySchedules([emptyData]);
         };
 
         fetchEmptySchedules();
@@ -110,27 +110,49 @@ const PowerEmptySchedule = () => {
     };
 
     const ScheduleSearch = () => {
+        // 기존 일정 이벤트
         const events = schedules.flatMap((scheduleList, listIdx) =>
             scheduleList.map((schedule, idx) => ({
-                id: `${listIdx}-${idx}`,
+                id: `schedule-${listIdx}-${idx}`,
                 resourceId: `member-${listIdx}`,
                 start: schedule.startTime,
                 end: schedule.endTime,
-                title: `일정 ${listIdx + 1}-${idx + 1}`
+                title: `일정 ${listIdx + 1}-${idx + 1}`,
+                color: '#4A90E2' // 새로운 일정 색상 설정 (파란색)
             }))
         );
 
-        const resources = schedules.map((_, idx) => ({
-            id: `member-${idx}`,
-            title: `멤버 ${idx + 1}`
-        }));
+        // 빈 일정 이벤트 추가
+        const emptyEvents = emptySchedules[0] ? emptySchedules[0].map((empty, idx) => ({
+            id: `empty-${idx}`,
+            resourceId: 'zempty', // 모든 빈 일정은 같은 리소스 ID를 사용
+            start: empty.startTime,
+            end: empty.endTime,
+            title: `빈 일정 ${idx + 1}`,
+            color: '#E94E77' // 새로운 빈 일정 색상 설정 (분홍색)
+        })) : [];
+
+        // 기존 일정과 빈 일정을 합친 새로운 이벤트 배열
+        const combinedEvents = [...events, ...emptyEvents];
+
+        // 리소스 배열 수정 (빈 일정을 마지막에 추가)
+        const resources = [
+            ...schedules.map((_, idx) => ({
+                id: `member-${idx}`,
+                title: `멤버 ${idx + 1}`
+            })),
+            {
+                id: 'zempty',
+                title: '빈 일정'
+            }
+        ];
 
         return (
             <FullCalendar
                 ref={calendarRef}
                 plugins={[resourceTimelinePlugin]}
                 initialView="resourceTimelineDay"
-                locale={koLocale} // 한국어 로케일 설정
+                locale={koLocale}
                 headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
@@ -149,10 +171,10 @@ const PowerEmptySchedule = () => {
                     }
                 }}
                 resources={resources}
-                events={events}
+                events={combinedEvents}
                 editable={true}
                 selectable={true}
-                eventOverlap={false}
+                eventOverlap={false} // 이벤트 겹침 방지
                 resourceAreaWidth="20%"
                 slotMinWidth={100}
             />
