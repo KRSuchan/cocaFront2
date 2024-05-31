@@ -98,6 +98,16 @@ const PowerEmptySchedule = () => {
         }
     };
 
+    const handleReset = () => {
+        setSchedules([]);
+        setEmptySchedules([]);
+        setRange(null);
+        setNumber(1);
+        setUnit('일');
+        const calendarApi = calendarRef.current.getApi();
+        calendarApi.removeAllEvents();
+    };
+
     const ScheduleSearch = () => {
         // 기존 일정 이벤트
         const events = schedules.flatMap((scheduleList, listIdx) =>
@@ -107,11 +117,11 @@ const PowerEmptySchedule = () => {
                 start: schedule.startTime,
                 end: schedule.endTime,
                 title: `일정 ${listIdx + 1}-${idx + 1}`,
-                color: '#75818C' // 새로운 일정 색상 설정 (파란색)
+                color: '#4A90E2' // 새로운 일정 색상 설정 (파란색)
             }))
         );
 
-        // 빈 일정 ���벤트 추가
+        // 빈 일정 벤트 추가
         const emptyEvents = emptySchedules[0] ? emptySchedules[0].map((empty, idx) => ({
             id: `empty-${idx}`,
             resourceId: 'zempty', // 모든 빈 일정은 같은 리소스 ID를 사용
@@ -156,7 +166,12 @@ const PowerEmptySchedule = () => {
                     customRange: {
                         type: 'resourceTimeline',
                         duration: { months: 13 },
-                        buttonText: '범위'
+                        buttonText: '일자범위'
+                    },
+                    customHourRange: {
+                        type: 'resourceTimeline',
+                        duration: { weeks: 10 },
+                        buttonText: '시간범위'
                     }
                 }}
                 resources={resources}
@@ -202,6 +217,7 @@ const PowerEmptySchedule = () => {
                     찾기
                 </button>
                 <button 
+                    onClick={handleReset} 
                     style={{ 
                         background: 'linear-gradient(315deg, #A031E4, #E492F8)', 
                         color: 'white', 
