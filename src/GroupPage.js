@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './css/GroupPage.module.css';
 import { useNavigate } from 'react-router-dom';
 
 import SelectedGroupInfo from './groupComp/selectedGroupInfo';
 import CreateGroupPage from './groupComp/CreateGroupPage';
 import axios from 'axios';
+import { refreshAccessToken } from './security/TokenManage';
+import Swal from 'sweetalert2';
 
 //✨ 이 페이지 컴포넌트는 모두 groupComp에 있음
 //✨ 관심분야 설정 -> PM에게 확인 예정임
@@ -39,28 +41,97 @@ const GroupPage = () => {
     setSearchTerm(hashtag);
   };
 
+  const fetchTagList = async () => {
+    try {
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + "/api/tag/all");
+      console.log(res.data);
+
+      return res.data;
+    } catch(error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchTagList().then(res => {
+      if(res.code === 200) {
+        setHashtags(res.data.map(option => `#${option.name}`));
+      } else {
+        console.error('태그 정보 가져오기 실패');
+      }
+    })
+  }, []);
+
+  // TODO :: 페이지 검색 처리
   const searchGroupByTag = async(searchTag) => {
     const pageNum = 1;
+    const accessToken = localStorage.getItem('accessToken');
     try {
-      const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/find/tag/${searchTag}/pageNum/${pageNum}`);
-      console.log(res); 
-
-      return res.data.data;
+        const config = {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/find/tag/${searchTag}/pageNum/${pageNum}`, config);
+        console.log(res); 
+        
+        if(res.data.code === 200) {
+          return res.data.data;
+        }
+        else if(res.data.code === 401) {
+          await refreshAccessToken(navigate);
+          searchGroupByTag(searchTag);
+        }
+        else {
+          throw new Error('unknown Error');
+        }
+        
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "에러!",
+        text: "서버와의 통신에 문제가 생겼어요!",
+        showConfirmButton: false,
+        timer: 1500
+      });
       return null;
     }
   }
 
   const searchGroupByName = async(searchText) => {
     const pageNum = 1;
+    const accessToken = localStorage.getItem('accessToken');
     try {
-      const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/find/groupName/${searchText}/pageNum/${pageNum}`);
+      const config = {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+      };
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/find/groupName/${searchText}/pageNum/${pageNum}`, config);
       console.log(res);
 
-      return res.data.data;
+      if(res.data.code === 200) {
+        return res.data.data;
+      }
+      else if(res.data.code === 401) {
+        await refreshAccessToken(navigate);
+        searchGroupByName(searchText);
+      }
+      else {
+        throw new Error('unknown Error');
+      }
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "에러!",
+        text: "서버와의 통신에 문제가 생겼어요!",
+        showConfirmButton: false,
+        timer: 1500
+      });
       return null;
     }
   }
@@ -135,14 +206,14 @@ const GroupPage = () => {
         {/* 그룹 목록 */}
         <div className={styles.groupList}>
           {groups.map((group, index) => (
-       <div key={index} className={styles.groupItem} onClick={() => handleGroupSelect(group)}>
-            <span className={styles.groupName}>{group.name}</span>
-              <span className={styles.memberCount}>{group.memberCount}명</span>
-            </div>
-          ))}
+          <div key={index} className={styles.groupItem} onClick={() => handleGroupSelect(group)}>
+                <span className={styles.groupName}>{group.name}</span>
+                  <span className={styles.memberCount}>{group.memberCount}명</span>
+                </div>
+              ))}
+          </div>
+          <button className={styles.groupCreateButton} onClick={handleCreate}>{createGroupPage? "닫기" : "생성"}</button>
         </div>
-        <button className={styles.groupCreateButton} onClick={handleCreate}>{createGroupPage? "닫기" : "생성"}</button>
-      </div>
       <div className={styles.rightPanel}>
 
         {/* 우측 판넬의 내용 */}

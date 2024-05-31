@@ -65,6 +65,8 @@ const SettingPage = () => {
     };
 
     const updateMember = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+
         try {
             let data = userInfo;
 
@@ -79,14 +81,38 @@ const SettingPage = () => {
                 console.log("data", data);
             }
 
-            const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/memberInfoUpdateReq", data);
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/memberInfoUpdateReq", data, config);
             console.log(res);
 
-            state.password = data.password;
-
-            setUserInfo({...userInfo, password: ''});
+            if(res.data.code === 200) {
+                state.password = data.password;
+                setUserInfo({...userInfo, password: ''});
+                return true;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                updateMember();
+            }
+            else {
+                // throw new Error('unknown Error');
+                return false;
+            }
         } catch (error) {
             console.log(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
     }
 
@@ -101,15 +127,25 @@ const SettingPage = () => {
             cancelButtonText: "취소"
         }).then(async (res) => {
             if(res.isConfirmed) {
-                await updateMember();
+                const res = await updateMember();
 
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "정상적으로 변경되었어요!",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+                if(res) {
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "정상적으로 변경되었어요!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        html: `변경 중 오류가 발생했어요!<br>잠시 후, 다시 한 번 시도해주세요!`,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
             }
             else {
                 Swal.fire({

@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
 import styles from '../css/GroupPage.module.css';
 import axios from 'axios';
+import { checkPassword, refreshAccessToken } from '../security/TokenManage';
+import Swal from 'sweetalert2';
 
 const EditGroupPage = () => {
   const { groupId } = useParams();
@@ -14,20 +16,43 @@ const EditGroupPage = () => {
     // TODO: 백엔드 API 호출 로직 구현
     const data = {
       member: {
-        id: localStorage.getItem("userId"),
-        password: "a"
+        id: localStorage.getItem("userId")
+        // password: "a"
       },
       group: {
         id: groupId
       }
     };
 
+    const accessToken = localStorage.getItem('accessToken');
+
     try {
-      const res = await axios.post(process.env.REACT_APP_SERVER_URL + `/api/group/admin`, data);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      const res = await axios.post(process.env.REACT_APP_SERVER_URL + `/api/group/admin`, data, config);
       console.log(res);
-      return res.data;
+
+      if(res.data.code === 200) {
+        return res.data;
+      } else if (res.data.code === 401) {
+        await refreshAccessToken(navigate);
+        fetchGroupDetails(groupId);
+      } else {
+        throw new Error('unknown Error');
+      }
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "에러!",
+        text: "서버와의 통신에 문제가 생겼어요!",
+        showConfirmButton: false,
+        timer: 1500
+    });
       return null;
     }
   };
@@ -119,18 +144,90 @@ const EditGroupPage = () => {
     // navigate(-1);
   };
 
-  const handleDelete = async () => {
+  const deleteGroup = async () => {
+    const accessToken = localStorage.getItem('accessToken');
+
     try {
-      const res = await axios.delete(process.env.REACT_APP_SERVER_URL + `/api/group/delete?adminId=${localStorage.getItem("userId")}&groupId=${groupId}`);
-      console.log('del', res);
+      const config = {
+          headers: {
+              Authorization: `Bearer ${accessToken}`,
+          },
+      };
 
-      navigate(-1);
+      const res = await axios.delete(process.env.REACT_APP_SERVER_URL + `/api/group/delete?adminId=${localStorage.getItem("userId")}&groupId=${groupId}`, config);
 
-      return res;
+      if(res.data.code === 200) {
+        return true;
+      }
+      else if(res.data.code === 401) {
+        await refreshAccessToken(navigate);
+        deleteGroup();
+      }
+      else {
+        throw new Error('unknown Error');
+      }
+
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "에러!",
+        text: "서버와의 통신에 문제가 생겼어요!",
+        showConfirmButton: false,
+        timer: 1500
+      });
 
+      return false;
     }
+  }
+
+  const handleDelete = async () => {
+    Swal.fire({
+      icon: "warning",
+      title: "그룹 삭제",
+      html: `정말로 그룹을 삭제하시겠나요?<br>삭제 시, 모든 정보가 사라져요!`,
+      input: 'password',
+      inputPlaceholder: '로그인 비밀번호를 입력해주세요!',
+      showCancelButton: true,
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+      showLoaderOnConfirm: true,
+      preConfirm: async (password) => {
+        const res = await checkPassword(navigate, password);
+        if(!res) {
+          return Swal.showValidationMessage('비밀번호가 달라요!');
+        }
+
+        return res;
+      }
+    }).then(async (res) => {
+      if(res.isConfirmed) {
+        const response = await deleteGroup();
+
+        if(response) {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "삭제완료",
+            text: "그룹이 정상적으로 삭제되었어요!",
+            showConfirmButton: false,
+            timer: 1500
+          }).then(res => {
+            navigate("/main");
+            window.location.reload();
+          });
+        }
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "info",
+          title: "삭제를 취소했어요!",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
+    })
   };
 
   const handleCancel = () => {
