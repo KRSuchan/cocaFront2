@@ -1,20 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './css/PowerEmptySchedule.module.css';
 import { useNavigate } from 'react-router-dom';
-import { Tabs, DatePicker, InputNumber, Select } from 'antd';
+import { DatePicker, InputNumber, Select } from 'antd';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import moment from 'moment';
 import koLocale from '@fullcalendar/core/locales/ko'; // 한국어 로케일 추가
 
-const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const PowerEmptySchedule = () => {
     const navigate = useNavigate();
     const calendarRef = useRef(null);
-    const [activeTab, setActiveTab] = useState('scheduleSearch'); // 'scheduleSearch' 또는 'timeSearch'
+    // const [activeTab, setActiveTab] = useState('scheduleSearch'); // 'scheduleSearch' 또는 'timeSearch' // 탭 관련 상태 주석 처리
     const [number, setNumber] = useState(1); // 숫자 (N)
     const [unit, setUnit] = useState('일'); // '일', '시간'
     const [range, setRange] = useState(null); //시작일 끝일
@@ -73,9 +72,9 @@ const PowerEmptySchedule = () => {
         navigate(-1);
     };
 
-    const handleTabChange = (key) => {
-        setActiveTab(key);
-    };
+    // const handleTabChange = (key) => { // 탭 관련 함수 주석 처리
+    //     setActiveTab(key);
+    // };
 
     const handleNumberChange = (value) => {
         setNumber(value);
@@ -191,30 +190,30 @@ const PowerEmptySchedule = () => {
                 <RangePicker getPopupContainer={trigger => trigger.parentNode} onChange={handleRangeChange} />
                 <InputNumber min={1} max={10} value={number} onChange={handleNumberChange} style={{ marginLeft: '20px' }} />
                 <Select value={unit} onChange={handleUnitChange} getPopupContainer={trigger => trigger.parentNode} style={{ width: '100px', marginLeft: '20px' }}>
-                    {activeTab === 'scheduleSearch' ? (
+                    {/* {activeTab === 'scheduleSearch' ? ( // 탭 관련 조건 주석 처리 */}
                         <Option value="일">일</Option>
-                    ) : (
+                    {/* ) : (
                         <>
                             <Option value="시간">시간</Option>
                         </>
-                    )}
+                    )} */}
                 </Select>
                 <button onClick={handleSearch} style={{ backgroundColor: '#D06B74', color: 'white', marginLeft: '20px', padding: '5px 10px', border: 'none', borderRadius: '5px' }}>찾기</button>
                 <button style={{ backgroundColor: '#D06B74', color: 'white', marginLeft: '10px', padding: '5px 10px', border: 'none', borderRadius: '5px' }}>초기화</button>
                 <button style={{ backgroundColor: '#D06B74', color: 'white', marginLeft: '10px', padding: '5px 10px', border: 'none', borderRadius: '5px' }}>일정추가</button>
             </div>
-            <Tabs activeKey={activeTab} onChange={handleTabChange} className={styles.tabContainer} tabBarStyle={{ fontFamily: 'Noto Sans KR' }}>
-                <TabPane tab={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>일자찾기</span>} key="scheduleSearch">
+            {/* <Tabs activeKey={activeTab} onChange={handleTabChange} className={styles.tabContainer} tabBarStyle={{ fontFamily: 'Noto Sans KR' }}> // 탭 관련 컴포넌트 주석 처리 */}
+                {/* <TabPane tab={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>일자찾기</span>} key="scheduleSearch"> */}
                     <div className={styles.mainPanel} style={{ height: '70vh' }}>
                         <ScheduleSearch />
                     </div>
-                </TabPane>
-                <TabPane tab={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>시간찾기</span>} key="timeSearch">
-                    <div className={styles.mainPanel} style={{ height: '70vh' }}>
+                {/* </TabPane> */}
+                {/* <TabPane tab={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>시간찾기</span>} key="timeSearch"> */}
+                    {/* <div className={styles.mainPanel} style={{ height: '70vh' }}> */}
                         {/* 시간찾기 내용 */}
-                    </div>
-                </TabPane>
-            </Tabs>
+                    {/* </div> */}
+                {/* </TabPane> */}
+            {/* </Tabs> */}
             
         </div>
     );

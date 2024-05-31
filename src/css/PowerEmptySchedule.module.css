@@ -19,7 +19,7 @@
 .title {
     font-size: 35pt;
     font-weight: 400;
-    color: #41ADCA;
+    color: #A031E4;
     font-family: 'Black Han Sans';
     line-height: 1; /* 타이틀 높이 줄이기 */
 }
@@ -28,7 +28,7 @@
     font-size: 35pt;
     font-weight: bold;
     margin-right: 20px;
-    color: #41ADCA;
+    color: #A031E4;
     background-color: #DEDEDE;
     border-radius: 10px;
     border-width: 0;
@@ -49,6 +49,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 10px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 15px;
 }
 
