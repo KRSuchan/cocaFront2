@@ -35,7 +35,7 @@ const PowerEmptySchedule = () => {
         setRange(dates);
     };
 
-    const handleSearch = async () => {
+    const handleSearch = async () => { //✌️찾기버튼 눌렀을떄!
         // 일정 데이터를 받
         const fetchSchedules = async () => {
             const data = [
@@ -88,13 +88,26 @@ const PowerEmptySchedule = () => {
             calendarApi.gotoDate(startDate); // 선택된 범위의 시작 날짜로 이동
 
             // FullCalendar의 view를 업데이트
-            calendarApi.changeView('customRange', {
-                duration: { months: duration },
-                visibleRange: {
-                    start: startDate,
-                    end: endDate
-                }
-            });
+            if (unit === '일') {
+                calendarApi.changeView('customRange', {
+                    duration: { months: 13 },
+                    visibleRange: {
+                        start: startDate,
+                        end: endDate
+                    }
+                });
+            } else if (unit === '시간') {
+                calendarApi.changeView('customHourRange', {
+                    duration: { hours: 430 }, // 49주를 일수로 변환
+                    visibleRange: {
+                        start: startDate,
+                    },
+                    slotLabelFormat: [
+                        { month: 'short', day: 'numeric', weekday: 'short' }, // 상위 레벨: 월, 일, 요일
+                        { hour: '2-digit', minute: '2-digit', hour12: false } // 하위 레벨: 시간
+                    ]
+                });
+            }
         }
     };
 
@@ -128,7 +141,7 @@ const PowerEmptySchedule = () => {
             start: empty.startTime,
             end: empty.endTime,
             title: `빈 일정 ${idx + 1}`,
-            color: '#E94E77' // 새로운 빈 일정 색상 설정 (분홍색)
+            color: '#E94E77' // 새로운 빈 일정 색상 설 (분홍색)
         })) : [];
 
         // 기존 일정과 빈 일정을 합친 새로운 이벤트 배열
@@ -155,7 +168,7 @@ const PowerEmptySchedule = () => {
                 headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear,resourceTimelineQuarter,customRange'
+                    right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear,customHourRange,customRange'
                 }}
                 views={{
                     resourceTimelineYear: {
@@ -166,12 +179,20 @@ const PowerEmptySchedule = () => {
                     customRange: {
                         type: 'resourceTimeline',
                         duration: { months: 13 },
-                        buttonText: '일자범위'
+                        buttonText: '일자범위',
+                        slotLabelFormat: [
+                            { month: 'short' }, // 상위 레벨: 월, 일, 요일
+                            { day: 'numeric' }, // 하위 레벨: 일
+                        ]
                     },
                     customHourRange: {
                         type: 'resourceTimeline',
-                        duration: { weeks: 10 },
-                        buttonText: '시간범위'
+                        duration: { hours: 430 }, 
+                        buttonText: '시간범위',
+                        slotLabelFormat: [
+                            { month: 'short', day: 'numeric', weekday: 'short' }, // 상위 레벨: 월, 일, 요일
+                            { hour: '2-digit', minute: '2-digit', hour12: false } // 하위 레벨: 시간
+                        ]
                     }
                 }}
                 resources={resources}
