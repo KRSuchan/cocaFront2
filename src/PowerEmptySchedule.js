@@ -22,7 +22,7 @@ const PowerEmptySchedule = () => {
     const [emptySchedules, setEmptySchedules] = useState([]); // 빈일정
 
     useEffect(() => {
-        // 일정 데이터를 받아오는 함수
+        // 일정 데이터를 받��오는 함수
         const fetchSchedules = async () => {
             const data = [
                 [
@@ -92,8 +92,20 @@ const PowerEmptySchedule = () => {
     const handleSearch = () => {
         if (range && range.length === 2) {
             const calendarApi = calendarRef.current.getApi();
-            calendarApi.gotoDate(range[0].toDate()); // 선택된 범위의 시작 날짜로 이동
-            calendarApi.changeView('resourceTimelineYear'); // 뷰 타입만 변경
+            const startDate = range[0].toDate();
+            const endDate = range[1].toDate();
+            const duration = moment(endDate).diff(moment(startDate), 'months') + 1; // 월 단위로 계산
+
+            calendarApi.gotoDate(startDate); // 선택된 범위의 시작 날짜로 이동
+
+            // FullCalendar의 view를 업데이트
+            calendarApi.changeView('customRange', {
+                duration: { months: duration },
+                visibleRange: {
+                    start: startDate,
+                    end: endDate
+                }
+            });
         }
     };
 
@@ -122,7 +134,7 @@ const PowerEmptySchedule = () => {
                 headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear,resourceTimelineQuarter'
+                    right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear,resourceTimelineQuarter,customRange'
                 }}
                 views={{
                     resourceTimelineYear: {
@@ -130,10 +142,10 @@ const PowerEmptySchedule = () => {
                         duration: { years: 1 },
                         buttonText: '연간'
                     },
-                    resourceTimelineQuarter: {
+                    customRange: {
                         type: 'resourceTimeline',
-                        duration: { months: 3 },
-                        buttonText: '분기별'
+                        duration: { months: 13 },
+                        buttonText: '범위'
                     }
                 }}
                 resources={resources}
@@ -187,6 +199,3 @@ const PowerEmptySchedule = () => {
 };
 
 export default PowerEmptySchedule;
-
-
-
