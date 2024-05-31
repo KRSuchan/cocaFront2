@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import styles from './css/PowerEmptySchedule.module.css';
 import { useNavigate } from 'react-router-dom';
 import { DatePicker, InputNumber, Select } from 'antd';
@@ -13,15 +13,30 @@ const { Option } = Select;
 const PowerEmptySchedule = () => {
     const navigate = useNavigate();
     const calendarRef = useRef(null);
-    // const [activeTab, setActiveTab] = useState('scheduleSearch'); // 'scheduleSearch' 또는 'timeSearch' // 탭 관련 상태 주석 처리
     const [number, setNumber] = useState(1); // 숫자 (N)
     const [unit, setUnit] = useState('일'); // '일', '시간'
     const [range, setRange] = useState(null); //시작일 끝일
     const [schedules, setSchedules] = useState([]);
     const [emptySchedules, setEmptySchedules] = useState([]); // 빈일정
 
-    useEffect(() => {
-        // 일정 데이터를 받 
+    const handleBack = () => {
+        navigate(-1);
+    };
+
+    const handleNumberChange = (value) => {
+        setNumber(value);
+    };
+
+    const handleUnitChange = (value) => {
+        setUnit(value);
+    };
+
+    const handleRangeChange = (dates) => {
+        setRange(dates);
+    };
+
+    const handleSearch = async () => {
+        // 일정 데이터를 받
         const fetchSchedules = async () => {
             const data = [
                 [
@@ -49,10 +64,6 @@ const PowerEmptySchedule = () => {
             setSchedules(data);
         };
 
-        fetchSchedules();
-    }, []);
-
-    useEffect(() => {
         // 빈일정 데이터를 받아오는 함수
         const fetchEmptySchedules = async () => {
             const emptyData = [
@@ -65,30 +76,9 @@ const PowerEmptySchedule = () => {
             setEmptySchedules([emptyData]);
         };
 
-        fetchEmptySchedules();
-    }, []);
+        await fetchSchedules();
+        await fetchEmptySchedules();
 
-    const handleBack = () => {
-        navigate(-1);
-    };
-
-    // const handleTabChange = (key) => { // 탭 관련 함수 주석 처리
-    //     setActiveTab(key);
-    // };
-
-    const handleNumberChange = (value) => {
-        setNumber(value);
-    };
-
-    const handleUnitChange = (value) => {
-        setUnit(value);
-    };
-
-    const handleRangeChange = (dates) => {
-        setRange(dates);
-    };
-
-    const handleSearch = () => {
         if (range && range.length === 2) {
             const calendarApi = calendarRef.current.getApi();
             const startDate = range[0].toDate();
@@ -117,11 +107,11 @@ const PowerEmptySchedule = () => {
                 start: schedule.startTime,
                 end: schedule.endTime,
                 title: `일정 ${listIdx + 1}-${idx + 1}`,
-                color: '#4A90E2' // 새로운 일정 색상 설정 (파란색)
+                color: '#75818C' // 새로운 일정 색상 설정 (파란색)
             }))
         );
 
-        // 빈 일정 이벤트 추가
+        // 빈 일정 ���벤트 추가
         const emptyEvents = emptySchedules[0] ? emptySchedules[0].map((empty, idx) => ({
             id: `empty-${idx}`,
             resourceId: 'zempty', // 모든 빈 일정은 같은 리소스 ID를 사용
@@ -190,31 +180,48 @@ const PowerEmptySchedule = () => {
                 <RangePicker getPopupContainer={trigger => trigger.parentNode} onChange={handleRangeChange} />
                 <InputNumber min={1} max={10} value={number} onChange={handleNumberChange} style={{ marginLeft: '20px' }} />
                 <Select value={unit} onChange={handleUnitChange} getPopupContainer={trigger => trigger.parentNode} style={{ width: '100px', marginLeft: '20px' }}>
-                    {/* {activeTab === 'scheduleSearch' ? ( // 탭 관련 조건 주석 처리 */}
-                        <Option value="일">일</Option>
-                    {/* ) : (
-                        <>
-                            <Option value="시간">시간</Option>
-                        </>
-                    )} */}
+                    <Option value="일">일</Option>
+                    <Option value="시간">시간</Option>
                 </Select>
-                <button onClick={handleSearch} style={{ backgroundColor: '#D06B74', color: 'white', marginLeft: '20px', padding: '5px 10px', border: 'none', borderRadius: '5px' }}>찾기</button>
-                <button style={{ backgroundColor: '#D06B74', color: 'white', marginLeft: '10px', padding: '5px 10px', border: 'none', borderRadius: '5px' }}>초기화</button>
-                <button style={{ backgroundColor: '#D06B74', color: 'white', marginLeft: '10px', padding: '5px 10px', border: 'none', borderRadius: '5px' }}>일정추가</button>
+                <button 
+                    onClick={handleSearch} 
+                    style={{ 
+                        background: 'linear-gradient(315deg, #A031E4, #E492F8)', 
+                        color: 'white', 
+                        marginLeft: '20px', 
+                        padding: '5px 10px', 
+                        border: 'none', 
+                        borderRadius: '5px', 
+                        transition: 'background 0.3s, transform 0.3s' 
+                    }}
+                    onMouseEnter={(e) => e.target.style.background = 'linear-gradient(315deg, #A031E4, #D482F8)'}
+                    onMouseLeave={(e) => e.target.style.background = 'linear-gradient(315deg, #A031E4, #E492F8)'}
+                    onMouseDown={(e) => e.target.style.transform = 'scale(0.95)'}
+                    onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                    찾기
+                </button>
+                <button 
+                    style={{ 
+                        background: 'linear-gradient(315deg, #A031E4, #E492F8)', 
+                        color: 'white', 
+                        marginLeft: '10px', 
+                        padding: '5px 10px', 
+                        border: 'none', 
+                        borderRadius: '5px', 
+                        transition: 'background 0.3s, transform 0.3s' 
+                    }}
+                    onMouseEnter={(e) => e.target.style.background = 'linear-gradient(315deg, #A031E4, #D482F8)'}
+                    onMouseLeave={(e) => e.target.style.background = 'linear-gradient(315deg, #A031E4, #E492F8)'}
+                    onMouseDown={(e) => e.target.style.transform = 'scale(0.95)'}
+                    onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                    초기화
+                </button>
             </div>
-            {/* <Tabs activeKey={activeTab} onChange={handleTabChange} className={styles.tabContainer} tabBarStyle={{ fontFamily: 'Noto Sans KR' }}> // 탭 관련 컴포넌트 주석 처리 */}
-                {/* <TabPane tab={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>일자찾기</span>} key="scheduleSearch"> */}
-                    <div className={styles.mainPanel} style={{ height: '70vh' }}>
-                        <ScheduleSearch />
-                    </div>
-                {/* </TabPane> */}
-                {/* <TabPane tab={<span style={{ fontSize: '18px', fontWeight: 'bold' }}>시간찾기</span>} key="timeSearch"> */}
-                    {/* <div className={styles.mainPanel} style={{ height: '70vh' }}> */}
-                        {/* 시간찾기 내용 */}
-                    {/* </div> */}
-                {/* </TabPane> */}
-            {/* </Tabs> */}
-            
+            <div className={styles.mainPanel} style={{ padding: '20px', backgroundColor: 'white', borderRadius: '15px', marginTop: '20px' }}>
+                <ScheduleSearch />
+            </div>
         </div>
     );
 };
