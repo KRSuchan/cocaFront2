@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
 import styles from './css/PowerEmptySchedule.module.css';
 import { useNavigate } from 'react-router-dom';
-import { DatePicker, InputNumber, Select } from 'antd';
+import { DatePicker, InputNumber, Select, Button, Input } from 'antd';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import moment from 'moment';
 import koLocale from '@fullcalendar/core/locales/ko'; // 한국어 로케일 추가
+import { UserOutlined } from '@ant-design/icons'; // antd 아이콘 추가
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -18,6 +19,13 @@ const PowerEmptySchedule = () => {
     const [range, setRange] = useState(null); //시작일 끝일
     const [schedules, setSchedules] = useState([]);
     const [emptySchedules, setEmptySchedules] = useState([]); // 빈일정
+    const [members, setMembers] = useState([
+        { id: 1, name: '아이유에오', photo: 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/202306/04/138bdfca-3e86-4c09-9632-d22df52a0484.jpg' },
+        { id: 2, name: '푸바오', photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg' },
+        { id: 3, name: '멤버 3', photo: '' },
+        { id: 4, name: '멤버 4', photo: '' },
+    ]); // 멤버 목록 상태 추가
+    const [newMemberName, setNewMemberName] = useState(''); // 새 멤버 이름 입력을 위한 상태
 
     const handleBack = () => {
         navigate(-1);
@@ -35,20 +43,20 @@ const PowerEmptySchedule = () => {
         setRange(dates);
     };
 
-    const handleSearch = async () => { //✌️찾기버튼 눌렀을떄!
+    const handleSearch = async () => { //✌️찾기버튼 눌렀을떄! unit에서 일인지 시간인 확인해야 함. 
         // 일정 데이터를 받
         const fetchSchedules = async () => {
             const data = [
                 [
-                    { startTime: "2024-05-01", endTime: "2024-07-01" },
-                    { startTime: "2024-07-11", endTime: "2024-08-01" },
+                    { startTime: "2024-05-01", endTime: "2024-07-02" },
+                    { startTime: "2024-07-10", endTime: "2024-08-02" },
                     { startTime: "2024-09-21", endTime: "2024-12-31" },
                     { startTime: "2025-01-01", endTime: "2025-03-31" },
                     { startTime: "2025-04-01", endTime: "2025-06-30" }
                 ],
                 [
                     { startTime: "2024-06-01", endTime: "2024-08-01" },
-                    { startTime: "2024-08-11", endTime: "2024-10-20" },
+                    { startTime: "2024-08-10", endTime: "2024-10-20" },
                     { startTime: "2024-10-21", endTime: "2025-01-31" },
                     { startTime: "2025-02-01", endTime: "2025-04-30" },
                     { startTime: "2025-05-01", endTime: "2025-07-30" }
@@ -103,7 +111,7 @@ const PowerEmptySchedule = () => {
                         start: startDate,
                     },
                     slotLabelFormat: [
-                        { month: 'short', day: 'numeric', weekday: 'short' }, // 상위 레벨: 월, 일, 요일
+                        { month: 'short', day: 'numeric', weekday: 'short' }, // 상위 레벨: 월, , 요일
                         { hour: '2-digit', minute: '2-digit', hour12: false } // 하위 레벨: 시간
                     ]
                 });
@@ -121,6 +129,24 @@ const PowerEmptySchedule = () => {
         calendarApi.removeAllEvents();
     };
 
+    // 새 멤버 추가 함수
+    const handleAddMember = () => {
+        if (newMemberName) {
+            const newMember = {
+                id: members.length + 1,
+                name: newMemberName,
+                photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg'
+            };
+            setMembers([...members, newMember]);
+            setNewMemberName(''); // 입력 필드 초기화
+        }
+    };
+
+    // 멤버 삭제 함수
+    const handleDeleteMember = (id) => {
+        setMembers(members.filter(member => member.id !== id));
+    };
+
     const ScheduleSearch = () => {
         // 기존 일정 이벤트
         const events = schedules.flatMap((scheduleList, listIdx) =>
@@ -130,7 +156,7 @@ const PowerEmptySchedule = () => {
                 start: schedule.startTime,
                 end: schedule.endTime,
                 title: `일정 ${listIdx + 1}-${idx + 1}`,
-                color: '#4A90E2' // 새로운 일정 색상 설정 (파란색)
+                color: '#4A90E2' // 새로 일정 색상 설정 (파란)
             }))
         );
 
@@ -168,7 +194,8 @@ const PowerEmptySchedule = () => {
                 headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear,customHourRange,customRange'
+                    // right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear,customHourRange,customRange'
+                    right: 'customHourRange,customRange'
                 }}
                 views={{
                     resourceTimelineYear: {
@@ -255,8 +282,33 @@ const PowerEmptySchedule = () => {
                 >
                     초기화
                 </button>
+                
             </div>
-            <div className={styles.mainPanel} style={{ padding: '20px', backgroundColor: 'white', borderRadius: '15px', marginTop: '20px' }}>
+            <div className={styles.subPanel} style={{ display: 'flex', overflowX: 'auto', justifyContent: 'flex-start', height: '40px' }}>
+                <Button onClick={handleAddMember} style={{ marginRight: '10px' }}>멤버 추가</Button>
+                {members.map(member => (
+                    <div key={member.id} style={{ display: 'flex', alignItems: 'center', marginRight: '10px' }}>
+                        {member.photo ? (
+                            <img 
+                                src={member.photo}
+                                alt={member.name} 
+                                style={{ borderRadius: '50%', marginRight: '10px', width: '40px', height: '40px' }}
+                            />
+                        ) : (
+                            <UserOutlined style={{ fontSize: '40px', marginRight: '10px' }} /> // 기본 아이콘 사용
+                        )}
+                        <span 
+                            style={{ cursor: 'pointer' }}
+                            onMouseEnter={(e) => e.target.style.color = 'red'}
+                            onMouseLeave={(e) => e.target.style.color = 'black'}
+                            onClick={() => handleDeleteMember(member.id)}
+                        >
+                            {member.name}
+                        </span>
+                    </div>
+                ))}
+            </div>
+            <div className={styles.mainPanel} style={{ padding: '20px', backgroundColor: 'white', borderRadius: '15px', marginTop: '10px' }}>
                 <ScheduleSearch />
             </div>
         </div>
