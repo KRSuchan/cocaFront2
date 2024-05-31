@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import styles from '../css/GroupPage.module.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { refreshAccessToken } from '../security/TokenManage';
+import Swal from 'sweetalert2';
 
 const CreateGroupPage = () => {
   const [groupName, setGroupName] = useState('');
@@ -44,12 +46,7 @@ const CreateGroupPage = () => {
     });
   }, []);
 
-  const handleCreateGroup = async () => { //✅ 그룹생성버튼 눌렀을때
-    if (isPrivate && !privatePassword) {
-      setIsPasswordRequired(true);
-      return;
-    }
-
+  const createGroupAxios = async () => {
     const groupData = {
       member: {
         id: localStorage.getItem("userId") // TODO : 관리자 두명? -> 일단 처음 생성 시에는 생성하는 본인이 관리자가 되는 게 맞을 듯.
@@ -75,15 +72,57 @@ const CreateGroupPage = () => {
         })
     };
 
+    const accessToken = localStorage.getItem('accessToken');
+
     try {
-      const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/group/add", groupData);
-      if(res.data.code === 201) {
-        navigate("/main");
-      }
+      const config = {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+      };
+      const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/group/add", groupData, config);
+
       console.log(res);
+
+      if(res.data.code === 201) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "생성 완료",
+          text: "성공적으로 그룹을 생성했어요!",
+          showConfirmButton: false,
+          timer: 1500
+        }).then(res => {
+          navigate("/main");
+        });
+      }
+      else if(res.data.code === 401) {
+        await refreshAccessToken(navigate);
+        createGroupAxios();
+      }
+      else {
+        throw new Error('unknown Error');
+      }
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "에러!",
+        text: "서버와의 통신에 문제가 생겼어요!",
+        showConfirmButton: false,
+        timer: 1500
+    });
     }
+  }
+
+  const handleCreateGroup = async () => { //✅ 그룹생성버튼 눌렀을때
+    if (isPrivate && !privatePassword) {
+      setIsPasswordRequired(true);
+      return;
+    }
+
+    createGroupAxios();
   };
 
   const handleInterestChange = (index, value) => {
