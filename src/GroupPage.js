@@ -7,10 +7,8 @@ import CreateGroupPage from './groupComp/CreateGroupPage';
 import axios from 'axios';
 import { refreshAccessToken } from './security/TokenManage';
 import Swal from 'sweetalert2';
-
-//✨ 이 페이지 컴포넌트는 모두 groupComp에 있음
-//✨ 관심분야 설정 -> PM에게 확인 예정임
-//✨ 
+import { SearchOutlined } from '@ant-design/icons'; // antd 아이콘 추가
+import Pagination from '@mui/material/Pagination'; // MUI Pagination 추가
 
 const GroupPage = () => {
 
@@ -31,6 +29,10 @@ const GroupPage = () => {
   // 해시태그 상태
   const [hashtags, setHashtags] = useState(['#IT', '#스터디', '#웹개발', '#파이썬']);
   const [selectedGroup, setSelectedGroup] = useState(null); //목록에서 선택된 그룹
+
+  // 페이지네이션 상태
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const handleBackClick = () => { // 뒤로가기 버튼
     navigate("/main");
@@ -63,8 +65,7 @@ const GroupPage = () => {
   }, []);
 
   // TODO :: 페이지 검색 처리
-  const searchGroupByTag = async(searchTag) => {
-    const pageNum = 1;
+  const searchGroupByTag = async(searchTag, pageNum) => {
     const accessToken = localStorage.getItem('accessToken');
     try {
         const config = {
@@ -76,11 +77,12 @@ const GroupPage = () => {
         console.log(res); 
         
         if(res.data.code === 200) {
+          setTotalPages(res.data.totalPages);
           return res.data.data;
         }
         else if(res.data.code === 401) {
           await refreshAccessToken(navigate);
-          searchGroupByTag(searchTag);
+          searchGroupByTag(searchTag, pageNum);
         }
         else {
           throw new Error('unknown Error');
@@ -100,8 +102,7 @@ const GroupPage = () => {
     }
   }
 
-  const searchGroupByName = async(searchText) => {
-    const pageNum = 1;
+  const searchGroupByName = async(searchText, pageNum) => {
     const accessToken = localStorage.getItem('accessToken');
     try {
       const config = {
@@ -113,11 +114,12 @@ const GroupPage = () => {
       console.log(res);
 
       if(res.data.code === 200) {
+        setTotalPages(res.data.totalPages);
         return res.data.data;
       }
       else if(res.data.code === 401) {
         await refreshAccessToken(navigate);
-        searchGroupByName(searchText);
+        searchGroupByName(searchText, pageNum);
       }
       else {
         throw new Error('unknown Error');
@@ -136,16 +138,16 @@ const GroupPage = () => {
     }
   }
 
-  const searchGroup = async() => {
+  const searchGroup = async(pageNum = 1) => {
     let res;
 
     if(searchTerm.includes("#")) { // 태그 검색
       const match = searchTerm.match(/#([^\s]+)/)[1];
       console.log("matchText", match);
-      res = await searchGroupByTag(match);
+      res = await searchGroupByTag(match, pageNum);
     } 
     else { // 일반 검색
-      res = await searchGroupByName(searchTerm);
+      res = await searchGroupByName(searchTerm, pageNum);
     }
 
     setGroups(res);
@@ -154,21 +156,52 @@ const GroupPage = () => {
 
   const handleSearchEnter = (event) => { // 22✅ 엔터 눌렀을때 [그룹 페이지] 
     if (event.key === 'Enter') {
+      if (searchTerm.trim() === '') {
+        Swal.fire({
+          position: "center",
+          icon: "warning",
+          title: "경고!",
+          text: "검색어를 입력해주세요!",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        return;
+      }
       console.log('검색어:', searchTerm);
-      // 여기에 검색을 처리하는 로직을 추가하세요.
       searchGroup();
     }
   };
 
-    // 그룹 선택 핸들러
-    const handleGroupSelect = (group) => { // 그룹선택시
-        if(selectedGroup === group) {
-          setSelectedGroup(null);
-        } else {
-          setSelectedGroup(group); 
-          console.log('그룹 선택:', group.id);
-        }
-      };
+  const handleSearchClick = () => { // 검색 버튼 클릭
+    if (searchTerm.trim() === '') {
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "경고!",
+        text: "검색어를 입력해주세요!",
+        showConfirmButton: false,
+        timer: 1500
+      });
+      return;
+    }
+    console.log('검색 버튼 클릭:', searchTerm);
+    searchGroup();
+  };
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+    searchGroup(value);
+  };
+
+  // 그룹 선택 핸들러
+  const handleGroupSelect = (group) => { // 그룹선택시
+    if(selectedGroup === group) {
+      setSelectedGroup(null);
+    } else {
+      setSelectedGroup(group); 
+      console.log('그룹 선택:', group.id);
+    }
+  };
 
   // 생성 버튼 핸들러
   const handleCreate = () => { // 생성 버튼 [그룹 페이지]
@@ -185,14 +218,36 @@ const GroupPage = () => {
         
         {/* 검색창 */}
         <div className={styles.searchBox}>
-        <input
-            type="text"
-            placeholder="검색"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={handleSearchEnter}
-            className={styles.searchInput}
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+            <input
+              type="text"
+              placeholder="검색"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleSearchEnter}
+              className={styles.searchInput}
             />
+            <button 
+              onClick={handleSearchClick} 
+              
+              style={{
+                backgroundColor: '#41ADCA', 
+                color: 'white', 
+                padding: '10px 20px', 
+                border: 'none', 
+                borderRadius: '5px', 
+                cursor: 'pointer', 
+                fontSize: '16px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                transition: 'background-color 0.3s ease',
+                width: '100px',
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#3698B0'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#41ADCA'}
+            >
+              검색
+            </button>
+          </div>
           {/* 해시태그 목록 */}
           <div className={styles.hashtags}>
             {hashtags.map((hashtag, index) => (
@@ -212,6 +267,16 @@ const GroupPage = () => {
                 </div>
               ))}
           </div>
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+            <Pagination 
+              count={totalPages} 
+              page={page} 
+              onChange={handlePageChange} 
+              color="primary" 
+              className={styles.pagination}
+            />
+          </div>
+          
           <button className={styles.groupCreateButton} onClick={handleCreate}>{createGroupPage? "닫기" : "생성"}</button>
         </div>
       <div className={styles.rightPanel}>
