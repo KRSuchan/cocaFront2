@@ -13,21 +13,35 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
+// 상태 등 역대급으로 긴 코드임당
+// 🍀 코드 작동 방식
+// 🍀 range 로 검색범위 설정하고 >  number 로 찾을 기간 N > unit 으로 일/시간 선택
+// 🍀 멤버 추가 버튼 누르면 친구 목록에서 친구 선택 가능하고, 추가 버튼 누르면 members 멤버 상태에 추가됨
+// 🍀 handleSearch 찾기버튼 > 각 멤버들의 일정 받아와 schedules로, 빈일정 받아와 emptySchedules로 넣음
+// 🍀 unit 에 맞게 시점과 일정이 표시되며 가로축으로 스크롤도 가능
+// 🍀 handleEventClick 일정 클릭시 일정 추가 모달창 띄우고 제목, 내용, 시작시간, 종료시간 입력 가능하고 저장하면 일정 추가됨
+
 const PowerEmptySchedule = () => {
     const navigate = useNavigate();
     const calendarRef = useRef(null);
+    const [isModalVisible, setIsModalVisible] = useState(false); // 모달 상태
+    // const [newMemberName, setNewMemberName] = useState(''); // 새 멤버 이름 입력을 위한 상태
+
+    // ✌️✌️✌️ 상단 검색 조건 상태들
     const [number, setNumber] = useState(1); // 숫자 (N)
     const [unit, setUnit] = useState('일'); // '일', '시간'
     const [range, setRange] = useState(null); //시작일 끝일
-    const [schedules, setSchedules] = useState([]);
-    const [emptySchedules, setEmptySchedules] = useState([]); // 빈일정
     const [members, setMembers] = useState([
         { id: 1, name: '아이유에오', photo: 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/202306/04/138bdfca-3e86-4c09-9632-d22df52a0484.jpg' },
         { id: 2, name: '멤브레인', photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg' },
         { id: 3, name: '멤버 3', photo: '' },
-    ]); // 멤버 목록 상태 추가
-    const [newMemberName, setNewMemberName] = useState(''); // 새 멤버 이름 입력을 위한 상태
-    const [isModalVisible, setIsModalVisible] = useState(false); // 모달 상태
+    ]); // 기존 멤버 상태
+
+    // ✌️✌️✌️ 일정 상태들
+    const [schedules, setSchedules] = useState([]); // 각 멤버들의 일정
+    const [emptySchedules, setEmptySchedules] = useState([]); // 빈일정
+
+    // ✌️✌️✌️ 멤버 추가 버튼 눌렀을때 관리하는 상태들 (모달창)
     const [friends, setFriends] = useState([]); // 친구 목록 상태
     const [selectedFriend, setSelectedFriend] = useState(null); // 선택된 친구 상태
     const [groups, setGroups] = useState([
@@ -91,7 +105,7 @@ const PowerEmptySchedule = () => {
     };
 
     const handleSearch = async () => { //✌️찾기버튼 눌렀을떄! unit에서 일인지 시간인 확인해야 함. 
-        // 일정 데이터를 받
+        // 일정 데이터를 받아옴. 
         const fetchSchedules = async () => {
             const data = [
                 [
@@ -134,7 +148,7 @@ const PowerEmptySchedule = () => {
         await fetchSchedules();
         await fetchEmptySchedules();
 
-        if (range && range.length === 2) {
+        if (range && range.length === 2) { // 검색 조건이 선택된 경우
             const calendarApi = calendarRef.current.getApi();
             const startDate = range[0].toDate();
             const endDate = range[1].toDate();
@@ -166,7 +180,7 @@ const PowerEmptySchedule = () => {
         }
     };
 
-    const handleReset = () => {
+    const handleReset = () => { // 검색 조건 초기화 함수
         setSchedules([]);
         setEmptySchedules([]);
         setRange(null);
@@ -181,7 +195,7 @@ const PowerEmptySchedule = () => {
         setIsModalVisible(true);
     };
 
-    const handleModalOk = () => {
+    const handleModalOk = () => { // 모달창에서 친구 선택하고 추가 버튼 누르면 멤버 상태에 추가됨
         if (selectedFriend) {
             const newMember = {
                 id: members.length + 1,
@@ -199,17 +213,17 @@ const PowerEmptySchedule = () => {
     };
 
     // 멤버 삭제 함수
-    const handleDeleteMember = (id) => {
+    const handleDeleteMember = (id) => { // 멤버 삭제 함수
         setMembers(members.filter(member => member.id !== id));
     };
 
-    const handleEventClick = (info) => {
+    const handleEventClick = (info) => { // 일정 클릭시 일정 추가 모달창 띄우고 제목, 내용, 시작시간, 종료시간 입력 가능하고 저장하면 일정 추가됨
         const event = info.event;
         const startTime = moment(event.start).format('YYYY-MM-DD HH:mm');
         const endTime = moment(event.end).format('YYYY-MM-DD HH:mm');
 
         Swal.fire({
-            title: '일정 수정',
+            title: '일정추가',
             html: `
                 <input id="swal-input1" class="swal2-input" placeholder="제목" value="${event.title}">
                 <input id="swal-input2" class="swal2-input" placeholder="내용">
@@ -238,7 +252,7 @@ const PowerEmptySchedule = () => {
         });
     };
 
-    const ScheduleSearch = () => {
+    const ScheduleSearch = () => { // 일정 검색 컴포넌트
         // 기존 일정 이벤트
         const events = schedules.flatMap((scheduleList, listIdx) =>
             scheduleList.map((schedule, idx) => ({
@@ -444,7 +458,14 @@ const PowerEmptySchedule = () => {
                                     itemLayout="horizontal"
                                     dataSource={groupMembers}
                                     renderItem={member => (
-                                        <List.Item>
+                                        <List.Item
+                                            onClick={() => setSelectedFriend({
+                                                friendId: member.id,
+                                                friendName: member.userName,
+                                                friendProfileImagePath: member.profileImgPath
+                                            })}
+                                            style={{ cursor: 'pointer', backgroundColor: selectedFriend?.friendId === member.id ? '#e6f7ff' : 'transparent' }}
+                                        >
                                             <List.Item.Meta
                                                 avatar={<Avatar src={member.profileImgPath} icon={!member.profileImgPath && <UserOutlined />} />}
                                                 title={member.userName}
