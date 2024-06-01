@@ -19,7 +19,6 @@ function LoginPage() {
 
   const handleLogin = () => {
     login();
-    // navigate('/main');
   };
 
   const handleSignUp = () => {
@@ -71,6 +70,16 @@ function LoginPage() {
     })
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (e.target.name === 'id') {
+        document.getElementById('pw').focus();
+      } else if (e.target.name === 'pw') {
+        handleLogin();
+      }
+    }
+  };
+
   return (
     <div className="container">
       <div className = "cards-container">
@@ -88,6 +97,7 @@ function LoginPage() {
               placeholder="ID"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
             <input
               type="password"
@@ -96,6 +106,7 @@ function LoginPage() {
               placeholder="PW"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
             <div className="button-container">
               <button className="login-button" type="submit" onClick={handleLogin}>LOGIN</button>
