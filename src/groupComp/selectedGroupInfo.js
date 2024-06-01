@@ -216,11 +216,20 @@ const SelectedGroupInfo = ({ groupId }) => {
     // TODO: 백엔드에 그룹 참가 요청 로직 구현
   };
 
-  // 백엔드와 통신하여 그룹 탈퇴 처리
-  // const handleLeaveGroup = () => {
-  //   // TODO: 백엔드에 그룹 탈퇴 요청 로직 구현
-  //   setIsMember(false);
-  // };
+  // 그룹 초대 버튼 클릭 시 모달 창을 띄우는 함수
+  const handleInviteGroup = () => {
+    Swal.fire({
+      title: '그룹 초대',
+      input: 'text',
+      inputPlaceholder: 'ID를 입력하세요',
+      showCancelButton: true,
+      confirmButtonText: '보내기',
+      cancelButtonText: '취소',
+      preConfirm: (inviteId) => {
+        console.log(`그룹 ID: ${groupId}, 초대할 사용자 ID: ${inviteId}`);
+      }
+    });
+  };
 
   return (
     <div className={styles.selectedGroupInfo}>
@@ -245,10 +254,11 @@ const SelectedGroupInfo = ({ groupId }) => {
       </div>
       {isMember ? (
         // <button className={styles.joinButton} onClick={handleLeaveGroup}>탈퇴</button>
-        null
+        <button className={styles.joinButton} onClick={handleInviteGroup}>그룹 초대</button>
       ) : (
         <button className={styles.joinButton} onClick={handleJoinGroup}>참가</button>
       )}
+      
     </div>
   );
 };
