@@ -65,3 +65,42 @@ export const logout = async (navigate) => {
         logout(navigate);
     }
 };
+
+export const checkPassword = async (navigate, pw) => {
+  const accessToken = localStorage.getItem('accessToken');
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    const data = {
+      id: localStorage.getItem('userId'),
+      password: pw
+    }
+
+    const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/checkPassword", data, config);
+
+    if(res.data.code === 200) {
+      return res.data.data;
+    }
+    else if(res.data.code === 401) {
+      await refreshAccessToken(navigate);
+      checkPassword(navigate, pw);
+    }
+    else {
+      throw new Error('unknown Error');
+    }
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: "에러!",
+      text: "서버와의 통신에 문제가 생겼어요!",
+      showConfirmButton: false,
+      timer: 1500
+  });
+  }
+}

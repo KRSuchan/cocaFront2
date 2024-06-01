@@ -69,6 +69,8 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
                         text: "일정을 정상적으로 추가했어요!",
                         showConfirmButton: false,
                         timer: 1500
+                    }).then(res => {
+                        window.location.reload();
                     });
                 }
                 else {
@@ -94,11 +96,14 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
                 Authorization: `Bearer ${accessToken}`,
                 },
                 params: {
-                    groupId: schedule.groupId,
-                    date: date,
-                    memberId: localStorage.getItem('userId')
+                    groupId: selectedGroup.groupId,
+                    memberId: localStorage.getItem('userId'),
+                    date: date
                 }
             };
+
+            console.log('ms2g start', config);
+            
 
             const res = await axios.get(process.env.REACT_APP_SERVER_URL + '/api/group-schedule/setPersonalScheduleToGroupScheduleReq', config);
 
@@ -141,6 +146,8 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
                         text: "일정을 정상적으로 추가했어요!",
                         showConfirmButton: false,
                         timer: 1500
+                    }).then(res => {
+                        window.location.reload();
                     });
                 }
                 else {

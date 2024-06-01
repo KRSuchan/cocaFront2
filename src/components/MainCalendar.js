@@ -72,6 +72,8 @@ const getGroupScehdule = async(groupId, memberId, startDate, endDate, navigate) 
                 endDate: endDate
             }
         };
+
+        console.log("what?", config);
         const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group-schedule/groupScheduleSummaryReq`, config);
 
         console.log('gr'. res);

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { SettingOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { refreshAccessToken } from '../security/TokenManage';
 
 const GroupsList = () => {
     const groups = useSelector(state => state.groups);
@@ -14,10 +15,31 @@ const GroupsList = () => {
     const dispatch = useDispatch();
 
     const quitGroup = async(group) => {
+
+        const accessToken = localStorage.getItem('accessToken');
+
         try {
-            const res = await axios.post(process.env.REACT_APP_SERVER_URL + `/api/group/leave/member/${localStorage.getItem("userId")}/group/${group.groupId}`);
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            console.log('gr', group);
+
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + `/api/group/leave/member/${localStorage.getItem("userId")}/group/${group.groupId}`, null, config);
             console.log(res);
-            return res.data;
+
+            if(res.data.code === 200 || res.data.code === 400) {
+                return res.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                quitGroup(group);
+            }
+            else {
+                throw new Error('unknown Error');
+            }
         } catch (error) {
             console.error(error);
             return null;
@@ -72,6 +94,15 @@ const GroupsList = () => {
                             showConfirmButton: false,
                             timer: 1500
                         }).then(async (res) => { window.location.reload(); });
+                    } else {
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "에러!",
+                            text: "서버와의 통신에 문제가 생겼어요!",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 }
                 else {
