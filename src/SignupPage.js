@@ -10,8 +10,7 @@ function SignUpPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [nickname, setNickname] = useState('');
-  // const [interest, setInterest] = useState(['', '', '']); // 단일 선택을 위해 배열에서 문자열로 변경
-  const [interest, setInterest] = useState('');
+  const [interest, setInterest] = useState([]);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [agreeToPolicy, setAgreeToPolicy] = useState(false);
   const [isDupchecked, setIsDupChecked] = useState(false);
@@ -70,21 +69,20 @@ function SignUpPage() {
 
   const signUp = async () => {
     try {
-      // const interestId = interest
-      // .filter(interestItem => interestItem !== '')
-      // .map(interestItem => {
-      //   const tag = tagList.find(tag => tag.name === interestItem);
-      //   return tag ? { tagId: tag.id, TagName: tag.name } : null;
-      // })
-      // .filter(tag => tag !== null);
+      const interestId = interest
+      .filter(interestItem => interestItem !== '')
+      .map(interestItem => {
+        const tag = tagList.find(tag => tag.name === interestItem);
+        return tag ? { tagId: tag.id, TagName: tag.name } : null;
+      })
+      .filter(tag => tag !== null);
 
       const requestData = {
         id: userId,
         password: password,
         userName: nickname,
         isDefaultImage: profilePhoto === null ? true : false,
-        interestId: interest ? [{ tagId: tagList.find(tag => tag.name === interest).id, TagName: interest }] : []
-        // interestId: interestId
+        interestId: interestId
       };
 
       const formData = new FormData();
@@ -120,7 +118,6 @@ function SignUpPage() {
         title: "비밀번호가 일치하지 않아요!",
         confirmButtonText: "확인"
       });
-      // alert('비밀번호가 일치하지 않습니다.');
       return;
     }
     if (!agreeToPolicy) {
@@ -129,21 +126,10 @@ function SignUpPage() {
         title: "정책에 동의 해 주셔야 해요!",
         confirmButtonText: "확인"
       });
-      // alert('정책에 동의해주세요.');
       return;
     }
     // 회원가입 API 호출
     try {
-      // const memberData = {
-      //   id: userId,
-      //   password: password,
-      //   userName: nickname,
-      //   interest: interest,
-      //   profilePhoto: profilePhoto || null
-      // };
-
-      // const response = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/joinReq", memberData);
-
       const response = await signUp();
 
       console.log("reg : ", response);
@@ -164,7 +150,21 @@ function SignUpPage() {
   
   // 관심사 변경 처리
   const handleInterestChange = (event) => {
-    setInterest(event.target.value);
+    const value = event.target.value;
+    setInterest(prevInterest => {
+      if (prevInterest.includes(value)) {
+        return prevInterest.filter(item => item !== value);
+      } else if (prevInterest.length < 3) {
+        return [...prevInterest, value];
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "관심사는 최대 3개까지 선택할 수 있습니다.",
+          confirmButtonText: "확인"
+        });
+        return prevInterest;
+      }
+    });
   };
 
   // 프로필 사진 변경 처리
@@ -179,6 +179,7 @@ function SignUpPage() {
         <div className="form-group">
           <label htmlFor="userId">아이디</label>
           <input type="text" id="userId" value={userId} onChange={(e) => setUserId(e.target.value)} required />
+          <button type="button" onClick={handleDuplicateCheck}>중복 체크</button>
         </div>
         <div className="form-group">
           <label htmlFor="password">비밀번호</label>
@@ -194,11 +195,8 @@ function SignUpPage() {
         </div>
         <div className="form-group">
           <label htmlFor="interest">관심사</label>
-          <select id="interest" value={interest} onChange={handleInterestChange} required>
-            <option value="">선택하세요</option>
-            {/* <option value="computer">컴퓨터</option>
-            <option value="anime">애니</option>
-            <option value="employment">취업</option> */}
+          <select id="interest" value={interest} onChange={handleInterestChange} multiple required>
+            <option value="" disabled>선택하세요</option>
             {tagList.map(tag => (
               <option key={tag.id} value={tag.name}>{tag.name}</option>
             ))}
