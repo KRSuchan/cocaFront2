@@ -25,7 +25,6 @@ const PowerEmptySchedule = () => {
         { id: 1, name: '아이유에오', photo: 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/202306/04/138bdfca-3e86-4c09-9632-d22df52a0484.jpg' },
         { id: 2, name: '멤브레인', photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg' },
         { id: 3, name: '멤버 3', photo: '' },
-        { id: 4, name: '멤버 4', photo: '' },
     ]); // 멤버 목록 상태 추가
     const [newMemberName, setNewMemberName] = useState(''); // 새 멤버 이름 입력을 위한 상태
     const [isModalVisible, setIsModalVisible] = useState(false); // 모달 상태
@@ -267,9 +266,9 @@ const PowerEmptySchedule = () => {
 
         // 리소스 배열 수정 (빈 일정을 마지막에 추가)
         const resources = [
-            ...schedules.map((_, idx) => ({
+            ...members.map((member, idx) => ({
                 id: `member-${idx}`,
-                title: `멤버 ${idx + 1}`
+                title: member.name
             })),
             {
                 id: 'zempty',
@@ -463,3 +462,4 @@ const PowerEmptySchedule = () => {
 };
 
 export default PowerEmptySchedule;
+
