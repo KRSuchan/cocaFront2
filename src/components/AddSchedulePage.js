@@ -416,7 +416,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                     </div>
                 ))}
                 <button style={{ height: '40px', color: colorCode, backgroundColor: colorCode }} onClick={() => setShowColorPicker(show => !show)}> {/* 색상 박스 클릭 시 Color Picker 표시 여부 토글 */}
-                    <div style={{ height: '40px',background: colorCode }} /> {/* 선택된 색상 표시 */}
+                    <div style={{ height: '30px',background: colorCode }} /> {/* 선택된 색상 표시 */}
                 </button>
                 {showColorPicker && (
                     <div style={{ }}>
