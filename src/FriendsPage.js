@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, List, Avatar, Modal, Input } from 'antd'; // Modal, Input 추가
 import { useNavigate } from 'react-router-dom';
 import styles from './css/FriendsPage.module.css';
-import { UserOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons';
+import { UserOutlined, CalendarOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
@@ -14,6 +14,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import axios from 'axios';
 import { refreshAccessToken } from './security/TokenManage';
 import Swal from 'sweetalert2';
+import { ko } from 'date-fns/locale'; // 한글 로케일 추가
 
 
 const FriendsPage = () => {
@@ -70,7 +71,7 @@ const FriendsPage = () => {
     useEffect(() => {
         const setData = async() => {
             const res = await fetchFriendList();
-            // TODO :: 목록 연동
+            // TODO :: 록 연동
             const response = {
                 "code": 200,
                 "message": "OK",
@@ -90,7 +91,7 @@ const FriendsPage = () => {
                 ]
             };
 
-            setFriends(res.data);
+            setFriends(res.data); //✨ res 로 변경해둘것 (2차요청사항)
         }
 
         setData();
@@ -204,7 +205,7 @@ const FriendsPage = () => {
                     position: "center",
                     icon: "success",
                     title: "수정 완료",
-                    text: "친구 정보를 정상적으로 수정했어요!",
+                    text: "친구 정보를 ��상적으로 수정했어요!",
                     showConfirmButton: false,
                     timer: 1500
                 }).then(res => {
@@ -294,8 +295,49 @@ const FriendsPage = () => {
         }
     };
 
+    const handleDeleteFriend = async (friendId) => {
+        const accessToken = localStorage.getItem('accessToken');
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            };
+            // const res = await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/friend/delete/${friendId}`, config);
+            const res = { data: { code: 200 } }; // 더미 응답 데이터
+
+            if (res.data.code === 200) {
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "삭제 완료!",
+                    text: "친구가 목록에서 삭제되었어요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                handleDeleteFriend(friendId);
+            } else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    };
+
     const locales = {
-        'en-US': require('date-fns/locale/en-US'),
+        'ko': ko,
     };
     const localizer = dateFnsLocalizer({
         format,
@@ -335,14 +377,7 @@ const FriendsPage = () => {
     
         return (
             <div>
-              <style>
-                {`
-                  /* 시간표 숨기기 */
-                  .rbc-time-content {
-                    display: none !important;
-                  }
-                `}
-              </style>
+              
               <Calendar
                 localizer={localizer}
                 events={myEvents}
@@ -352,6 +387,7 @@ const FriendsPage = () => {
                 views={['week']}
                 defaultView="week"
                 eventPropGetter={eventPropGetter} // 이벤트 스타일 설정 함수 적용
+                culture='ko' // 캘린더 한글 표시
               />
             </div>
           );
@@ -386,7 +422,8 @@ const FriendsPage = () => {
                             </div>
                             <div className={styles.icons}>
                                 <Button type="primary" size="medium" style={{ marginRight: 12, backgroundColor: 'skyblue', color: 'white' }} onClick={() => handleCalendarClick(friend.friendId)}><CalendarOutlined /></Button>
-                                <Button type="danger" size="medium" style={{ backgroundColor: 'salmon', color: 'white' }} onClick={() => handleEditClick(friend)}><EditOutlined /></Button>
+                                <Button type="danger" size="medium" style={{ marginRight: 12, backgroundColor: 'salmon', color: 'white' }} onClick={() => handleEditClick(friend)}><EditOutlined /></Button>
+                                <Button type="danger" size="medium" style={{ backgroundColor: 'red', color: 'white' }} onClick={() => handleDeleteFriend(friend.friendId)}><DeleteOutlined /></Button>
                             </div>
                         </div>
                     ))}
@@ -416,7 +453,7 @@ const FriendsPage = () => {
                 <Modal
                     title="친구 추가"
                     visible={addModalVisible}
-                    onOk={addFriend} // 추가 버튼 클릭 시 친구 추가
+                    onOk={addFriend} // 추 버튼 클릭 시 친구 추가
                     onCancel={() => setAddModalVisible(false)} // 취소 버튼 클릭 시 모달창 닫기
                 >
                     <Input placeholder="친구 아이디 입력" value={newFriendId} onChange={e => setNewFriendId(e.target.value)} />

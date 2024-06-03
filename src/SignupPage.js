@@ -10,7 +10,7 @@ function SignUpPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [interest, setInterest] = useState([]);
+  const [interests, setInterests] = useState(['', '', '']); //✅ 관심사 이부분 수정되었어요 기존은 []
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [agreeToPolicy, setAgreeToPolicy] = useState(false);
   const [isDupchecked, setIsDupChecked] = useState(false);
@@ -95,7 +95,7 @@ function SignUpPage() {
 
   const signUp = async () => {
     try {
-      const interestId = interest
+      const interestId = interests
       .filter(interestItem => interestItem !== '')
       .map(interestItem => {
         const tag = tagList.find(tag => tag.name === interestItem);
@@ -182,21 +182,12 @@ function SignUpPage() {
   };
   
   // 관심사 변경 처리
-  const handleInterestChange = (event) => {
+  const handleInterestChange = (index, event) => {
     const value = event.target.value;
-    setInterest(prevInterest => {
-      if (prevInterest.includes(value)) {
-        return prevInterest.filter(item => item !== value);
-      } else if (prevInterest.length < 3) {
-        return [...prevInterest, value];
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "관심사는 최대 3개까지 선택할 수 있습니다.",
-          confirmButtonText: "확인"
-        });
-        return prevInterest;
-      }
+    setInterests(prevInterests => {
+      const newInterests = [...prevInterests];
+      newInterests[index] = value;
+      return newInterests;
     });
   };
 
@@ -226,14 +217,16 @@ function SignUpPage() {
           <label htmlFor="nickname">닉네임</label>
           <input type="text" id="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
         </div>
-        <div className="form-group">
+        <div className="form-group interest-group">
           <label htmlFor="interest">관심사</label>
-          <select id="interest" value={interest} onChange={handleInterestChange} multiple required>
-            <option value="" disabled>선택하세요</option>
-            {tagList.map(tag => (
-              <option key={tag.id} value={tag.name}>{tag.name}</option>
-            ))}
-          </select>
+          {interests.map((interest, index) => (
+            <select key={index} id={`interest-${index}`} style={{ marginRight: '10px' }} value={interest} onChange={(e) => handleInterestChange(index, e)} required>
+              <option value="" disabled>선택하세요</option>
+              {tagList.map(tag => (
+                <option key={tag.id} value={tag.name}>{tag.name}</option>
+              ))}
+            </select>
+          ))}
         </div>
         <div className="form-group">
           <label htmlFor="profilePhoto">프로필 사진</label>

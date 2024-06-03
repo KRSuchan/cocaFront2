@@ -34,3 +34,8 @@
       font-family: 'Black Han Sans';
   }
 
+/* 모달이 열릴 때 body의 스타일을 고정 */
+body.modal-open {
+  overflow: initial !important;
+  padding-right: 0 !important;
+}

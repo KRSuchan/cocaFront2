@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
-import { UserOutlined, LeftOutlined } from '@ant-design/icons'; // 아이콘 추가
+import { UserOutlined, LeftOutlined, EditOutlined } from '@ant-design/icons'; // 아이콘 추가
 import styles from './css/SettingPage.module.css'; // 스타일 시트 임포트
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -15,12 +15,45 @@ const SettingPage = () => {
         id: 'defaultUser',
         password: 'defaultPassword',
         userName: 'defaultUserName',
-        profileImgPath: ''
+        profileImgPath: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV6iTAtlopog7qRqLKpz8gdWw2VGsH8CwBig&s'
     });
+
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [profileImage, setProfileImage] = useState(null);
+    const [originalProfileImgPath, setOriginalProfileImgPath] = useState('');
+
+    useEffect(() => {
+        setOriginalProfileImgPath(userInfo.profileImgPath);
+    }, [userInfo.profileImgPath]);
 
     console.log(userInfo);
 
     const navigate = useNavigate();
+
+    const handleProfileImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfileImage(reader.result);
+                setUserInfo({ ...userInfo, profileImgPath: reader.result });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleProfileEditClick = () => {
+        setIsEditingProfile(true);
+    };
+
+    const handleProfileEditCancel = () => {
+        setIsEditingProfile(false);
+        setProfileImage(null);
+        setUserInfo(prevState => ({
+            ...prevState,
+            profileImgPath: originalProfileImgPath
+        }));
+    };
 
     // 백엔드 API 호출을 위한 함수 선언 (현재는 더미 데이터 사용)
     const fetchUserInfo = async () => {
@@ -277,10 +310,19 @@ const SettingPage = () => {
             </div>
             <div className={styles.content}>
                 <div className={styles.profileImageContainer}>
-                    {userInfo.profileImgPath ? (
-                        <img src={userInfo.profileImgPath} alt="profile" className={styles.profileImage} />
+                    {profileImage ? (
+                        <img src={profileImage} alt="profile" className={styles.profileImage} />
                     ) : (
                         <UserOutlined style={{ fontSize: '150px' }} />
+                    )}
+                    <div className={styles.editIcon} onClick={handleProfileEditClick}>
+                        <EditOutlined style={{ fontSize: '24px' }} />
+                    </div>
+                    {isEditingProfile && (
+                        <div className={styles.profileEditContainer}>
+                            <input type="file" accept="image/*" onChange={handleProfileImageChange} />
+                            <button onClick={handleProfileEditCancel}>취소</button>
+                        </div>
                     )}
                 </div>
                 <div className={styles.inputContainer}>
@@ -311,5 +353,3 @@ const SettingPage = () => {
 };
 
 export default SettingPage;
-
-

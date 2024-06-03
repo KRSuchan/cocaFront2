@@ -69,11 +69,15 @@ const NoticePage = () => {
     };
 
     const handleScheduleApproval = () => {
-        // 승인 버튼에 대한 함수
+        // 일정 승인 버튼에 대한 함수
     };
 
     const handleScheduleRejection = () => {
-        // 거절 버튼에 대한 함수
+        // 일정 거절 버튼에 대한 함수
+    };
+
+    const handleScheduleDeletion = () => {
+        // 일정 삭제 버튼에 대한 함수
     };
 
     const handleFriendAcceptance = () => {
@@ -84,12 +88,20 @@ const NoticePage = () => {
         // 친구 거절 버튼에 대한 함수
     };
 
+    const handleFriendDeletion = () => {
+        // 친구 삭제 버튼에 대한 함수
+    };
+
     const handleGroupAcceptance = () => {
         // 그룹 수락 버튼에 대한 함수
     };
 
     const handleGroupRejection = () => {
         // 그룹 거절 버튼에 대한 함수
+    };
+
+    const handleGroupDeletion = () => {
+        // 그룹 삭제 버튼에 대한 함수
     };
 
     const TabContent = () => (
@@ -103,8 +115,14 @@ const NoticePage = () => {
                             description={`${schedule.start} - ${schedule.end}`}
                         />
                         <div style={{ marginTop: '10px' }}>
-                            <Button type="primary" style={{ marginRight: '8px' }} onClick={handleScheduleApproval}>승인</Button>
-                            <Button type="danger" onClick={handleScheduleRejection}>거절</Button>
+                            {schedule.status === "PENDING" ? (
+                                <>
+                                    <Button type="primary" style={{ marginRight: '8px' }} onClick={handleScheduleApproval}>승인</Button>
+                                    <Button type="danger" onClick={handleScheduleRejection}>거절</Button>
+                                </>
+                            ) : (
+                                <Button type="danger" onClick={handleScheduleDeletion}>삭제</Button>
+                            )}
                         </div>
                     </Card>
                 ))}
@@ -117,8 +135,14 @@ const NoticePage = () => {
                             title={<span style={{ fontSize: '16px', fontWeight: 'bold', color: '#41ADCA' }}>{friend.sender.name}</span>}
                         />
                         <div style={{ marginTop: '10px' }}>
-                            <Button type="primary" style={{ marginRight: '8px' }} onClick={handleFriendAcceptance}>수락</Button>
-                            <Button type="danger" onClick={handleFriendRejection}>거절</Button>
+                            {friend.status === "PENDING" ? (
+                                <>
+                                    <Button type="primary" style={{ marginRight: '8px' }} onClick={handleFriendAcceptance}>수락</Button>
+                                    <Button type="danger" onClick={handleFriendRejection}>거절</Button>
+                                </>
+                            ) : (
+                                <Button type="danger" onClick={handleFriendDeletion}>삭제</Button>
+                            )}
                         </div>
                     </Card>
                 ))}
@@ -131,8 +155,14 @@ const NoticePage = () => {
                             title={<span style={{ fontSize: '16px', fontWeight: 'bold' }}>{group.groupName}</span>}
                         />
                         <div style={{ marginTop: '10px' }}>
-                            <Button type="primary" style={{ marginRight: '8px' }} onClick={handleGroupAcceptance}>수락</Button>
-                            <Button type="danger" onClick={handleGroupRejection}>거절</Button>
+                            {group.status === "PENDING" ? (
+                                <>
+                                    <Button type="primary" style={{ marginRight: '8px' }} onClick={handleGroupAcceptance}>수락</Button>
+                                    <Button type="danger" onClick={handleGroupRejection}>거절</Button>
+                                </>
+                            ) : (
+                                <Button type="danger" onClick={handleGroupDeletion}>삭제</Button>
+                            )}
                         </div>
                     </Card>
                 ))}
