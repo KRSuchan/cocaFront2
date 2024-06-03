@@ -205,7 +205,7 @@ const FriendsPage = () => {
                     position: "center",
                     icon: "success",
                     title: "수정 완료",
-                    text: "친구 정보를 ��상적으로 수정했어요!",
+                    text: "친구 정보를 정상적으로 수정했어요!",
                     showConfirmButton: false,
                     timer: 1500
                 }).then(res => {
@@ -273,6 +273,16 @@ const FriendsPage = () => {
                     window.location.reload();
                 });
             }
+            else if(res.data.code === 409) {
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "에러!",
+                    text: "이미 등록된 친구거나, 친구 요청을 이미 보냈어요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
             else if(res.data.code === 401) {
                 await refreshAccessToken(navigate);
                 addFriend();
@@ -295,7 +305,7 @@ const FriendsPage = () => {
         }
     };
 
-    const handleDeleteFriend = async (friendId) => {
+    const deleteFriend = async (friendId) => {
         const accessToken = localStorage.getItem('accessToken');
         try {
             const config = {
@@ -303,37 +313,69 @@ const FriendsPage = () => {
                     Authorization: `Bearer ${accessToken}`,
                 },
             };
-            // const res = await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/friend/delete/${friendId}`, config);
-            const res = { data: { code: 200 } }; // 더미 응답 데이터
+            const res = await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/friend/delete/${friendId}`, config);
+
+            console.log(res);
 
             if (res.data.code === 200) {
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "삭제 완료!",
-                    text: "친구가 목록에서 삭제되었어요!",
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(() => {
-                    window.location.reload();
-                });
-            } else if (res.data.code === 401) {
+                return true;
+            }
+            else if(res.data.code === 401) {
                 await refreshAccessToken(navigate);
-                handleDeleteFriend(friendId);
-            } else {
+                deleteFriend(friendId);
+            }
+            else {
                 throw new Error('unknown Error');
             }
         } catch (error) {
             console.error(error);
-            Swal.fire({
-                position: "center",
-                icon: "error",
-                title: "에러!",
-                text: "서버와의 통신에 문제가 생겼어요!",
-                showConfirmButton: false,
-                timer: 1500
-            });
+            return false;
         }
+    }
+
+    const handleDeleteFriend = async (friendId) => {
+        Swal.fire({
+            icon: "warning",
+            title: "친구 삭제",
+            html:`정말 친구를 삭제하시겠나요?<br>삭제하면 상대방의 친구 목록에서도 내가 사라져요.`,
+            showCancelButton: true,
+            confirmButtonText: "삭제",
+            cancelButtonText: "취소"
+        }).then(async (res) => {
+            if(res.isConfirmed) {
+                const resp = await deleteFriend(friendId);
+                if(resp) {
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "삭제 완료",
+                        text: "친구를 삭제했어요.",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                }
+                else {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "에러!",
+                        text: "서버와의 통신에 문제가 생겼어요!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            } else {
+                Swal.fire({
+                    position: "center",
+                    icon: "info",
+                    title: "삭제를 취소했어요.",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        })        
     };
 
     const locales = {

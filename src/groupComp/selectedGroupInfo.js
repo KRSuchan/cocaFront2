@@ -216,17 +216,102 @@ const SelectedGroupInfo = ({ groupId }) => {
     // TODO: 백엔드에 그룹 참가 요청 로직 구현
   };
 
+  const inviteGroup = async (groupId, inviteId) => {
+    const accessToken = localStorage.getItem('accessToken');
+
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const res = await axios.post(process.env.REACT_APP_SERVER_URL + 
+        `/api/request/add/group-invite/from/${localStorage.getItem('userId')}/to/${inviteId}/group/${groupId}`, null, config);
+      
+        console.log(res);
+
+        if(res.data.code === 201) {
+          return 200;
+        } else if (res.data.code === 400) {
+          return 404;
+        } else if (res.data.code === 401) {
+          await refreshAccessToken(navigate);
+          inviteGroup(groupId, inviteId);
+        } else if (res.data.code === 409) {
+          return 409;
+        } else {
+          throw new Error('unknown Error');
+        }
+    } catch(error) {
+      console.error(error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "에러!",
+        text: "서버와의 통신에 문제가 생겼어요!",
+        showConfirmButton: false,
+        timer: 1500
+      });
+
+      return null;
+    }
+  }
+
   // 그룹 초대 버튼 클릭 시 모달 창을 띄우는 함수
-  const handleInviteGroup = () => {
+  const handleInviteGroup = async () => {
     Swal.fire({
+      icon: 'question',
       title: '그룹 초대',
       input: 'text',
-      inputPlaceholder: 'ID를 입력하세요',
+      inputPlaceholder: '초대할 ID를 입력하세요',
       showCancelButton: true,
       confirmButtonText: '보내기',
       cancelButtonText: '취소',
-      preConfirm: (inviteId) => {
+      preConfirm: async (inviteId) => {
         console.log(`그룹 ID: ${groupId}, 초대할 사용자 ID: ${inviteId}`);
+        const res = await inviteGroup(groupId, inviteId);
+        console.log(res);
+        if(res === 404) {
+          return Swal.showValidationMessage('해당 유저를 찾지 못했어요!');
+        }
+        if(res === 409) {
+          return 409;
+        }
+        if(res === null) {
+          return null;
+        }
+      }
+    }).then(async (res) => {
+      if(res.isConfirmed) {
+        if(res.value === 200) {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "초대 완료",
+            text: "성공적으로 그룹에 초대했어요!",
+            showConfirmButton: false,
+            timer: 1500
+          });
+        } else if (res.value === 409) {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "에러!",
+            text: "이미 초대를 보냈어요!",
+            showConfirmButton: false,
+            timer: 1500
+          });
+        }
+      } 
+      else {
+        Swal.fire({
+          position: "center",
+          icon: "info",
+          title: "초대를 취소했어요.",
+          showConfirmButton: false,
+          timer: 1500
+        });
       }
     });
   };

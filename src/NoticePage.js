@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
 import { Tabs, Card, Avatar, Button } from 'antd';
 import styles from './css/NoticePage.module.css';
+import Swal from 'sweetalert2';
+import { refreshAccessToken } from './security/TokenManage';
+import axios from 'axios';
 
 const { TabPane } = Tabs;
 
@@ -62,46 +65,537 @@ const NoticePage = () => {
 
     useEffect(() => {
         // 백엔드에서 추가적인 일정 데이터를 가져오는 로직은 생략
+        const setData = async () => {
+            const scheduleData = await fetchScheduleRequestData();
+            const groupData = await fetchGroupRequestData();
+            const friendData = await fetchFriendRequestData();
+
+            setSchedules(scheduleData);
+            setGroups(groupData);
+            setFriends(friendData);
+        }
+
+        setData();
     }, []);
 
     const handleBack = () => {
         navigate(-1);
     };
 
-    const handleScheduleApproval = () => {
+    const fetchScheduleRequestData = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/request/list/schedule/member/${localStorage.getItem('userId')}`, config);
+            
+            console.log("schedule", res);
+
+            if(res.data.code === 200) {
+                return res.data.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                fetchScheduleRequestData();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+            
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
+    const fetchFriendRequestData = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/request/list/friend/member/${localStorage.getItem('userId')}`, config);
+
+            console.log("friend", res);
+
+            if(res.data.code === 200) {
+                return res.data.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                fetchFriendRequestData();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+            
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
+    const fetchGroupRequestData = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/request/list/group-invite/member/${localStorage.getItem('userId')}`, config);
+
+            console.log("group", res);
+
+            if(res.data.code === 200) {
+                return res.data.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                fetchGroupRequestData();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+            
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
+    // 일정 통신
+    const updateScheduleRequest = async (id, status) => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.put(process.env.REACT_APP_SERVER_URL + '/api/request/update/schedule', 
+                {
+                    requestId: id,
+                    status: status
+                }
+            , config);
+
+            if(res.data.code === 200) {
+                return true;
+            }
+            else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                updateScheduleRequest(id, status);
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            return false;
+        }
+    }
+
+    const deleteScheduleRequest = async (id) => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.delete(process.env.REACT_APP_SERVER_URL + `/api/request/delete/schedule/${id}`, config);
+
+            if(res.data.code === 200) {
+                return true;
+            }
+            else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                deleteScheduleRequest(id);
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            return false;
+        }
+    }
+
+    const handleScheduleApproval = async (id) => {
         // 일정 승인 버튼에 대한 함수
+        const res = await updateScheduleRequest(id, "ACCEPTED");
+
+        if(res){
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "수락 완료",
+                text: "일정이 정상적으로 등록되었어요!",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                window.location.reload();
+            });
+        }
     };
 
-    const handleScheduleRejection = () => {
+    const handleScheduleRejection = async (id) => {
         // 일정 거절 버튼에 대한 함수
+        const res = await updateScheduleRequest(id, "REJECTED");
+
+        if(res){
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "거절 완료",
+                text: "일정 등록을 거절했어요.",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                window.location.reload();
+            });
+        }
     };
 
-    const handleScheduleDeletion = () => {
+    const handleScheduleDeletion = async (id) => {
         // 일정 삭제 버튼에 대한 함수
+        const res = await deleteScheduleRequest(id);
+
+        if(res){
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "삭제 완료",
+                text: "알림이 정상적으로 삭제되었어요!",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                window.location.reload();
+            });
+        }
     };
 
-    const handleFriendAcceptance = () => {
+    // 친구 통신
+    const updateFriendRequest = async (id, status) => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.put(process.env.REACT_APP_SERVER_URL + '/api/request/update/friend', 
+                {
+                    requestId: id,
+                    status: status
+                }
+            , config);
+
+            if(res.data.code === 200) {
+                return true;
+            }
+            else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                updateFriendRequest(id, status);
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            return false;
+        }
+    }
+
+    const deleteFriendRequest = async (id) => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.delete(process.env.REACT_APP_SERVER_URL + `/api/request/delete/friend/${id}`, config);
+
+            if(res.data.code === 200) {
+                return true;
+            }
+            else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                deleteFriendRequest(id);
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            return false;
+        }
+    }
+
+    const handleFriendAcceptance = async (id) => {
         // 친구 수락 버튼에 대한 함수
+        const res = await updateFriendRequest(id, "ACCEPTED");
+
+        if(res){
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "수락 완료",
+                text: "친구가 정상적으로 등록되었어요!",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                window.location.reload();
+            });
+        }
     };
 
-    const handleFriendRejection = () => {
+    const handleFriendRejection = async (id) => {
         // 친구 거절 버튼에 대한 함수
+        const res = await updateFriendRequest(id, "REJECTED");
+
+        if(res){
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "거절 완료",
+                text: "친구 요청을 거절했어요.",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                window.location.reload();
+            });
+        }
     };
 
-    const handleFriendDeletion = () => {
+    const handleFriendDeletion = async (id) => {
         // 친구 삭제 버튼에 대한 함수
+        const res = await deleteFriendRequest(id);
+
+        if(res){
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "삭제 완료",
+                text: "알림이 정상적으로 삭제되었어요!",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                window.location.reload();
+            });
+        }
     };
 
-    const handleGroupAcceptance = () => {
+    // 그룹 통신
+    const updateGroupRequest = async (id, status) => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.put(process.env.REACT_APP_SERVER_URL + '/api/request/update/group-invite', 
+                {
+                    requestId: id,
+                    status: status
+                }
+            , config);
+
+            if(res.data.code === 200) {
+                return true;
+            }
+            else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                updateGroupRequest(id, status);
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            return false;
+        }
+    }
+
+    const deleteGroupRequest = async (id) => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.delete(process.env.REACT_APP_SERVER_URL + `/api/request/delete/group-invite/${id}`, config);
+
+            if(res.data.code === 200) {
+                return true;
+            }
+            else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                deleteGroupRequest(id);
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            return false;
+        }
+    }
+
+    const handleGroupAcceptance = async (id) => {
         // 그룹 수락 버튼에 대한 함수
+        const res = await updateGroupRequest(id, "ACCEPTED");
+
+        if(res){
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "수락 완료",
+                text: "그룹에 정상적으로 가입했어요!",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                window.location.reload();
+            });
+        }
     };
 
-    const handleGroupRejection = () => {
+    const handleGroupRejection = async (id) => {
         // 그룹 거절 버튼에 대한 함수
+        const res = await updateGroupRequest(id, "ACCEPTED");
+
+        if(res){
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "거절 완료",
+                text: "그룹 초대를 거절했어요.",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                window.location.reload();
+            });
+        }
     };
 
-    const handleGroupDeletion = () => {
+    const handleGroupDeletion = async (id) => {
         // 그룹 삭제 버튼에 대한 함수
+        const res = await deleteGroupRequest(id);
+
+        if(res){
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "삭제 완료",
+                text: "알림이 정상적으로 삭제되었어요!",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                window.location.reload();
+            });
+        }
     };
 
     const TabContent = () => (
@@ -117,15 +611,21 @@ const NoticePage = () => {
                         <div style={{ marginTop: '10px' }}>
                             {schedule.status === "PENDING" ? (
                                 <>
-                                    <Button type="primary" style={{ marginRight: '8px' }} onClick={handleScheduleApproval}>승인</Button>
-                                    <Button type="danger" onClick={handleScheduleRejection}>거절</Button>
+                                    <Button type="primary" style={{ marginRight: '8px' }} onClick={() => handleScheduleApproval(schedule.requestedScheduleId)}>승인</Button>
+                                    <Button type="danger" onClick={() => handleScheduleRejection(schedule.requestedScheduleId)}>거절</Button>
                                 </>
                             ) : (
-                                <Button type="danger" onClick={handleScheduleDeletion}>삭제</Button>
+                                <Button type="danger" onClick={() => handleScheduleDeletion(schedule.requestedScheduleId)}>삭제</Button>
                             )}
                         </div>
                     </Card>
                 ))}
+                {(schedules.length === 0 && 
+                <Card style={{ width: '100%', marginTop: 16 }}>
+                    <Card.Meta 
+                    title={<span>현재 등록된 알림이 없어요!</span>}
+                    />
+                </Card>)}
             </TabPane>
             <TabPane tab={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>친구</span>} key="친구">
                 {friends.map(friend => (
@@ -137,15 +637,21 @@ const NoticePage = () => {
                         <div style={{ marginTop: '10px' }}>
                             {friend.status === "PENDING" ? (
                                 <>
-                                    <Button type="primary" style={{ marginRight: '8px' }} onClick={handleFriendAcceptance}>수락</Button>
-                                    <Button type="danger" onClick={handleFriendRejection}>거절</Button>
+                                    <Button type="primary" style={{ marginRight: '8px' }} onClick={() => handleFriendAcceptance(friend.friendRequestId)}>수락</Button>
+                                    <Button type="danger" onClick={() => handleFriendRejection(friend.friendRequestId)}>거절</Button>
                                 </>
                             ) : (
-                                <Button type="danger" onClick={handleFriendDeletion}>삭제</Button>
+                                <Button type="danger" onClick={() => handleFriendDeletion(friend.friendRequestId)}>삭제</Button>
                             )}
                         </div>
                     </Card>
                 ))}
+                {(friends.length === 0 && 
+                <Card style={{ width: '100%', marginTop: 16 }}>
+                    <Card.Meta 
+                    title={<span>현재 등록된 알림이 없어요!</span>}
+                    />
+                </Card>)}
             </TabPane>
             <TabPane tab={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>그룹</span>} key="그룹">
                 {groups.map(group => (
@@ -157,15 +663,21 @@ const NoticePage = () => {
                         <div style={{ marginTop: '10px' }}>
                             {group.status === "PENDING" ? (
                                 <>
-                                    <Button type="primary" style={{ marginRight: '8px' }} onClick={handleGroupAcceptance}>수락</Button>
-                                    <Button type="danger" onClick={handleGroupRejection}>거절</Button>
+                                    <Button type="primary" style={{ marginRight: '8px' }} onClick={() => handleGroupAcceptance(group.groupRequestId)}>수락</Button>
+                                    <Button type="danger" onClick={() => handleGroupRejection(group.groupRequestId)}>거절</Button>
                                 </>
                             ) : (
-                                <Button type="danger" onClick={handleGroupDeletion}>삭제</Button>
+                                <Button type="danger" onClick={() => handleGroupDeletion(group.groupRequestId)}>삭제</Button>
                             )}
                         </div>
                     </Card>
                 ))}
+                {(groups.length === 0 && 
+                <Card style={{ width: '100%', marginTop: 16 }}>
+                    <Card.Meta 
+                    title={<span>현재 등록된 알림이 없어요!</span>}
+                    />
+                </Card>)}
             </TabPane>
         </Tabs>
     );
