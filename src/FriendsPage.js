@@ -12,12 +12,15 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import axios from 'axios';
+import { refreshAccessToken } from './security/TokenManage';
+import Swal from 'sweetalert2';
 
 
 const FriendsPage = () => {
     const navigate = useNavigate();
     const handleBack = () => {
-        navigate(-1);
+        // navigate(-1);
+        navigate('/main');
     };
 
     const [friends, setFriends] = useState([]);
@@ -26,45 +29,119 @@ const FriendsPage = () => {
     const [editModalVisible, setEditModalVisible] = useState(false); // 수정 모달창 visible 상태 추가
     const [addModalVisible, setAddModalVisible] = useState(false); // 추가 모달창 visible 상태 추가
     const [selectedFriend, setSelectedFriend] = useState(null); // 선택된 친구 상태 추가
+    const [friendNameForUpdate, setFriendNameForUpdate] = useState('');
     const [newFriendId, setNewFriendId] = useState(''); // 새로운 친구 아이디 상태 추가
 
     const fetchFriendList = async () => {
+        const accessToken = localStorage.getItem('accessToken');
         try {
-            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/friend/list/memberId/${localStorage.getItem("userId")}`);
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/friend/list/memberId/${localStorage.getItem("userId")}`, config);
+
             console.log(res);
-            
-            return res.data;
+
+            if(res.data.code === 200) {
+                return res.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                fetchFriendList();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
         } catch (error) {
             console.log(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
     }
 
-    useEffect(async () => {
-        
-        const res = await fetchFriendList();
-        // TODO :: 목록 연동
-        const response = {
-            "code": 200,
-            "message": "OK",
-            "data": [
-                {
-                    "friendId": 3,
-                    "friendMemberId": "TESTID2",
-                    "friendName": "벼랑위의표뇨",
-                    "friendProfileImagePath": "https://mblogthumb-phinf.pstatic.net/MjAxODA2MDRfMjY5/MDAxNTI4MTExNjgyODQx.QtAlWz5AGylTqNbrUlY4fBjCvP0JVhMrizEFksV_e-Ag.z7yP9BuIpBoK9KmEAcRBq1TZQW7qnYQNWli71rnAESUg.PNG.hellokitty4427/1.png?type=w800"
-                },
-                {
-                    "friendId": 4,
-                    "friendMemberId": "TESTID3",
-                    "friendName": "포뇨포뇨토토로",
-                    "friendProfileImagePath": null
-                }
-            ]
-        };
-        setFriends(response.data);
+    useEffect(() => {
+        const setData = async() => {
+            const res = await fetchFriendList();
+            // TODO :: 목록 연동
+            const response = {
+                "code": 200,
+                "message": "OK",
+                "data": [
+                    {
+                        "friendId": 3,
+                        "friendMemberId": "TESTID2",
+                        "friendName": "벼랑위의표뇨",
+                        "friendProfileImagePath": "https://mblogthumb-phinf.pstatic.net/MjAxODA2MDRfMjY5/MDAxNTI4MTExNjgyODQx.QtAlWz5AGylTqNbrUlY4fBjCvP0JVhMrizEFksV_e-Ag.z7yP9BuIpBoK9KmEAcRBq1TZQW7qnYQNWli71rnAESUg.PNG.hellokitty4427/1.png?type=w800"
+                    },
+                    {
+                        "friendId": 4,
+                        "friendMemberId": "TESTID3",
+                        "friendName": "포뇨포뇨토토로",
+                        "friendProfileImagePath": null
+                    }
+                ]
+            };
+
+            setFriends(res.data);
+        }
+
+        setData();
     }, []);
 
-    const handleCalendarClick = () => {
+    const getFriendCalendar = async (friendid) => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            console.log('selF', friendid);
+            // console.log('selFid', selectedFriend.friendId);
+
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/friend/schedule/friendId/${friendid}`, config);
+
+            console.log('ff', res);
+
+            if(res.data.code === 200) {
+                return res.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                getFriendCalendar(friendid);
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
+    const handleCalendarClick = async (friendid) => {
+        console.log('fri', friendid);
+
+        const res = await getFriendCalendar(friendid);
+
         const response = {
             "code": 200,
             "message": "OK",
@@ -95,9 +172,65 @@ const FriendsPage = () => {
                 }
             ]
         };
-        setEvents(response.data);
+        setEvents(res.data);
         setCalendarVisible(true);
     };
+
+    const updateFriendProfile = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.put(process.env.REACT_APP_SERVER_URL + '/api/friend/update', 
+                {
+                    id: selectedFriend.friendId,
+                    member: {
+                        id: localStorage.getItem('userId')
+                    },
+                    opponentNickname: friendNameForUpdate
+                }
+            , config);
+
+            console.log(res);
+
+            if(res.data.code === 200) {
+                setEditModalVisible(false);
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "수정 완료",
+                    text: "친구 정보를 정상적으로 수정했어요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(res => {
+                    window.location.reload();
+                });
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                updateFriendProfile();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        }
+        catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
 
     const handleEditClick = (friend) => {
         setSelectedFriend(friend);
@@ -113,12 +246,51 @@ const FriendsPage = () => {
     };
 
     const addFriend = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+
         try {
-            await axios.post(process.env.REACT_APP_SERVER_URL + `/api/friend/add`, { memberId: newFriendId });
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + `/api/request/add/friend/from/${localStorage.getItem('userId')}/to/${newFriendId}`, null, config);
             setAddModalVisible(false);
             setNewFriendId(""); // 입력 필드 초기화
+
+            console.log('fr', res);
+
+            if(res.data.code === 201) {
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "요청 완료!",
+                    text: "상대방에게 친구 추가를 요청했어요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(res => {
+                    window.location.reload();
+                });
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                addFriend();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
         } catch (error) {
             console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            return;
         }
     };
 
@@ -213,7 +385,7 @@ const FriendsPage = () => {
                                 <span style={{ fontFamily: 'Noto Sans Kr', fontSize: '24px', fontWeight: 'bold', color: 'navy' }}>{friend.friendName}</span>
                             </div>
                             <div className={styles.icons}>
-                                <Button type="primary" size="medium" style={{ marginRight: 12, backgroundColor: 'skyblue', color: 'white' }} onClick={handleCalendarClick}><CalendarOutlined /></Button>
+                                <Button type="primary" size="medium" style={{ marginRight: 12, backgroundColor: 'skyblue', color: 'white' }} onClick={() => handleCalendarClick(friend.friendId)}><CalendarOutlined /></Button>
                                 <Button type="danger" size="medium" style={{ backgroundColor: 'salmon', color: 'white' }} onClick={() => handleEditClick(friend)}><EditOutlined /></Button>
                             </div>
                         </div>
@@ -234,10 +406,10 @@ const FriendsPage = () => {
                 <Modal
                     title="친구 닉네임 수정"
                     visible={editModalVisible}
-                    onOk={() => setEditModalVisible(false)}
+                    onOk={updateFriendProfile}
                     onCancel={() => setEditModalVisible(false)}
                 >
-                    <Input defaultValue={selectedFriend ? selectedFriend.friendName : ''} /> {/* 기존 닉네임 표시 */}
+                    <Input defaultValue={selectedFriend ? selectedFriend.friendName : '' } onChange={e => setFriendNameForUpdate(e.target.value)} /> {/* 기존 닉네임 표시 */}
                 </Modal>
             )}
             {addModalVisible && (
