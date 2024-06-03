@@ -32,12 +32,38 @@ function SignUpPage() {
     }
   ]);
 
-  const handleDuplicateCheck = () => {
+  const handleDuplicateCheck = async () => {
     // 통신 구현 필요
-    const res = {code : 200};
-    
-    if(res.code === 200) {
-      setIsDupChecked(true);
+    const res = await axios.post(process.env.REACT_APP_SERVER_URL + '/api/member/validate-id', 
+      {
+        id: userId
+      }
+    );
+
+    console.log(res);
+
+    if(res.data.data === true) {
+      Swal.fire({
+        icon: "question",
+        title: "사용 가능한 아이디에요!",
+        text: "이 아이디를 사용하시겠나요?",
+        showCancelButton: true,
+        confirmButtonText: "네! 사용할래요!",
+        cancelButtonText: "아니요, 바꿀래요."
+      }).then(async (resp) => {
+        if(resp.isConfirmed) {
+          setIsDupChecked(true);
+        }
+      })
+    }
+    else {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: `이 아이디는 사용할 수 없어요.`,
+        showConfirmButton: false,
+        timer: 1500
+    });
     }
   }
 
@@ -128,6 +154,13 @@ function SignUpPage() {
       });
       return;
     }
+    if(!isDupchecked) {
+      Swal.fire({
+        icon: "error",
+        title: "아이디 중복 체크가 필요해요!",
+        confirmButtonText: "확인"
+      });
+    }
     // 회원가입 API 호출
     try {
       const response = await signUp();
@@ -178,8 +211,8 @@ function SignUpPage() {
         <h2>회원가입</h2>
         <div className="form-group">
           <label htmlFor="userId">아이디</label>
-          <input type="text" id="userId" value={userId} onChange={(e) => setUserId(e.target.value)} required />
-          <button type="button" onClick={handleDuplicateCheck}>중복 체크</button>
+          <input type="text" id="userId" value={userId} onChange={(e) => setUserId(e.target.value)} disabled={isDupchecked} required />
+          {!isDupchecked && (<button type="button" onClick={handleDuplicateCheck} >중복 체크</button>)}
         </div>
         <div className="form-group">
           <label htmlFor="password">비밀번호</label>
