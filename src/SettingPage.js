@@ -15,12 +15,58 @@ const SettingPage = () => {
         id: 'defaultUser',
         password: 'defaultPassword',
         userName: 'defaultUserName',
-        profileImgPath: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV6iTAtlopog7qRqLKpz8gdWw2VGsH8CwBig&s'
+        profileImgPath: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV6iTAtlopog7qRqLKpz8gdWw2VGsH8CwBig&s',
+        interests:[{
+            tagId: 1,
+            tagName: '콜라'
+        }, {
+            tagId: 2,
+            tagName: '코카콜라'
+        }, {
+            tagId: 3,
+            tagName: '코카콜라'
+        }]
     });
 
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
     const [originalProfileImgPath, setOriginalProfileImgPath] = useState('');
+
+    const [interests, setInterests] = useState(['', '', '']); // 관심사 상태 추가
+
+    // 관심사 변경 처리 함수 추가
+    const handleInterestChange = (index, event) => {
+        const value = event.target.value;
+        setInterests(prevInterests => {
+            const newInterests = [...prevInterests];
+            newInterests[index] = value;
+            return newInterests;
+        });
+    };
+
+    // 태그 리스트 상태 추가
+    const [tagList, setTagList] = useState([]);
+
+    // 태그 리스트 가져오기 함수 추가
+    const fetchTagList = async () => {
+        try {
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + "/api/tag/all");
+            console.log(res.data);
+            return res.data;
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchTagList().then(res => {
+            if (res.code === 200) {
+                setTagList(res.data.map(option => option));
+            } else {
+                console.error('태그 정보 가져오기 실패');
+            }
+        });
+    }, []);
 
     useEffect(() => {
         setOriginalProfileImgPath(userInfo.profileImgPath);
@@ -150,7 +196,7 @@ const SettingPage = () => {
     }
 
     const handleUpdate = async () => {
-        // 백엔드에 사용자 정보를 업데이트하는 로직 구현 예정
+        // 백��에 사용자 정보를 업데이트하는 로직 구현 예정
         // console.log("백엔드에 사용자 정보를 업데이트하는 로직 구현 예정");
         Swal.fire({
             icon: "question",
@@ -295,8 +341,10 @@ const SettingPage = () => {
                 id: res.id, 
                 password: '', 
                 userName: res.userName, 
-                profileImgPath: res.profileImgPath 
+                profileImgPath: res.profileImgPath,
+                interests: res.interests.map(interest => interest.tagName)
             });
+            setInterests(res.interests.map(interest => interest.tagName));
         }
 
         fetchData();
@@ -343,6 +391,17 @@ const SettingPage = () => {
                         className={styles.inputField}
                     />
                 </div>
+                <div className={styles.inputContainer}>
+                    <label>관심사</label>
+                    {interests.map((interest, index) => (
+                        <select key={index} id={`interest-${index}`} style={{ marginRight: '10px' }} value={interest} onChange={(e) => handleInterestChange(index, e)} required>
+                            <option value="" disabled>선택하세요</option>
+                            {tagList.map(tag => (
+                                <option key={tag.id} value={tag.name}>{tag.name}</option>
+                            ))}
+                        </select>
+                    ))}
+                </div>
                 <div className={styles.buttonContainer}>
                     <button className={styles.updateButton} onClick={handleUpdate}>변경</button>
                     <button className={styles.deleteButton} onClick={handleDelete}>탈퇴</button>
@@ -353,3 +412,4 @@ const SettingPage = () => {
 };
 
 export default SettingPage;
+
