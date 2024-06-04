@@ -140,7 +140,7 @@ const PowerEmptySchedule = () => {
                     { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" }
                 ];
                 // setGroupMembers(membersData);
-                setGroupMembers([data]);
+                setGroupMembers(data);
             }
         };
 
