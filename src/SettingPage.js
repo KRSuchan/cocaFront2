@@ -9,7 +9,7 @@ import { refreshAccessToken } from './security/TokenManage';
 
 const SettingPage = () => {
     let { state } = useLocation();
-    console.log(state);
+    console.log("state", state);
 
     const [userInfo, setUserInfo] = useState({
         id: 'defaultUser',
@@ -59,6 +59,21 @@ const SettingPage = () => {
     };
 
     useEffect(() => {
+        if(state === null) {
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "잘못된 접근이에요!",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(res => {
+                navigate('/main');
+            });
+        }
+    })
+
+    useEffect(() => {
         fetchTagList().then(res => {
             if (res.code === 200) {
                 setTagList(res.data.map(option => option));
@@ -71,6 +86,8 @@ const SettingPage = () => {
     useEffect(() => {
         setOriginalProfileImgPath(userInfo.profileImgPath);
     }, [userInfo.profileImgPath]);
+
+    
 
     console.log(userInfo);
 
@@ -349,6 +366,8 @@ const SettingPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            if(state === null) return;
+
             const res = await fetchUserInfo();
             setUserInfo({ 
                 id: res.id, 
