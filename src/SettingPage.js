@@ -60,7 +60,7 @@ const SettingPage = () => {
     };
 
     useEffect(() => {
-        if(state === null) {
+        if (state === null) {
             Swal.fire({
                 position: "center",
                 icon: "error",
@@ -71,8 +71,17 @@ const SettingPage = () => {
             }).then(res => {
                 navigate('/main'); 
             });
+        } else {
+            setUserInfo({
+                id: state.id,
+                password: '',
+                userName: state.userName,
+                profileImgPath: state.profileImgPath,
+                interest: state.interest.map(item => item.tagName)
+            });
+            setInterests(state.interest.map(item => item.tagName));
         }
-    })
+    }, [state]);
 
     useEffect(() => {
         fetchTagList().then(res => {
