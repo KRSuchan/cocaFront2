@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { refreshAccessToken } from '../security/TokenManage';
+import { dateValidationCheck } from '../security/ErrorController';
 // import * as MainCalendar from './MainCalendar';
 
 // const formatDate = (date) => {
@@ -81,6 +82,10 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
 
     // 일정 추가 또는 수정 로직
     const saveSchedule = async () => { //✅ 저장버튼 혹은 수정버튼을 눌렀을때 
+        if (!dateValidationCheck(startDate, endDate)) {
+            return;
+        }
+
         let url;
         const method = editingSchedule ? 'put' : 'post';
 
@@ -446,3 +451,4 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
 };
 
 export default AddSchedulePage;
+
