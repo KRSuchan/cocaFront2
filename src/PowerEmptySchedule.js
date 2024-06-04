@@ -23,14 +23,10 @@ const { TabPane } = Tabs;
 // 🍀 unit 에 맞게 시점과 일정이 표시되며 가로축으로 스크롤도 가능
 // 🍀 handleEventClick 일정 클릭시 일정 추가 모달창 띄우고 제목, 내용, 시작시간, 종료시간 입력 가능하고 저장하면 일정 추가됨
 
-// 🔓 멤버들 일정을 한번에 받아올지, 멤버들 추가할때마다 받아올지 생각해 보았는데 일단 전자로 가정하고 작성했어요
-// 🔓 일정의 형태는 시간을 포함하든, 포함하지 않든 캘린더에서는 적절히 처리하도록 파싱됩니당
-
 const PowerEmptySchedule = () => {
     const navigate = useNavigate();
     const calendarRef = useRef(null);
     const [isModalVisible, setIsModalVisible] = useState(false); // 모달 상태
-    // const [newMemberName, setNewMemberName] = useState(''); // 새 멤버 이름 입력을 위한 상태
 
     // ✌️✌️✌️ 상단 검색 조건 상태들
     const [number, setNumber] = useState(1); // 숫자 (N)
@@ -49,10 +45,6 @@ const PowerEmptySchedule = () => {
     // ✌️✌️✌️ 멤버 추가 버튼 눌렀을때 관리하는 상태들 (모달창)
     const [friends, setFriends] = useState([]); // 친구 목록 상태
     const [selectedFriend, setSelectedFriend] = useState(null); // 선택된 친구 상태
-    // const [groups, setGroups] = useState([
-    //     { groupId: 11, groupName: "수정NAME", isAdmin: true },
-    //     { groupId: 13, groupName: "테스트그룹7", isAdmin: true }
-    // ]); // 내가 가입한 그룹 목록
     const groups = useSelector(state => state.groups);
     const [groupMembers, setGroupMembers] = useState([]); // 선택된 그룹의 멤버 목록
     const [selectedGroup, setSelectedGroup] = useState(null); // 선택된 그룹
@@ -245,7 +237,7 @@ const PowerEmptySchedule = () => {
                 });
             } else if (unit === '분') {
                 calendarApi.changeView('customMinuteRange', {
-                    duration: { minutes: 2880 }, // 2일을 분으로 변환
+                    duration: {  hours: 430 }, // 2일을 분으로 변환
                     visibleRange: {
                         start: startDate,
                     },
@@ -405,7 +397,7 @@ const PowerEmptySchedule = () => {
                     },
                     customMinuteRange: {
                         type: 'resourceTimeline',
-                        duration: { minutes: 2880 }, 
+                        duration: { hours: 48 }, 
                         buttonText: '분범위',
                         slotLabelFormat: [
                             { month: 'short', day: 'numeric', weekday: 'short' }, // 상위 레벨: 월, 일, 요일
@@ -428,6 +420,9 @@ const PowerEmptySchedule = () => {
                             console.log('Prev button clicked');
                             const calendarApi = calendarRef.current.getApi();
                             calendarApi.prev();
+                            const currentDate = calendarApi.getDate();
+                            const newDate = moment(currentDate).subtract(2, 'days').toDate();
+                            console.log('2 days before:', newDate);
                         }
                     },
                     next: {
@@ -436,6 +431,9 @@ const PowerEmptySchedule = () => {
                             console.log('Next button clicked');
                             const calendarApi = calendarRef.current.getApi();
                             calendarApi.next();
+                            const currentDate = calendarApi.getDate();
+                            const newDate = moment(currentDate).add(2, 'days').toDate();
+                            console.log('2 days after:', newDate);
                         }
                     }
                 }}
