@@ -472,39 +472,38 @@ const PowerEmptySchedule = () => {
         setMembers(members.filter(member => member.id !== id));
     };
 
-    const handleEventClick = (info) => { // 일정 클릭시 일정 추가 모달창 띄우고 제목, 내용, 시작시간, 종료시간 입력 가능하고 저장하면 일정 추가됨
+    const handleEventClick = (info) => {
         const event = info.event;
-        const startTime = moment(event.start).format('YYYY-MM-DD HH:mm');
-        const endTime = moment(event.end).format('YYYY-MM-DD HH:mm');
-
-        Swal.fire({
-            title: '일정추가',
-            html: `
-                <input id="swal-input1" class="swal2-input" placeholder="제목" value="${event.title}">
-                <input id="swal-input2" class="swal2-input" placeholder="내용">
-                <input id="swal-input3" class="swal2-input" type="datetime-local" value="${startTime}">
-                <input id="swal-input4" class="swal2-input" type="datetime-local" value="${endTime}">
-            `,
-            focusConfirm: false,
-            preConfirm: () => {
-                const title = document.getElementById('swal-input1').value;
-                const content = document.getElementById('swal-input2').value;
-                const start = document.getElementById('swal-input3').value;
-                const end = document.getElementById('swal-input4').value;
-
-                if (title && start && end) {
-                    console.log('Title:', title);
-                    console.log('Content:', content);
-                    console.log('Start:', start);
-                    console.log('End:', end);
-
-                    // 멤버들의 id 출력
-                    members.forEach(member => {
-                        console.log('Member ID:', member.id);
-                    });
+    
+        // 빈 일정에 대해서만 모달창을 띄우기
+        if (event.id.startsWith('empty-')) {
+            const startTime = moment(event.start).format('YYYY-MM-DD HH:mm');
+            const endTime = moment(event.end).format('YYYY-MM-DD HH:mm');
+    
+            Swal.fire({
+                title: '일정추가',
+                html: `
+                    <input id="swal-input1" class="swal2-input" placeholder="제목">
+                    <input id="swal-input2" class="swal2-input" placeholder="내용">
+                    <input id="swal-input3" class="swal2-input" type="datetime-local" value="${startTime}">
+                    <input id="swal-input4" class="swal2-input" type="datetime-local" value="${endTime}">
+                `,
+                focusConfirm: false,
+                preConfirm: () => {
+                    const title = document.getElementById('swal-input1').value;
+                    const content = document.getElementById('swal-input2').value;
+                    const start = document.getElementById('swal-input3').value;
+                    const end = document.getElementById('swal-input4').value;
+    
+                    if (title && start && end) {
+                        console.log('Title:', title);
+                        console.log('Content:', content);
+                        console.log('Start:', start);
+                        console.log('End:', end);
+                    }
                 }
-            }
-        });
+            });
+        }
     };
 
     const ScheduleSearch = () => { // 일정 검색 컴포넌트
