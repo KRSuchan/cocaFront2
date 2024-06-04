@@ -59,12 +59,12 @@ const MainLogo = () => {
                 }
             } catch (error) {
                 console.error('Failed to fetch notices:', error);
-                // 백엔드가 연결되지 않았을 때의 가정된 데이터
+                // 백엔드가 연결되지 않았을 때의 가정된 데���터
                 const fallbackResponse = {
                     code: 200,
                     message: "OK",
                     data: {
-                        contents: "우리 캘린더는 사용자의 편의를 최우선으로 생각하여 설계된 혁신적인 도구입니다. 다양한 기능과 직관적인 인터페이스를 통해 일정을 쉽게 관리할 수 있으며, 팀원들과의 원활한 협업을 지원합니다. 지금 바로 사용해보세요!"
+                        contents: "우리 캘린더는"
                     }
                 };
                 setNotices([fallbackResponse.data.contents]);
@@ -102,7 +102,7 @@ const MainLogo = () => {
             <div style={{ marginLeft: '10px', cursor: 'pointer', marginRight: '20px' }} onClick={handleLogOut}>
                 <LogoutOutlined style={{ color: 'gray', fontSize: '24px' }} />
             </div>
-            <div className="marquee-container" style={{ flexGrow: 1, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+            <div className="marquee-container" style={{ flexGrow: 1, overflow: 'hidden', whiteSpace: 'nowrap', display: 'flex', justifyContent: 'flex-end' }}>
                 <div className="marquee" style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
                     {notices.map((notice, index) => (
                         <span key={index} style={{ marginRight: '50px', fontFamily: 'Noto Sans KR' }}>
