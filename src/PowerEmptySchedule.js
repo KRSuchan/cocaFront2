@@ -70,7 +70,7 @@ const PowerEmptySchedule = () => {
             console.log(res);
 
             if(res.data.code === 200) {
-                return res.data;
+                return res.data.data; // 수정된 부분
             }
             else if(res.data.code === 401) {
                 await refreshAccessToken(navigate);
@@ -96,22 +96,7 @@ const PowerEmptySchedule = () => {
         // 친구 목록을 받아오는 함수
         const fetchFriends = async () => {
             const data = await fetchFriendList();
-            const friendData = [
-                {
-                    friendId: 3,
-                    friendMemberId: "TESTID2",
-                    friendName: "TESTNAME2",
-                    friendProfileImagePath: "TESTURL2"
-                },
-                {
-                    friendId: 4,    
-                    friendMemberId: "TESTID3",
-                    friendName: "TESTNAME3",
-                    friendProfileImagePath: "TESTURL3"
-                }
-            ];
-            // setFriends(friendData);
-            setFriends([data]);
+            setFriends(data); // 수정된 부분
         };
 
         fetchFriends();
@@ -131,7 +116,7 @@ const PowerEmptySchedule = () => {
             console.log(res);
 
             if(res.data.code === 200) {
-                return res.data;
+                return res.data.data; // 수정된 부분
             }
             else if(res.data.code === 401) {
                 await refreshAccessToken(navigate);
@@ -565,4 +550,5 @@ const PowerEmptySchedule = () => {
 };
 
 export default PowerEmptySchedule;
+
 
