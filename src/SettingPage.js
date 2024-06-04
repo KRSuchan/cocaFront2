@@ -12,10 +12,10 @@ const SettingPage = () => {
     console.log("state", state);
 
     const [userInfo, setUserInfo] = useState({
-        id: 'defaultUser',
-        password: 'defaultPassword',
+        id: state?.id || 'defaultUser',
+        password: state?.password || 'defaultPassword',
         userName: 'defaultUserName',
-        profileImgPath: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV6iTAtlopog7qRqLKpz8gdWw2VGsH8CwBig&s',
+        profileImgPath: state?.profileImgPath || 'https://health.chosun.com/site/data/img_dir/2023/01/10/2023011001501_0.jpg',
         interest:[{
             tagId: 1,
             tagName: '콜라'
@@ -412,12 +412,14 @@ const SettingPage = () => {
             </div>
             <div className={styles.content}>
                 <div className={styles.profileImageContainer}>
-                    {profileImage ? (
+                {profileImage ? (
                         <img src={profileImage} alt="profile" className={styles.profileImage} />
-                    ) : ( // 여기 고치는 중
-                        {state.profileImgPath !== '' ? 
-                            (<img src={profileImgPath} alt="profile" className={styles.profileImage} />)
-                             : (<UserOutlined style={{ fontSize: '150px' }} />)}
+                    ) : (
+                        state?.profileImgPath ? (
+                            <img src={state.profileImgPath} alt="profile" className={styles.profileImage} />
+                        ) : (
+                            <UserOutlined style={{ fontSize: '150px' }} />
+                        )
                     )}
                     <div className={styles.editIcon} onClick={handleProfileEditClick}>
                         <EditOutlined style={{ fontSize: '24px' }} />
