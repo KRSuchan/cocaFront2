@@ -167,7 +167,7 @@ const SettingPage = () => {
             let data = userInfo;
 
             const interestData = interests
-            .fillter(item => item !== '')
+            .filter(item => item !== '')
             .map(item => {
                 const tag = tagList.find(tag => tag.name === item);
                 return tag ? {tagId: tag.id, TagName: tag.name} : null;
@@ -180,23 +180,39 @@ const SettingPage = () => {
                     id: userInfo.id,
                     password: state.password,
                     userName: userInfo.userName,
-                    isDefaultImage: false,
+                    profileImageUrl: (profileImage === null && !isEditingProfile) ? userInfo.profileImgPath : '',
                     interestId: interestData
                 };
                 console.log("data", data);
+            } else {
+                data = {
+                    id: userInfo.id,
+                    password: userInfo.password,
+                    userName: userInfo.userName,
+                    profileImageUrl: (profileImage === null && !isEditingProfile) ? userInfo.profileImgPath : '',
+                    interestId: interestData
+                };
             }
 
             const formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {type: 'application/json'}));
 
-            // TODO : 파일 첨부
+            if(profileImage) {
+                formData.append('profileImage', profileImage);
+            } else {
+                formData.append('profileImage', '[]');
+            }
+
+            console.log('pro', profileImage);
 
             const config = {
                 headers: {
-                  Authorization: `Bearer ${accessToken}`,
+                    Authorization: `Bearer ${accessToken}`,
+                  'Content-Type': 'multipart/form-data'
                 },
             };
 
-            const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/memberInfoUpdateReq", data, config);
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/memberInfoUpdateReq", formData, config);
             console.log(res);
 
             if(res.data.code === 200) {
@@ -245,6 +261,8 @@ const SettingPage = () => {
                         title: "정상적으로 변경되었어요!",
                         showConfirmButton: false,
                         timer: 1500
+                    }).then(res => {
+                        window.location.reload();            
                     });
                 } else {
                     Swal.fire({
