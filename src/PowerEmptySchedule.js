@@ -29,13 +29,14 @@ const PowerEmptySchedule = () => {
     const [isModalVisible, setIsModalVisible] = useState(false); // 모달 상태
 
     // ✌️✌️✌️ 상단 검색 조건 상태들
-    const [number, setNumber] = useState(1); // 숫자 (N)
+    const [number, setNumber] = useState(1); // 숫자 (N) -> 일 및 시간
+    const [minute, setMinute] = useState(10); // 분
     const [unit, setUnit] = useState('일'); // '일', '시간', '분'
     const [range, setRange] = useState(null); //시작일 끝일
     const [members, setMembers] = useState([
-        { id: 1, name: '아이유에오', photo: 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/202306/04/138bdfca-3e86-4c09-9632-d22df52a0484.jpg' },
-        { id: 2, name: '멤브레인', photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg' },
-        { id: 3, name: '멤버 3', photo: '' },
+        // { id: 1, name: '아이유에오', photo: 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/202306/04/138bdfca-3e86-4c09-9632-d22df52a0484.jpg' },
+        // { id: 2, name: '멤브레인', photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg' },
+        // { id: 3, name: '멤버 3', photo: '' },
     ]); // 기존 멤버 상태
 
     // ✌️✌️✌️ 일정 상태들
@@ -87,7 +88,8 @@ const PowerEmptySchedule = () => {
     useEffect(() => {
         // 친구 목록을 받아오는 함수
         const fetchFriends = async () => {
-            const data = await fetchFriendList();
+            let data = await fetchFriendList();
+            data = data.map(item => ({...item, friendId: item.friendMemberId}));
             setFriends(data); // 수정된 부분
         };
 
@@ -155,6 +157,10 @@ const PowerEmptySchedule = () => {
         setNumber(value);
     };
 
+    const handleMinuteChange = (value) => {
+        setMinute(value);
+    };
+
     const handleUnitChange = (value) => {
         setUnit(value);
     };
@@ -163,8 +169,174 @@ const PowerEmptySchedule = () => {
         setRange(dates);
     };
 
+    const getMembersSchedules = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            if(range === null) {
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "에러!",
+                    text: "검색일을 지정해주세요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                return;
+            }
+
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const memberData = members.map(item => item.id);
+
+            const data = {
+                members: memberData,
+                startDate: formatDate(range[0].$d),
+                endDate: formatDate(range[1].$d),
+                findDay: null,
+                findMinute: null
+            }
+
+            console.log('data', data);
+
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + '/api/commonscheduleController/memberScheduleReq', data, config);
+
+            console.log('mem', res);
+
+            if(res.data.code === 200) {
+                return res.data.data;
+            }
+            else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                getMembersSchedules();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            return [];
+        }
+    }
+
+    const getEmptySchedules = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            if(range === null) {
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "에러!",
+                    text: "검색일을 지정해주세요!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                return;
+            }
+            
+            const memberData = members.map(item => item.id);
+
+            let data;
+            if(unit === '일') {
+                data = {
+                    members: memberData,
+                    startDate: formatDate(range[0].$d),
+                    endDate: formatDate(range[1].$d),
+                    findDay: number,
+                    findMinute: 0
+                }
+            }
+            else if(unit === '시간') {
+                data = {
+                    members: memberData,
+                    startDate: formatDate(range[0].$d),
+                    endDate: formatDate(range[1].$d),
+                    findDay: 0,
+                    findMinute: number * 60
+                }
+            }
+            else if(unit === '분') {
+                data = {
+                    members: memberData,
+                    startDate: formatDate(range[0].$d),
+                    endDate: formatDate(range[1].$d),
+                    findDay: 0,
+                    findMinute: number * 60 + minute
+                }
+            }
+            else {
+                throw new Error('type mismatch');
+            }
+
+            console.log('data', data);
+
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + '/api/commonscheduleController/findEmptyScheduleReq', data, config);
+
+            console.log(res);
+
+            if(res.data.code === 200) {
+                return res.data.data;
+            }
+            else if (res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                getEmptySchedules();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            return [];
+        }
+    }
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        // getMonth()는 0부터 시작하므로 1을 더해준다. 월이 한 자리수일 때 앞에 '0'을 붙여준다.
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        // getDate()는 날짜를 반환한다. 일이 한 자리수일 때 앞에 '0'을 붙여준다.
+        const day = ('0' + date.getDate()).slice(-2);
+
+        return `${year}-${month}-${day}`;
+    }
+
     const handleSearch = async () => { //✌️찾기버튼 눌렀을떄! unit에서 일인지 시간인지 분인지 확인해야 함. 
-        // 일정 데이터를 받아옴. 
+        // console.log(formatDate(range));
+        
+        // 일정 데이터를 받아옴. -> 각자 개인 일정?
         const fetchSchedules = async () => {
             const data = [
                 [
@@ -192,7 +364,7 @@ const PowerEmptySchedule = () => {
             setSchedules(data);
         };
 
-        // 빈일정 데이터를 받아오는 함수
+        // 빈일정 데이터를 받아오는 함수 -> 빈 일정
         const fetchEmptySchedules = async () => {
             const emptyData = [
                 { startTime: "2024-08-02", endTime: "2024-08-06" },
@@ -201,11 +373,23 @@ const PowerEmptySchedule = () => {
                 { startTime: "2024-08-05", endTime: "2024-08-09" },
                 { startTime: "2024-08-06", endTime: "2024-08-10" }
             ];
-            setEmptySchedules([emptyData]);
+
+            const data = await getEmptySchedules();
+            setEmptySchedules(data);
+
+            console.log(emptySchedules);
         };
 
-        await fetchSchedules();
-        await fetchEmptySchedules();
+        // await fetchSchedules();
+        
+        const emptyScheduleData = await getEmptySchedules();
+        setEmptySchedules(emptyScheduleData);
+
+        const memberScheduleData = await getMembersSchedules();
+        const memberSchedule = memberScheduleData.map(item => item.scheduleList);
+        console.log(memberSchedule);
+        setSchedules(memberSchedule);
+        
 
         if (range && range.length === 2) { // 검색 조건이 선택된 경우
             const calendarApi = calendarRef.current.getApi();
@@ -266,9 +450,10 @@ const PowerEmptySchedule = () => {
     };
 
     const handleModalOk = () => { // 모달창에서 친구 선택하고 추가 버튼 누르면 멤버 상태에 추가됨
+        console.log(selectedFriend);
         if (selectedFriend) {
             const newMember = {
-                id: members.length + 1,
+                id: selectedFriend.friendId,
                 name: selectedFriend.friendName,
                 photo: selectedFriend.friendProfileImagePath
             };
@@ -335,8 +520,10 @@ const PowerEmptySchedule = () => {
             }))
         );
 
+        console.log('em', emptySchedules);
+
         // 빈 일정 벤트 추가
-        const emptyEvents = emptySchedules[0] ? emptySchedules[0].map((empty, idx) => ({
+        const emptyEvents = emptySchedules ? emptySchedules.map((empty, idx) => ({
             id: `empty-${idx}`,
             resourceId: 'zempty', // 모든 빈 일정은 같은 리소스 ID를 사용
             start: empty.startTime,
@@ -449,11 +636,25 @@ const PowerEmptySchedule = () => {
             </div>
             <div className={styles.subPanel}>
                 <RangePicker getPopupContainer={trigger => trigger.parentNode} onChange={handleRangeChange} />
-                <InputNumber min={1} max={10} value={number} onChange={handleNumberChange} style={{ marginLeft: '20px' }} />
+                <InputNumber min={unit === '분' ? 0 : 1} max={(unit === '분' || unit === '시간') ? 23 : 30} value={number} onChange={handleNumberChange} style={{ marginLeft: '20px' }} />
+                {unit === '분' 
+                ? ( <div>
+                <Button type="text">시간</Button>
+                <Select value={minute} onChange={handleMinuteChange} getPopupContainer={trigger => trigger.parentNode}>
+                    <Option value="10">10</Option>
+                    <Option value="20">20</Option>
+                    <Option value="30">30</Option>
+                    <Option value="40">40</Option>
+                    <Option value="50">50</Option>
+                </Select>
+                </div>
+                ) 
+                : null }
+                
                 <Select value={unit} onChange={handleUnitChange} getPopupContainer={trigger => trigger.parentNode} style={{ width: '100px', marginLeft: '20px' }}>
                     <Option value="일">일</Option>
                     <Option value="시간">시간</Option>
-                    <Option value="시간">십분</Option>
+                    <Option value="분">분</Option>
                 </Select>
                 <button 
                     onClick={handleSearch} 
