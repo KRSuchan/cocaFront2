@@ -88,7 +88,18 @@ const SettingPage = () => {
         setOriginalProfileImgPath(userInfo.profileImgPath);
     }, [userInfo.profileImgPath]);
 
-    
+    useEffect(() => {
+        if (state) {
+            setUserInfo({
+                id: state.id,
+                password: '',
+                userName: state.userName,
+                profileImgPath: state.profileImgPath,
+                interest: state.interest.map(item => item.tagName)
+            });
+            setInterests(state.interest.map(item => item.tagName));
+        }
+    }, [state]);
 
     console.log(userInfo);
 
@@ -99,9 +110,12 @@ const SettingPage = () => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
+                setUserInfo(prevState => ({
+                    ...prevState,
+                    profileImgPath: reader.result
+                }));
                 setProfileImage(reader.result);
                 setProfileImageFile(file);
-                setUserInfo({ ...userInfo, profileImgPath: reader.result });
             };
             reader.readAsDataURL(file);
         }
