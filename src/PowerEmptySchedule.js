@@ -237,7 +237,7 @@ const PowerEmptySchedule = () => {
                 });
             } else if (unit === '분') {
                 calendarApi.changeView('customMinuteRange', {
-                    duration: { minutes: 2880 }, // 2일을 분으로 변환
+                    duration: {  hours: 430 }, // 2일을 분으로 변환
                     visibleRange: {
                         start: startDate,
                     },
