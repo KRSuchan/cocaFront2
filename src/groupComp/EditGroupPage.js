@@ -20,6 +20,7 @@ const EditGroupPage = () => {
    const [currentManagerIndex, setCurrentManagerIndex] = useState(null);
    const [members, setMembers] = useState([]);
    const [privatePassword, setPrivatePassword] = useState("");
+   const [originalManager, setOriginalManager] = useState([]);
    const [membersToManager, setMembersToManager] = useState([]);
    const [managersToMember, setManagerToMember] = useState([]);
    const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const EditGroupPage = () => {
        fetchGroupDetails(groupId).then(response => {
          if (response && response.code === 200) {
            setGroupDetails(response.data);
+           setOriginalManager(response.data.groupManagers);
            setPrivatePassword(response.data.privatePassword || "");
          } else {
            // 백엔드에서 데이터를 가져오지 못했을 때 더미 데이터 사용
@@ -169,6 +171,22 @@ const EditGroupPage = () => {
     // TODO: 백엔드에 그룹 정보를 저장하는 로직 구현
     const accessToken = localStorage.getItem('accessToken');
 
+    const originalManagerIds = originalManager.map(manager => manager.id); // originalManager의 id들만 추출
+
+    const member2manager = groupDetails.groupManagers.filter(manager => 
+        !originalManagerIds.includes(manager.id) // originalManager에 없는 항목만 필터링
+    );
+  
+    console.log(member2manager);
+
+    const groupManagerIds = groupDetails.groupManagers.map(manager => manager.id); // groupDetails.groupManagers의 id들만 추출
+
+    const manager2member = originalManager.filter(manager => 
+        !groupManagerIds.includes(manager.id) // groupManagerIds에 manager.id가 포함되지 않는 경우만 필터링
+    );
+
+    console.log(manager2member);
+
     let groupData = {
       group: {
         id: groupDetails.groupId,
@@ -180,10 +198,10 @@ const EditGroupPage = () => {
       },
       groupTags: groupDetails.groupTags,
       notice: {
-        contents: groupDetails.groupNotice
+        contents: groupDetails.groupNotice === '' ? null : groupDetails.groupNotice
       },
-      membersToManager: membersToManager,
-      managersToMember: managersToMember
+      membersToManager: member2manager,
+      managersToMember: manager2member
     };
 
     console.log(groupData);
@@ -234,7 +252,7 @@ const EditGroupPage = () => {
                   showConfirmButton: false,
                   timer: 1500
               }).then(res => {
-                  window.location.reload();            
+                  window.location.reload();
               });
           } else {
               Swal.fire({
@@ -427,7 +445,7 @@ const EditGroupPage = () => {
                     {index !== 0 && (
                       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '0px' }}>
                         <button onClick={() => handleManagerDelete(index)} className={styles.joinButton} style={{ marginBottom: '4px' }}>해임</button>
-                        <button onClick={() => handleManagerSave(index)} className={styles.joinButton}>저장</button>
+                        {/* <button onClick={() => handleManagerSave(index)} className={styles.joinButton}>저장</button> */}
                         <button onClick={() => openMemberModal(index)} className={styles.joinButton}>선택</button>
                       </div>
                     )}
