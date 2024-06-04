@@ -8,6 +8,9 @@ import moment from 'moment';
 import koLocale from '@fullcalendar/core/locales/ko'; // 한국어 로케일 추가
 import { UserOutlined } from '@ant-design/icons'; // antd 아이콘 추가
 import Swal from 'sweetalert2'; // Swal 추가
+import axios from 'axios';
+import { refreshAccessToken } from './security/TokenManage';
+import { useSelector } from 'react-redux';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -46,16 +49,53 @@ const PowerEmptySchedule = () => {
     // ✌️✌️✌️ 멤버 추가 버튼 눌렀을때 관리하는 상태들 (모달창)
     const [friends, setFriends] = useState([]); // 친구 목록 상태
     const [selectedFriend, setSelectedFriend] = useState(null); // 선택된 친구 상태
-    const [groups, setGroups] = useState([
-        { groupId: 11, groupName: "수정NAME", isAdmin: true },
-        { groupId: 13, groupName: "테스트그룹7", isAdmin: true }
-    ]); // 내가 가입한 그룹 목록
+    // const [groups, setGroups] = useState([
+    //     { groupId: 11, groupName: "수정NAME", isAdmin: true },
+    //     { groupId: 13, groupName: "테스트그룹7", isAdmin: true }
+    // ]); // 내가 가입한 그룹 목록
+    const groups = useSelector(state => state.groups);
     const [groupMembers, setGroupMembers] = useState([]); // 선택된 그룹의 멤버 목록
     const [selectedGroup, setSelectedGroup] = useState(null); // 선택된 그룹
+
+    const fetchFriendList = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/friend/list/memberId/${localStorage.getItem("userId")}`, config);
+
+            console.log(res);
+
+            if(res.data.code === 200) {
+                return res.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                fetchFriendList();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.log(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
 
     useEffect(() => {
         // 친구 목록을 받아오는 함수
         const fetchFriends = async () => {
+            const data = await fetchFriendList();
             const friendData = [
                 {
                     friendId: 3,
@@ -70,24 +110,64 @@ const PowerEmptySchedule = () => {
                     friendProfileImagePath: "TESTURL3"
                 }
             ];
-            setFriends(friendData);
+            // setFriends(friendData);
+            setFriends([data]);
         };
 
         fetchFriends();
     }, []);
 
+    const fetchGroupMembers = async (group) => {
+        const accessToken = localStorage.getItem('accessToken');
+        try {
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/list/members/member/${localStorage.getItem('userId')}/group/${group.groupId}`, config);
+
+            console.log(res);
+
+            if(res.data.code === 200) {
+                return res.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                fetchGroupMembers(group);
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "에러!",
+                text: "서버와의 통신에 문제가 생겼어요!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
     useEffect(() => {
         // 선택된 그룹의 멤버 목록을 받아오는 함수
-        const fetchGroupMembers = async () => {
+        const getGroupMembers = async () => {
             if (selectedGroup) {
+                console.log(selectedGroup);
+                const data = await fetchGroupMembers(selectedGroup);
                 const membersData = [
                     { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" }
                 ];
-                setGroupMembers(membersData);
+                // setGroupMembers(membersData);
+                setGroupMembers([data]);
             }
         };
 
-        fetchGroupMembers();
+        getGroupMembers();
     }, [selectedGroup]);
 
     const handleBack = () => {
@@ -443,7 +523,7 @@ const PowerEmptySchedule = () => {
                                 <List
                                     itemLayout="horizontal"
                                     dataSource={groups}
-                                    renderItem={group => (
+                                    renderItem={group => group.groupId !== -1 && (
                                         <List.Item
                                             onClick={() => setSelectedGroup(group)}
                                             style={{ cursor: 'pointer', backgroundColor: selectedGroup?.groupId === group.groupId ? '#e6f7ff' : 'transparent' }}

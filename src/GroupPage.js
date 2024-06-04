@@ -57,6 +57,7 @@ const GroupPage = () => {
     }
   }
 
+  // TODO : 유저 태그 받아와서 첫 목록은 유저 관심사로 검색한 결과 가져오기
   const fetchUserTags = async () => {
     const accessToken = localStorage.getItem('accessToken');
     try {
@@ -66,7 +67,7 @@ const GroupPage = () => {
         },
       };
 
-      
+
     } catch (error) {
       console.error(error);
     }
