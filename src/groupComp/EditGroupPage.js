@@ -105,7 +105,19 @@ const EditGroupPage = () => {
 
       if(res.data.code === 200) {
         return res.data;
-      } else if (res.data.code === 401) {
+      } else if(res.data.code === 403) {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "에러!",
+          text: "접근할 수 없는 페이지에요!",
+          showConfirmButton: false,
+          timer: 1500
+        }).then(res => {
+          navigate('/main');
+        });
+      } 
+      else if (res.data.code === 401) {
         await refreshAccessToken(navigate);
         fetchGroupDetails(groupId);
       } else {
@@ -120,7 +132,7 @@ const EditGroupPage = () => {
         text: "서버와의 통신에 문제가 생겼어요!",
         showConfirmButton: false,
         timer: 1500
-    });
+      });
       return null;
     }
   };
