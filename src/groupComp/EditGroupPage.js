@@ -508,7 +508,7 @@ const EditGroupPage = () => {
           {members.map((member) => (
             <div key={member.id} className={styles.memberInfo} onClick={() => handleMemberSelect(member)}>
               {member.profileImgPath ? (
-                <img src={member.profileImgPath} alt="멤버 사진" className={styles.memberImage} />
+                <img src={member.profileImgPath} alt="멤버 사진" className={styles.memberImage} style={{ maxWidth: '80px', maxHeight: '80px' }} />
               ) : (
                 <UserOutlined style={{ fontSize: '40px' }} />
               )}
