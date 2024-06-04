@@ -7,6 +7,7 @@ import axios from 'axios';
 import { checkPassword, refreshAccessToken } from '../security/TokenManage';
 import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
+import { Modal, Button } from 'antd';
 
 const EditGroupPage = () => {
   const { groupId } = useParams();
@@ -73,12 +74,27 @@ const EditGroupPage = () => {
     }
   };
 
+  // 백엔드에서 멤버 목록을 가져오는 함수
+  const fetchMembers = async () => {
+    try {
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + "/api/members/all");
+      if (res.data.code === 200) {
+        return res.data.data;
+      } else {
+        throw new Error('Failed to fetch members');
+      }
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
   // useState를 사용하여 그룹 정보 상태 관리
   const [groupDetails, setGroupDetails] = useState(null);
   const [availableTags, setAvailableTags] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentManagerIndex, setCurrentManagerIndex] = useState(null);
-  const [newManagerId, setNewManagerId] = useState("");
+  const [members, setMembers] = useState([]);
   const [privatePassword, setPrivatePassword] = useState("");
   const dispatch = useDispatch();
 
@@ -237,10 +253,10 @@ const EditGroupPage = () => {
     navigate(-1);
   };
 
-  const handleManagerChange = (index, newManagerId) => {
+  const handleManagerChange = (index, newManager) => {
     if (!groupDetails) return;
     const newManagers = [...groupDetails.groupManagers];
-    newManagers[index] = { ...newManagers[index], id: newManagerId };
+    newManagers[index] = newManager;
     setGroupDetails({ ...groupDetails, groupManagers: newManagers });
   };
 
@@ -253,6 +269,18 @@ const EditGroupPage = () => {
   const handleManagerSave = (index) => {
     // TODO: 백엔드에서 프사 다시 받아오는 기능 구현
     console.log(`Save manager at index ${index}`);
+  };
+
+  const openMemberModal = async (index) => {
+    const members = await fetchMembers();
+    setMembers(members);
+    setCurrentManagerIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const handleMemberSelect = (member) => {
+    handleManagerChange(currentManagerIndex, member);
+    setIsModalOpen(false);
   };
 
   if (!groupDetails) {
@@ -285,38 +313,39 @@ const EditGroupPage = () => {
             className={styles.textarea}
           />
           <p className={styles.title2}>그룹 매니저</p>
-          <div className={styles.managersContainer} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'start', gap: '20px' }}>
-            {[...Array(3)].map((_, index) => {
-              const manager = groupDetails.groupManagers[index];
-              return (
-                <div key={index} className={styles.managerInfo} style={{ textAlign: 'center', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '10px', padding: '10px', backgroundColor: '#f0f0f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  {manager ? (
-                    <>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        {manager.profileImgPath ? (
-                          <img src={manager.profileImgPath} alt="매니저 사진" className={styles.managerImage} style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
-                        ) : (
-                          <UserOutlined style={{ fontSize: '80px' }} />
-                        )}
-                        <input
-                          type="text"
-                          value={manager.id}
-                          onChange={(e) => handleManagerChange(index, e.target.value)}
-                          className={styles.input}
-                          style={{ marginTop: '8px', fontWeight: 'bold', color: '#333' }}
-                        />
+          <div className={styles.managersContainer} style={{ display: 'flex', overflowX: 'auto', whiteSpace: 'nowrap', gap: '20px' }}>
+            {groupDetails.groupManagers.map((manager, index) => (
+              <div key={index} className={styles.managerInfo} style={{ display: 'inline-block', textAlign: 'center', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '10px', padding: '10px', backgroundColor: '#f0f0f0', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                {manager ? (
+                  <>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      {manager.profileImgPath ? (
+                        <img src={manager.profileImgPath} alt="매니저 사진" className={styles.managerImage} style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
+                      ) : (
+                        <UserOutlined style={{ fontSize: '80px' }} />
+                      )}
+                      <div className={styles.input} style={{ marginTop: '8px', fontWeight: 'bold', color: '#333' }}>
+                        {manager.userName}
                       </div>
+                    </div>
+                    {index !== 0 && (
                       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: '0px' }}>
-                        <button onClick={() => handleManagerDelete(index)} className={styles.joinButton} style={{ marginBottom: '4px' }}>삭제</button>
+                        <button onClick={() => handleManagerDelete(index)} className={styles.joinButton} style={{ marginBottom: '4px' }}>해임</button>
                         <button onClick={() => handleManagerSave(index)} className={styles.joinButton}>저장</button>
+                        <button onClick={() => openMemberModal(index)} className={styles.joinButton}>선택</button>
                       </div>
-                    </>
-                  ) : (
-                    <button onClick={() => handleManagerChange(index, "")} className={styles.joinButton}>추가</button>
-                  )}
-                </div>
-              );
-            })}
+                    )}
+                  </>
+                ) : (
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <button onClick={() => openMemberModal(index)} className={styles.joinButton}>추가</button>
+                  </div>
+                )}
+              </div>
+            ))}
+            <div className={styles.managerInfo} style={{ display: 'inline-block', textAlign: 'center', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '10px', padding: '10px', backgroundColor: '#f0f0f0', flexDirection: 'column', alignItems: 'center' }}>
+              <button onClick={() => openMemberModal(groupDetails.groupManagers.length)} className={styles.joinButton}>추가</button>
+            </div>
           </div>
           <p className={styles.title2}>그룹분야</p>
           {groupDetails.groupTags.map((tag, index) => (
@@ -361,6 +390,34 @@ const EditGroupPage = () => {
           취소
         </button>
       </div>
+      <Modal
+        title="멤버 선택"
+        visible={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setIsModalOpen(false)}>
+            취소
+          </Button>,
+          <Button key="ok" type="primary" onClick={() => setIsModalOpen(false)}>
+            확인
+          </Button>,
+        ]}
+        getContainer={false}
+        destroyOnClose={true}
+      >
+        <div className={styles.membersContainer}>
+          {members.map((member) => (
+            <div key={member.id} className={styles.memberInfo} onClick={() => handleMemberSelect(member)}>
+              {member.profileImgPath ? (
+                <img src={member.profileImgPath} alt="멤버 사진" className={styles.memberImage} />
+              ) : (
+                <UserOutlined style={{ fontSize: '40px' }} />
+              )}
+              <div className={styles.memberName}>{member.userName}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 };
