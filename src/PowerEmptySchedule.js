@@ -551,12 +551,14 @@ const PowerEmptySchedule = () => {
             <FullCalendar
                 ref={calendarRef}
                 plugins={[resourceTimelinePlugin]}
-                initialView="resourceTimelineDay"
+                // initialView="customRange"
+                initialView={unit === '일' ? 'customRange' : unit === '시간' ? 'customHourRange' : 'customMinuteRange'}
                 locale={koLocale}
                 headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'customMinuteRange,customHourRange,customRange,resourceTimelineDay,resourceTimelineMonth,resourceTimelineYear'
+                    // right: 'customMinuteRange,customHourRange,customRange,resourceTimelineDay,resourceTimelineMonth,resourceTimelineYear'
+                    right: 'customMinuteRange,customHourRange,customRange'
                 }}
                 views={{
                     resourceTimelineYear: {
