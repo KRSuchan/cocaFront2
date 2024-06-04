@@ -16,7 +16,7 @@ const SettingPage = () => {
         password: 'defaultPassword',
         userName: 'defaultUserName',
         profileImgPath: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV6iTAtlopog7qRqLKpz8gdWw2VGsH8CwBig&s',
-        interests:[{
+        interest:[{
             tagId: 1,
             tagName: '콜라'
         }, {
@@ -149,16 +149,29 @@ const SettingPage = () => {
         try {
             let data = userInfo;
 
+            const interestData = interests
+            .fillter(item => item !== '')
+            .map(item => {
+                const tag = tagList.find(tag => tag.name === item);
+                return tag ? {tagId: tag.id, TagName: tag.name} : null;
+            })
+            .filter(tag => tag !== null);
+
             if(userInfo.password === '') {
                 console.log("pw blanked");
                 data = {
                     id: userInfo.id,
                     password: state.password,
                     userName: userInfo.userName,
-                    profileImgPath: userInfo.profileImgPath
+                    isDefaultImage: false,
+                    interestId: interestData
                 };
                 console.log("data", data);
             }
+
+            const formData = new FormData();
+
+            // TODO : 파일 첨부
 
             const config = {
                 headers: {
@@ -196,7 +209,7 @@ const SettingPage = () => {
     }
 
     const handleUpdate = async () => {
-        // 백��에 사용자 정보를 업데이트하는 로직 구현 예정
+        // 백엔드에 사용자 정보를 업데이트하는 로직 구현 예정
         // console.log("백엔드에 사용자 정보를 업데이트하는 로직 구현 예정");
         Swal.fire({
             icon: "question",
@@ -331,7 +344,7 @@ const SettingPage = () => {
     };
 
     const handleBack = () => {
-        navigate(-2);
+        navigate('/main');
     };
 
     useEffect(() => {
@@ -342,9 +355,9 @@ const SettingPage = () => {
                 password: '', 
                 userName: res.userName, 
                 profileImgPath: res.profileImgPath,
-                interests: res.interests.map(interest => interest.tagName)
+                interest: res.interest.map(item => item.tagName)
             });
-            setInterests(res.interests.map(interest => interest.tagName));
+            setInterests(res.interest.map(item => item.tagName));
         }
 
         fetchData();
