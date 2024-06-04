@@ -143,7 +143,7 @@ const getGroupList = async (id, navigate) => {
 
         if(res.data.code === 200) {
             return res.data.data;
-        } else if (res.data.code === 401) {
+        } else if (res.data.code === 401 || res.data.data === null) {
             await refreshAccessToken(navigate);
             getGroupList(id, navigate);
         } else {

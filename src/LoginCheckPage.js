@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { UserOutlined, LeftOutlined } from '@ant-design/icons'; // 아이콘 추가
 import styles from './css/SettingPage.module.css'; // 스타일 시트 임포트
@@ -14,6 +14,49 @@ const LoginCheckPage = () => {
         password: '',
         profileImgPath: ''
     });
+
+    const fetchProfileImage = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/member/memberProfileImageUrlReq?memberId=${localStorage.getItem('userId')}`, config);
+
+            console.log(res);
+
+            if(res.data.code === 200) {
+                return res.data.data;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                fetchProfileImage();
+            }
+            else {
+                throw new Error('unknown Error');
+            }
+        } catch (error) {
+            console.error(error);
+
+            return null;
+        }
+    }
+
+    useEffect(() => {
+        const setProfileImage = async () => {
+            const res = await fetchProfileImage();
+
+            if(res) {
+                setUserInfo({...userInfo, profileImgPath: res});
+            }
+        }
+
+        setProfileImage();
+    }, []);
 
     const handleLogin = async () => {
         console.log(userInfo);
