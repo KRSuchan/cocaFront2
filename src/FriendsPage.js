@@ -419,7 +419,14 @@ const FriendsPage = () => {
     
         return (
             <div>
-              
+              <style>
+                {`
+                  /* 시간표 숨기기 */
+                  .rbc-time-content {
+                    display: none !important;
+                  }
+                `}
+              </style>
               <Calendar
                 localizer={localizer}
                 events={myEvents}
