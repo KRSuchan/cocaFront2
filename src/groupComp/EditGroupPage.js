@@ -348,23 +348,26 @@ const EditGroupPage = () => {
             </div>
           </div>
           <p className={styles.title2}>그룹분야</p>
-          {groupDetails.groupTags.map((tag, index) => (
-            <select
-              key={tag.id}
-              value={tag.id}
-              onChange={(e) => {
-                const newTags = [...groupDetails.groupTags];
-                const selectedTag = availableTags.find(t => t.id === parseInt(e.target.value));
-                newTags[index] = selectedTag;
-                setGroupDetails({ ...groupDetails, groupTags: newTags });
-              }}
-              className={styles.input}
-            >
-              {availableTags.map(option => (
-                <option key={option.id} value={option.id}>{option.name}</option>
-              ))}
-            </select>
-          ))}
+          <div style={{ display: 'flex', gap: '10px' }}>
+            {[0, 1, 2].map((index) => (
+              <select
+                key={index}
+                value={groupDetails.groupTags[index]?.id || ''}
+                onChange={(e) => {
+                  const newTags = [...groupDetails.groupTags];
+                  const selectedTag = availableTags.find(t => t.id === parseInt(e.target.value));
+                  newTags[index] = selectedTag;
+                  setGroupDetails({ ...groupDetails, groupTags: newTags });
+                }}
+                className={styles.input}
+              >
+                <option value="" disabled>태그 선택</option>
+                {availableTags.map(option => (
+                  <option key={option.id} value={option.id}>{option.name}</option>
+                ))}
+              </select>
+            ))}
+          </div>
           {privatePassword !== null && (
             <>
               <p className={styles.title2}>비밀번호</p>
