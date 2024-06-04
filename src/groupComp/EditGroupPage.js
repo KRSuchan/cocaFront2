@@ -13,6 +13,70 @@ const EditGroupPage = () => {
   const { groupId } = useParams();
   const navigate = useNavigate();
 
+   // useState를 사용하여 그룹 정보 상태 관리
+   const [groupDetails, setGroupDetails] = useState(null);
+   const [availableTags, setAvailableTags] = useState([]);
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [currentManagerIndex, setCurrentManagerIndex] = useState(null);
+   const [members, setMembers] = useState([]);
+   const [privatePassword, setPrivatePassword] = useState("");
+   const [membersToManager, setMembersToManager] = useState([]);
+   const [managersToMember, setManagerToMember] = useState([]);
+   const dispatch = useDispatch();
+ 
+   useEffect(() => {
+     if (groupId) {
+       fetchGroupDetails(groupId).then(response => {
+         if (response && response.code === 200) {
+           setGroupDetails(response.data);
+           setPrivatePassword(response.data.privatePassword || "");
+         } else {
+           // 백엔드에서 데이터를 가져오지 못했을 때 더미 데이터 사용
+           console.error('그룹 정보를 가져오는데 실패했습니다. 더미 데이터를 사용합니다.');
+           setGroupDetails({
+             groupId: 11,
+             name: "수정NAME",
+             description: "테스트그룹 설명5",
+             privatePassword: "1234",
+             groupTags: [
+               { id: 1, field: "IT", name: "스프링" },
+               { id: 2, field: "IT", name: "리액트" },
+               { id: 3, field: "IT", name: "자바" }
+             ],
+             groupMembers: [
+               { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" },
+               { id: "TESTID2", userName: "TESTNAME2", profileImgPath: "TESTURL2" }
+             ],
+             groupManagers: [
+               { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/35/23dc85ac1d8c845da121c12ff644d920_res.jpeg" },
+               { id: "TESTID2", userName: "TESTNAME2", profileImgPath: null }
+             ],
+             groupNotice: "초기 공지사항"
+           });
+           setPrivatePassword("1234");
+         }
+       });
+       fetchTags().then(response => {
+         if (response && response.code === 200) {
+           setAvailableTags(response.data);
+         } else {
+           console.error('태그 정보를 가져오는데 실패했습니다.');
+           // 태그 정보를 가져오지 못했을 때 더미 데이터 사용
+           setAvailableTags([
+             { id: 1, field: "IT", name: "스프링" },
+             { id: 2, field: "IT", name: "자바" },
+             { id: 3, field: "IT", name: "리액트" },
+             { id: 4, field: "IT", name: "자바스크립트" },
+             { id: 5, field: "여행", name: "일본" },
+             { id: 6, field: "여행", name: "미국" },
+             { id: 7, field: "여행", name: "영국" },
+             { id: 8, field: "여행", name: "호주" }
+           ]);
+         }
+       });
+     }
+   }, [groupId]);
+
   // 백엔드에서 그룹 정보를 가져오는 함수 (미구현 상태)
   const fetchGroupDetails = async (groupId) => { 
     // TODO: 백엔드 API 호출 로직 구현
@@ -76,90 +140,122 @@ const EditGroupPage = () => {
 
   // 백엔드에서 멤버 목록을 가져오는 함수
   const fetchMembers = async () => {
+    const accessToken = localStorage.getItem('accessToken');
     try {
-      const res = await axios.get(process.env.REACT_APP_SERVER_URL + "/api/members/all");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+    };
+
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/list/members/member/${localStorage.getItem('userId')}/group/${groupId}`, config);
       if (res.data.code === 200) {
         return res.data.data;
-      } else {
+      }
+      else if(res.data.code === 401) {
+        await refreshAccessToken(navigate);
+        fetchMembers();
+      } 
+      else {
         throw new Error('Failed to fetch members');
       }
     } catch (error) {
       console.error(error);
       return [];
     }
-  };
+  };  
 
-  // useState를 사용하여 그룹 정보 상태 관리
-  const [groupDetails, setGroupDetails] = useState(null);
-  const [availableTags, setAvailableTags] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentManagerIndex, setCurrentManagerIndex] = useState(null);
-  const [members, setMembers] = useState([]);
-  const [privatePassword, setPrivatePassword] = useState("");
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (groupId) {
-      fetchGroupDetails(groupId).then(response => {
-        if (response && response.code === 200) {
-          setGroupDetails(response.data);
-          setPrivatePassword(response.data.privatePassword || "");
-        } else {
-          // 백엔드에서 데이터를 가져오지 못했을 때 더미 데이터 사용
-          console.error('그룹 정보를 가져오는데 실패했습니다. 더미 데이터를 사용합니다.');
-          setGroupDetails({
-            groupId: 11,
-            name: "수정NAME",
-            description: "테스트그룹 설명5",
-            privatePassword: "1234",
-            groupTags: [
-              { id: 1, field: "IT", name: "스프링" },
-              { id: 2, field: "IT", name: "리액트" },
-              { id: 3, field: "IT", name: "자바" }
-            ],
-            groupMembers: [
-              { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "TESTURL1" },
-              { id: "TESTID2", userName: "TESTNAME2", profileImgPath: "TESTURL2" }
-            ],
-            groupManagers: [
-              { id: "TESTID1", userName: "TESTNAME1", profileImgPath: "https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/35/23dc85ac1d8c845da121c12ff644d920_res.jpeg" },
-              { id: "TESTID2", userName: "TESTNAME2", profileImgPath: null }
-            ],
-            groupNotice: "초기 공지사항"
-          });
-          setPrivatePassword("1234");
-        }
-      });
-      fetchTags().then(response => {
-        if (response && response.code === 200) {
-          setAvailableTags(response.data);
-        } else {
-          console.error('태그 정보를 가져오는데 실패했습니다.');
-          // 태그 정보를 가져오지 못했을 때 더미 데이터 사용
-          setAvailableTags([
-            { id: 1, field: "IT", name: "스프링" },
-            { id: 2, field: "IT", name: "자바" },
-            { id: 3, field: "IT", name: "리액트" },
-            { id: 4, field: "IT", name: "자바스크립트" },
-            { id: 5, field: "여행", name: "일본" },
-            { id: 6, field: "여행", name: "미국" },
-            { id: 7, field: "여행", name: "영국" },
-            { id: 8, field: "여행", name: "호주" }
-          ]);
-        }
-      });
-    }
-  }, [groupId]);
-
-  const handleSave = async () => {
+  const updateGroup = async () => {
     // TODO: 백엔드에 그룹 정보를 저장하는 로직 구현
-      console.log(groupDetails);
+    const accessToken = localStorage.getItem('accessToken');
+
+    let groupData = {
+      group: {
+        id: groupDetails.groupId,
+        name: groupDetails.name,
+        description: groupDetails.description
+      },
+      admin: {
+        id: localStorage.getItem("userId")
+      },
+      groupTags: groupDetails.groupTags,
+      notice: {
+        contents: groupDetails.groupNotice
+      },
+      membersToManager: membersToManager,
+      managersToMember: managersToMember
+    };
+
+    console.log(groupData);
+
     try {
+      const config = {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+      };
+      const res = await axios.put(process.env.REACT_APP_SERVER_URL + "/api/group/update", groupData, config);
+      console.log(res);
+
+      if(res.data.code === 200) {
+        return true;
+      }
+      else if(res.data.code === 401) {
+          await refreshAccessToken(navigate);
+          updateGroup();
+      }
+      else {
+          throw new Error('unknown Error');
+      }
 
     } catch (error) {
       console.error(error);
     }
+    
     // navigate(-1);
+  };
+
+  const handleSave = async () => {
+    Swal.fire({
+      icon: "question",
+      title: "그룹 정보를 수정하시겠나요?",
+      showCancelButton: true,
+      confirmButtonText: "수정",
+      cancelButtonText: "취소"
+      }).then(async (res) => {
+        if(res.isConfirmed) {
+          const res = await updateGroup();
+
+          if(res) {
+              Swal.fire({
+                  position: "center",
+                  icon: "success",
+                  title: "정상적으로 변경되었어요!",
+                  showConfirmButton: false,
+                  timer: 1500
+              }).then(res => {
+                  window.location.reload();            
+              });
+          } else {
+              Swal.fire({
+                  position: "center",
+                  icon: "error",
+                  html: `변경 중 오류가 발생했어요!<br>잠시 후, 다시 한 번 시도해주세요!`,
+                  showConfirmButton: false,
+                  timer: 1500
+              });
+          }
+      }
+      else {
+          Swal.fire({
+              position: "center",
+              icon: "info",
+              title: "수정을 취소했어요.",
+              showConfirmButton: false,
+              timer: 1500
+          });
+      }
+  });
   };
 
   const deleteGroup = async () => {
