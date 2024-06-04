@@ -235,7 +235,7 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
                 {selectedGroup.groupId === -1 && (
                     <button className="add-schedule-button" onClick={() => setActivePanel('addSchedule')}>일정추가</button>
                 )}
-                {selectedGroup.groupId !== -1 && selectedGroup.isAdmin && (
+                {selectedGroup.groupId !== -1 && (selectedGroup.isAdmin || selectedGroup.isManager) && (
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <button className="add-schedule-button" onClick={() => setActivePanel('addSchedule')} style={{ marginRight: '10px' }}>일정추가</button>
                         <button className="add-schedule-button" style={{ fontSize: '19px' }} onClick={handleImportMySchedule}>내일정가져오기</button>
