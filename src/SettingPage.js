@@ -30,6 +30,7 @@ const SettingPage = () => {
 
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
+    const [profileImageFile, setProfileImageFile] = useState(null);
     const [originalProfileImgPath, setOriginalProfileImgPath] = useState('');
 
     const [interests, setInterests] = useState(['', '', '']); // 관심사 상태 추가
@@ -68,7 +69,7 @@ const SettingPage = () => {
                 showConfirmButton: false,
                 timer: 1500
             }).then(res => {
-                navigate('/main');
+                navigate('/main'); 
             });
         }
     })
@@ -99,6 +100,7 @@ const SettingPage = () => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setProfileImage(reader.result);
+                setProfileImageFile(file);
                 setUserInfo({ ...userInfo, profileImgPath: reader.result });
             };
             reader.readAsDataURL(file);
@@ -112,6 +114,7 @@ const SettingPage = () => {
     const handleProfileEditCancel = () => {
         setIsEditingProfile(false);
         setProfileImage(null);
+        setProfileImageFile(null);
         setUserInfo(prevState => ({
             ...prevState,
             profileImgPath: originalProfileImgPath
@@ -180,7 +183,7 @@ const SettingPage = () => {
                     id: userInfo.id,
                     password: state.password,
                     userName: userInfo.userName,
-                    profileImageUrl: (profileImage === null && !isEditingProfile) ? userInfo.profileImgPath : '',
+                    profileImageUrl: (profileImageFile === null && !isEditingProfile) ? userInfo.profileImgPath : '',
                     interestId: interestData
                 };
                 console.log("data", data);
@@ -189,7 +192,7 @@ const SettingPage = () => {
                     id: userInfo.id,
                     password: userInfo.password,
                     userName: userInfo.userName,
-                    profileImageUrl: (profileImage === null && !isEditingProfile) ? userInfo.profileImgPath : '',
+                    profileImageUrl: (profileImageFile === null && !isEditingProfile) ? userInfo.profileImgPath : '',
                     interestId: interestData
                 };
             }
@@ -197,13 +200,13 @@ const SettingPage = () => {
             const formData = new FormData();
             formData.append('data', new Blob([JSON.stringify(data)], {type: 'application/json'}));
 
-            if(profileImage) {
-                formData.append('profileImage', profileImage);
+            if(profileImageFile) {
+                formData.append('profileImage', profileImageFile);
             } else {
                 formData.append('profileImage', '[]');
             }
 
-            console.log('pro', profileImage);
+            console.log('pro', profileImageFile);
 
             const config = {
                 headers: {
@@ -217,6 +220,7 @@ const SettingPage = () => {
 
             if(res.data.code === 200) {
                 state.password = data.password;
+                state.profileImgPath = res.data.data.profileImgPath;
                 setUserInfo({...userInfo, password: ''});
                 return true;
             }
@@ -410,8 +414,10 @@ const SettingPage = () => {
                 <div className={styles.profileImageContainer}>
                     {profileImage ? (
                         <img src={profileImage} alt="profile" className={styles.profileImage} />
-                    ) : (
-                        <UserOutlined style={{ fontSize: '150px' }} />
+                    ) : ( // 여기 고치는 중
+                        {state.profileImgPath !== '' ? 
+                            (<img src={profileImgPath} alt="profile" className={styles.profileImage} />)
+                             : (<UserOutlined style={{ fontSize: '150px' }} />)}
                     )}
                     <div className={styles.editIcon} onClick={handleProfileEditClick}>
                         <EditOutlined style={{ fontSize: '24px' }} />
