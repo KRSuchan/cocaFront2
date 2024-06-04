@@ -6,12 +6,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { refreshAccessToken } from './security/TokenManage';
-
 const SettingPage = () => {
     let { state } = useLocation();
     console.log("state", state);
 
     const [userInfo, setUserInfo] = useState({
+        id: 'defaultUser',
+        password: 'defaultPassword',
         id: state?.id || 'defaultUser',
         password: state?.password || 'defaultPassword',
         userName: 'defaultUserName',
@@ -27,14 +28,11 @@ const SettingPage = () => {
             tagName: '코카콜라'
         }]
     });
-
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
     const [profileImageFile, setProfileImageFile] = useState(null);
     const [originalProfileImgPath, setOriginalProfileImgPath] = useState('');
-
     const [interests, setInterests] = useState(['', '', '']); // 관심사 상태 추가
-
     // 관심사 변경 처리 함수 추가
     const handleInterestChange = (index, event) => {
         const value = event.target.value;
@@ -44,10 +42,8 @@ const SettingPage = () => {
             return newInterests;
         });
     };
-
     // 태그 리스트 상태 추가
     const [tagList, setTagList] = useState([]);
-
     // 태그 리스트 가져오기 함수 추가
     const fetchTagList = async () => {
         try {
@@ -58,9 +54,8 @@ const SettingPage = () => {
             console.error(error);
         }
     };
-
     useEffect(() => {
-        if (state === null) {
+        if(state === null) {
             Swal.fire({
                 position: "center",
                 icon: "error",
@@ -71,18 +66,8 @@ const SettingPage = () => {
             }).then(res => {
                 navigate('/main'); 
             });
-        } else {
-            setUserInfo({
-                id: state.id,
-                password: '',
-                userName: state.userName,
-                profileImgPath: state.profileImgPath,
-                interest: state.interest.map(item => item.tagName)
-            });
-            setInterests(state.interest.map(item => item.tagName));
         }
-    }, [state]);
-
+    })
     useEffect(() => {
         fetchTagList().then(res => {
             if (res.code === 200) {
@@ -92,48 +77,28 @@ const SettingPage = () => {
             }
         });
     }, []);
-
     useEffect(() => {
         setOriginalProfileImgPath(userInfo.profileImgPath);
     }, [userInfo.profileImgPath]);
-
-    useEffect(() => {
-        if (state) {
-            setUserInfo({
-                id: state.id,
-                password: '',
-                userName: state.userName,
-                profileImgPath: state.profileImgPath,
-                interest: state.interest.map(item => item.tagName)
-            });
-            setInterests(state.interest.map(item => item.tagName));
-        }
-    }, [state]);
-
+    
     console.log(userInfo);
-
     const navigate = useNavigate();
-
     const handleProfileImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setUserInfo(prevState => ({
-                    ...prevState,
-                    profileImgPath: reader.result
-                }));
                 setProfileImage(reader.result);
                 setProfileImageFile(file);
+                setUserInfo({ ...userInfo, profileImgPath: reader.result });
+                state.profileImgPath = reader.result; // Update state with new profile image
             };
             reader.readAsDataURL(file);
         }
     };
-
     const handleProfileEditClick = () => {
         setIsEditingProfile(true);
     };
-
     const handleProfileEditCancel = () => {
         setIsEditingProfile(false);
         setProfileImage(null);
@@ -143,14 +108,11 @@ const SettingPage = () => {
             profileImgPath: originalProfileImgPath
         }));
     };
-
     // 백엔드 API 호출을 위한 함수 선언 (현재는 더미 데이터 사용)
     const fetchUserInfo = async () => {
         // 백엔드에서 사용자 정보를 불러오는 로직 구현 예정
         // console.log("백엔드에서 사용자 정보를 불러오는 로직 구현 예정");
-
         const accessToken = localStorage.getItem('accessToken');
-
         try {
             const config = {
                 headers: {
@@ -161,9 +123,7 @@ const SettingPage = () => {
                 id: state.id,
                 password: state.password,
             }, config);
-
             console.log(res);
-
             if(res.data.code === 200) {
                 return res.data.data;
             }
@@ -185,13 +145,10 @@ const SettingPage = () => {
             });
         }
     };
-
     const updateMember = async () => {
         const accessToken = localStorage.getItem('accessToken');
-
         try {
             let data = userInfo;
-
             const interestData = interests
             .filter(item => item !== '')
             .map(item => {
@@ -199,7 +156,6 @@ const SettingPage = () => {
                 return tag ? {tagId: tag.id, TagName: tag.name} : null;
             })
             .filter(tag => tag !== null);
-
             if(userInfo.password === '') {
                 console.log("pw blanked");
                 data = {
@@ -219,28 +175,22 @@ const SettingPage = () => {
                     interestId: interestData
                 };
             }
-
             const formData = new FormData();
             formData.append('data', new Blob([JSON.stringify(data)], {type: 'application/json'}));
-
             if(profileImageFile) {
                 formData.append('profileImage', profileImageFile);
             } else {
                 formData.append('profileImage', '[]');
             }
-
             console.log('pro', profileImageFile);
-
             const config = {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                   'Content-Type': 'multipart/form-data'
                 },
             };
-
             const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/memberInfoUpdateReq", formData, config);
             console.log(res);
-
             if(res.data.code === 200) {
                 state.password = data.password;
                 state.profileImgPath = res.data.data.profileImgPath;
@@ -267,7 +217,6 @@ const SettingPage = () => {
             });
         }
     }
-
     const handleUpdate = async () => {
         // 백엔드에 사용자 정보를 업데이트하는 로직 구현 예정
         // console.log("백엔드에 사용자 정보를 업데이트하는 로직 구현 예정");
@@ -280,7 +229,6 @@ const SettingPage = () => {
         }).then(async (res) => {
             if(res.isConfirmed) {
                 const res = await updateMember();
-
                 if(res) {
                     Swal.fire({
                         position: "center",
@@ -311,23 +259,18 @@ const SettingPage = () => {
                 });
             }
         });
-
         
         
     };
-
     const deleteMember = async (password) => {
         console.log("탈퇴 처리");
-
         const accessToken = localStorage.getItem('accessToken');
-
         try {
             const config = {
                 headers: {
                   Authorization: `Bearer ${accessToken}`,
                 },
               };
-
         const res = await axios.post(process.env.REACT_APP_SERVER_URL + "/api/member/withdrawalReq", 
             {
                 id: userInfo.id,
@@ -335,16 +278,13 @@ const SettingPage = () => {
             },
             config
         );
-
         console.log(res);
-
         if(res.data.data) {
             return res.data.data;
         } else if (res.data.code === 401) {
             await refreshAccessToken(navigate);
             deleteMember();
         }
-
         } catch (error) {
             Swal.fire({
                 position: "center",
@@ -356,7 +296,6 @@ const SettingPage = () => {
             });
         }
     }
-
     const handleDelete = async () => {
         // 백엔드에 사용자 탈퇴 요청하는 로직 구현 예정
         // console.log("백엔드에 사용자 탈퇴 요청하는 로직 구현 예정");
@@ -375,13 +314,11 @@ const SettingPage = () => {
                 if(!res) {
                     return Swal.showValidationMessage('비밀번호가 달라요!');
                 }
-
                 return res;
             }
         }).then(async (res) => {
             if(res.isConfirmed) {
                 localStorage.clear();
-
                 Swal.fire({
                     position: "center",
                     icon: "success",
@@ -390,7 +327,6 @@ const SettingPage = () => {
                     showConfirmButton: false,
                     timer: 1500
                 });
-
                 navigate("/");
             }
             else {
@@ -404,15 +340,12 @@ const SettingPage = () => {
             }
         });
     };
-
     const handleBack = () => {
         navigate('/main');
     };
-
     useEffect(() => {
         const fetchData = async () => {
             if(state === null) return;
-
             const res = await fetchUserInfo();
             setUserInfo({ 
                 id: res.id, 
@@ -423,10 +356,8 @@ const SettingPage = () => {
             });
             setInterests(res.interest.map(item => item.tagName));
         }
-
         fetchData();
     }, []);
-
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -435,7 +366,7 @@ const SettingPage = () => {
             </div>
             <div className={styles.content}>
                 <div className={styles.profileImageContainer}>
-                {profileImage ? (
+                    {profileImage ? (
                         <img src={profileImage} alt="profile" className={styles.profileImage} />
                     ) : (
                         state?.profileImgPath ? (
@@ -491,6 +422,4 @@ const SettingPage = () => {
         </div>
     );
 };
-
 export default SettingPage;
-
