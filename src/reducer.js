@@ -29,6 +29,8 @@ const reducer = (state = initialState, action) => {
             return { ...state, groups: groupsWithDefault };
         case 'SELECT_GROUP':
             return { ...state, selectedGroup: action.payload };
+        case 'RESET_STATE':
+            return initialState;
         default:
             return state;
     }

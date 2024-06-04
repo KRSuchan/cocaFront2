@@ -244,6 +244,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                 console.log(pair[0]+ ', ' + pair[1]);
             }
 
+            console.log('att', tmpAttachments);
             console.log('fd', formData);
         
             let response;
@@ -344,6 +345,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             for (let pair of formData.entries()) {
                 console.log(pair[0]+ ', ' + pair[1]);
             }
+
+            console.log("att", tmpAttachments);
 
             console.log('fd', formData);
 

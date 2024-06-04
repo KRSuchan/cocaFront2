@@ -6,6 +6,7 @@ import styles from '../css/GroupPage.module.css';
 import axios from 'axios';
 import { checkPassword, refreshAccessToken } from '../security/TokenManage';
 import Swal from 'sweetalert2';
+import { useDispatch } from 'react-redux';
 
 const EditGroupPage = () => {
   const { groupId } = useParams();
@@ -79,6 +80,7 @@ const EditGroupPage = () => {
   const [currentManagerIndex, setCurrentManagerIndex] = useState(null);
   const [newManagerId, setNewManagerId] = useState("");
   const [privatePassword, setPrivatePassword] = useState("");
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (groupId) {
@@ -214,6 +216,7 @@ const EditGroupPage = () => {
             showConfirmButton: false,
             timer: 1500
           }).then(res => {
+            dispatch({ type: 'RESET_STATE', payload: null });
             navigate("/main");
             window.location.reload();
           });

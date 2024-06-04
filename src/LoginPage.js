@@ -3,17 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './css/LoginPage.css';
 import Swal from 'sweetalert2';
+import { useDispatch } from 'react-redux';
 
 function LoginPage() {
   const navigate = useNavigate();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const id = localStorage.getItem('userId');
 
     if(id) {
       navigate('/main');
+    }
+    else {
+      dispatch({ type: 'RESET_STATE', payload: null });
     }
   })
 

@@ -85,7 +85,10 @@ const GroupsList = () => {
                             title: "정상적으로 탈퇴되었어요!",
                             showConfirmButton: false,
                             timer: 1500
-                        }).then(async (res) => { window.location.reload(); });
+                        }).then(async (res) => { 
+                            dispatch({ type: 'RESET_STATE', payload: null });
+                            window.location.reload();
+                        });
                     } else if (res.code === 400) {
                         Swal.fire({
                             position: "center",

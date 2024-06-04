@@ -34,6 +34,9 @@ const GroupPage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // 유저 해시태그 상태
+  const [userTags, setUserTags] = useState(['', '', '']);
+
   const handleBackClick = () => { // 뒤로가기 버튼
     navigate("/main");
   }
@@ -54,6 +57,21 @@ const GroupPage = () => {
     }
   }
 
+  const fetchUserTags = async () => {
+    const accessToken = localStorage.getItem('accessToken');
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
     fetchTagList().then(res => {
       if(res.code === 200) {
@@ -62,6 +80,8 @@ const GroupPage = () => {
         console.error('태그 정보 가져오기 실패');
       }
     })
+
+
   }, []);
 
   // TODO :: 페이지 검색 처리
@@ -73,7 +93,10 @@ const GroupPage = () => {
               Authorization: `Bearer ${accessToken}`,
             },
         };
-        const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/find/tag/${searchTag}/pageNum/${pageNum}`, config);
+
+        const url = searchTag !== '' ? `/api/group/find/tag/${searchTag}/pageNum/${pageNum}` : `/api/group/find/tag/pageNum/${pageNum}`
+        
+        const res = await axios.get(process.env.REACT_APP_SERVER_URL + url, config);
         console.log(res); 
         
         if(res.data.code === 200) {
@@ -110,7 +133,10 @@ const GroupPage = () => {
             Authorization: `Bearer ${accessToken}`,
           },
       };
-      const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/group/find/groupName/${searchText}/pageNum/${pageNum}`, config);
+
+      const url = searchText !== '' ? `/api/group/find/groupName/${searchText}/pageNum/${pageNum}` : `/api/group/find/groupName/pageNum/${pageNum}`
+
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + url, config);
       console.log(res);
 
       if(res.data.code === 200) {
@@ -138,10 +164,13 @@ const GroupPage = () => {
     }
   }
 
-  const searchGroup = async(pageNum = 1) => {
+  const searchGroup = async(pageNum) => {
     let res;
 
-    if(searchTerm.includes("#")) { // 태그 검색
+    if(searchTerm === '#') {
+      res = await searchGroupByName('', pageNum);
+    }
+    else if(searchTerm.includes("#")) { // 태그 검색
       const match = searchTerm.match(/#([^\s]+)/)[1];
       console.log("matchText", match);
       res = await searchGroupByTag(match, pageNum);
@@ -156,36 +185,36 @@ const GroupPage = () => {
 
   const handleSearchEnter = (event) => { // 22✅ 엔터 눌렀을때 [그룹 페이지] 
     if (event.key === 'Enter') {
-      if (searchTerm.trim() === '') {
-        Swal.fire({
-          position: "center",
-          icon: "warning",
-          title: "경고!",
-          text: "검색어를 입력해주세요!",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        return;
-      }
+      // if (searchTerm.trim() === '') {
+      //   Swal.fire({
+      //     position: "center",
+      //     icon: "warning",
+      //     title: "경고!",
+      //     text: "검색어를 입력해주세요!",
+      //     showConfirmButton: false,
+      //     timer: 1500
+      //   });
+      //   return;
+      // }
       console.log('검색어:', searchTerm);
-      searchGroup();
+      searchGroup(1);
     }
   };
 
   const handleSearchClick = () => { // 검색 버튼 클릭
-    if (searchTerm.trim() === '') {
-      Swal.fire({
-        position: "center",
-        icon: "warning",
-        title: "경고!",
-        text: "검색어를 입력해주세요!",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      return;
-    }
+    // if (searchTerm.trim() === '') {
+    //   Swal.fire({
+    //     position: "center",
+    //     icon: "warning",
+    //     title: "경고!",
+    //     text: "검색어를 입력해주세요!",
+    //     showConfirmButton: false,
+    //     timer: 1500
+    //   });
+    //   return;
+    // }
     console.log('검색 버튼 클릭:', searchTerm);
-    searchGroup();
+    searchGroup(1);
   };
 
   const handlePageChange = (event, value) => {
@@ -221,7 +250,7 @@ const GroupPage = () => {
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             <input
               type="text"
-              placeholder="검색"
+              placeholder="검색 (빈 칸은 전체 검색)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleSearchEnter}
