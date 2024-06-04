@@ -17,7 +17,7 @@ const { Option } = Select;
 const { TabPane } = Tabs;
 
 // 🍀🍀🍀 코드 작동 방식
-// 🍀 range 로 검색범위 설정하고 >  number 로 찾을 기간 N > unit 으로 일/시간 선택
+// 🍀 range 로 검색범위 설정하고 >  number 로 찾을 기간 N > unit 으로 일/시간/분 선택
 // 🍀 멤버 추가 버튼 누르면 멤버선택 가능하고, 추가 버튼 누르면 members 멤버 상태에 추가됨
 // 🍀 handleSearch 찾기버튼 > 각 멤버들의 일정 받아와 schedules로, 빈일정 받아와 emptySchedules로 넣음
 // 🍀 unit 에 맞게 시점과 일정이 표시되며 가로축으로 스크롤도 가능
@@ -34,7 +34,7 @@ const PowerEmptySchedule = () => {
 
     // ✌️✌️✌️ 상단 검색 조건 상태들
     const [number, setNumber] = useState(1); // 숫자 (N)
-    const [unit, setUnit] = useState('일'); // '일', '시간'
+    const [unit, setUnit] = useState('일'); // '일', '시간', '분'
     const [range, setRange] = useState(null); //시작일 끝일
     const [members, setMembers] = useState([
         { id: 1, name: '아이유에오', photo: 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/202306/04/138bdfca-3e86-4c09-9632-d22df52a0484.jpg' },
@@ -171,7 +171,7 @@ const PowerEmptySchedule = () => {
         setRange(dates);
     };
 
-    const handleSearch = async () => { //✌️찾기버튼 눌렀을떄! unit에서 일인지 시간인 확인해야 함. 
+    const handleSearch = async () => { //✌️찾기버튼 눌렀을떄! unit에서 일인지 시간인지 분인지 확인해야 함. 
         // 일정 데이터를 받아옴. 
         const fetchSchedules = async () => {
             const data = [
@@ -226,7 +226,7 @@ const PowerEmptySchedule = () => {
             // FullCalendar의 view를 업데이트
             if (unit === '일') {
                 calendarApi.changeView('customRange', {
-                    duration: { months: 13 },
+                    duration: { months: 3 },
                     visibleRange: {
                         start: startDate,
                         end: endDate
@@ -235,6 +235,17 @@ const PowerEmptySchedule = () => {
             } else if (unit === '시간') {
                 calendarApi.changeView('customHourRange', {
                     duration: { hours: 430 }, // 49주를 일수로 변환
+                    visibleRange: {
+                        start: startDate,
+                    },
+                    slotLabelFormat: [
+                        { month: 'short', day: 'numeric', weekday: 'short' }, // 상위 레벨: 월, , 요일
+                        { hour: '2-digit', minute: '2-digit', hour12: false } // 하위 레벨: 시간
+                    ]
+                });
+            } else if (unit === '분') {
+                calendarApi.changeView('customMinuteRange', {
+                    duration: { minutes: 2880 }, // 2일을 분으로 변환
                     visibleRange: {
                         start: startDate,
                     },
@@ -366,7 +377,7 @@ const PowerEmptySchedule = () => {
                 headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'customHourRange,customRange'
+                    right: 'customMinuteRange,customHourRange,customRange,resourceTimelineDay,resourceTimelineMonth,resourceTimelineYear'
                 }}
                 views={{
                     resourceTimelineYear: {
@@ -385,8 +396,17 @@ const PowerEmptySchedule = () => {
                     },
                     customHourRange: {
                         type: 'resourceTimeline',
-                        duration: { hours: 430 }, 
+                        duration: { hours: 48 }, 
                         buttonText: '시간범위',
+                        slotLabelFormat: [
+                            { month: 'short', day: 'numeric', weekday: 'short' }, // 상위 레벨: 월, 일, 요일
+                            { hour: '2-digit', minute: '2-digit', hour12: false } // 하위 레벨: 시간
+                        ]
+                    },
+                    customMinuteRange: {
+                        type: 'resourceTimeline',
+                        duration: { minutes: 2880 }, 
+                        buttonText: '분범위',
                         slotLabelFormat: [
                             { month: 'short', day: 'numeric', weekday: 'short' }, // 상위 레벨: 월, 일, 요일
                             { hour: '2-digit', minute: '2-digit', hour12: false } // 하위 레벨: 시간
@@ -401,6 +421,24 @@ const PowerEmptySchedule = () => {
                 resourceAreaWidth="20%"
                 slotMinWidth={100}
                 eventClick={handleEventClick} // 이벤트 클릭 핸들러 추가
+                customButtons={{
+                    prev: {
+                        text: 'prev',
+                        click: () => {
+                            console.log('Prev button clicked');
+                            const calendarApi = calendarRef.current.getApi();
+                            calendarApi.prev();
+                        }
+                    },
+                    next: {
+                        text: 'next',
+                        click: () => {
+                            console.log('Next button clicked');
+                            const calendarApi = calendarRef.current.getApi();
+                            calendarApi.next();
+                        }
+                    }
+                }}
             />
         );
     };
@@ -417,6 +455,7 @@ const PowerEmptySchedule = () => {
                 <Select value={unit} onChange={handleUnitChange} getPopupContainer={trigger => trigger.parentNode} style={{ width: '100px', marginLeft: '20px' }}>
                     <Option value="일">일</Option>
                     <Option value="시간">시간</Option>
+                    <Option value="시간">십분</Option>
                 </Select>
                 <button 
                     onClick={handleSearch} 
@@ -550,5 +589,3 @@ const PowerEmptySchedule = () => {
 };
 
 export default PowerEmptySchedule;
-
-
