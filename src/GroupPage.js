@@ -15,6 +15,7 @@ const GroupPage = () => {
   const navigate = useNavigate(); 
   // 검색어 상태
   const [searchTerm, setSearchTerm] = useState('');
+  const [initialSearchTerm, setInitialSearchTerm] = useState('');
 
   // 생성 페이지 상태
   const [createGroupPage, setCreateGroupPage] = useState(false);
@@ -67,11 +68,58 @@ const GroupPage = () => {
         },
       };
 
+      const res = await axios.get(process.env.REACT_APP_SERVER_URL + `/api/member/memberTagInquiryReq?memberId=${localStorage.getItem('userId')}`, config);
 
+      console.log(res);
+
+      if(res.data.code === 200) {
+        return res.data.data;
+      }
+      else if (res.data.code === 401) {
+        await refreshAccessToken(navigate);
+        fetchUserTags();
+      }
+      else {
+        throw new Error('unknown Error');
+      }
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "에러!",
+        text: "서버와의 통신에 문제가 생겼어요!",
+        showConfirmButton: false,
+        timer: 1500
+    });
     }
   }
+
+  useEffect(() => {
+    const setInitialTerm = async () => {
+      const data = await fetchUserTags();
+      const randomIndex = Math.floor(Math.random() * data.length);
+      const ranSelTag = data[randomIndex].tagName;
+      // setInitialSearchTerm(ranSelTag);
+      setInitialSearchTerm(ranSelTag);
+      setSearchTerm('#'+ranSelTag);
+
+      console.log(ranSelTag);
+      console.log('t', searchTerm);
+    }
+
+    setInitialTerm();
+  }, [])
+
+  useEffect(() => {
+    const searchInit = async () => {
+      const res = await searchGroupByTag(initialSearchTerm, 1);
+
+      setGroups(res);
+    }
+
+    searchInit();
+  }, [initialSearchTerm])
 
   useEffect(() => {
     fetchTagList().then(res => {
@@ -168,6 +216,7 @@ const GroupPage = () => {
   const searchGroup = async(pageNum) => {
     let res;
 
+    console.log(searchTerm);
     if(searchTerm === '#') {
       res = await searchGroupByName('', pageNum);
     }
