@@ -214,6 +214,15 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                 tmpAttachments = null;
             }
 
+            console.log('att3', tmpAttachments);
+            const attachmentData = tmpAttachments === null ? null :
+            tmpAttachments
+            .filter(item => !(item instanceof File) && item !== null)
+            .map(item => ({
+                fileName: item.fileName,
+                filePath: item.filePath
+            }));
+
             const requestData = {
                 personalSchedule: {
                     id: scheduleId,
@@ -223,13 +232,16 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                     startTime: formatDate(startDate),
                     endTime: formatDate(endDate),
                     color: colorCode,
-                    isPrivate: isPrivate
+                    isPrivate: isPrivate,
+                    attachments: attachmentData
                 },
                 member: {
                     id: localStorage.getItem('userId')
                 }
                 // attachments: tmpAttachments || null // attachments가 존재하지 않으면 null로 설정
             };
+
+            console.log(requestData);
 
             const formData = new FormData();
             formData.append('data', new Blob([JSON.stringify(requestData)], { type: 'application/json' } ));
@@ -250,6 +262,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             }
 
             console.log('att', tmpAttachments);
+            tmpAttachments.map(item => {console.log(item instanceof File)});
             console.log('fd', formData);
         
             let response;
@@ -283,7 +296,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                     showConfirmButton: false,
                     timer: 1500
                 }).then(res => {
-                    window.location.reload();
+                    // window.location.reload();
                 });
             } else if(response.data.code === 401) {
                 await refreshAccessToken(navigate);
