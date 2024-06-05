@@ -179,6 +179,26 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
         });
     };
 
+    const downloadFile = async (attachment) => {
+        try {
+            const response = await fetch(attachment.filePath);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = attachment.fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+        }
+    };
+
     return (
         <React.Fragment>
             <div className='new-page'>
@@ -224,7 +244,8 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
                             </div>
                             <div className="schedule-attachments">
                                 {item.attachments.map((attachment, i) => (
-                                    <a key={i} href={attachment.filePath} download={attachment.fileName} target="_blank" rel="noopener noreferrer">
+                                    // <a key={i} href={attachment.filePath} download={attachment.fileName} target="_blank" rel="noopener noreferrer">
+                                        <a key={i} onClick={() => downloadFile(attachment)}>
                                         <div className="attachment-name">💾 {attachment.fileName}</div>
                                     </a>
                                 ))}
