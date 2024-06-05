@@ -15,13 +15,7 @@ import axios from 'axios';
 import { refreshAccessToken } from './security/TokenManage';
 import Swal from 'sweetalert2';
 import { ko } from 'date-fns/locale'; // 한글 로케일 추가
-
-useEffect(() =>{
-    const id = localStorage.getItem('userId');
-    if(id === null) {
-        showLoginRequired(navigate);
-    }
-}, [])
+import { showLoginRequired } from './security/ErrorController';
 
 const FriendsPage = () => {
     const navigate = useNavigate();
@@ -29,6 +23,13 @@ const FriendsPage = () => {
         // navigate(-1);
         navigate('/main');
     };
+
+    useEffect(() =>{
+        const id = localStorage.getItem('userId');
+        if(id === null) {
+            showLoginRequired(navigate);
+        }
+    }, [])
 
     const [friends, setFriends] = useState([]);
     const [events, setEvents] = useState([]);

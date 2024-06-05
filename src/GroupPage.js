@@ -9,17 +9,20 @@ import { refreshAccessToken } from './security/TokenManage';
 import Swal from 'sweetalert2';
 import { SearchOutlined } from '@ant-design/icons'; // antd 아이콘 추가
 import Pagination from '@mui/material/Pagination'; // MUI Pagination 추가
-
-useEffect(() =>{
-  const id = localStorage.getItem('userId');
-  if(id === null) {
-      showLoginRequired(navigate);
-  }
-}, [])
+import { showLoginRequired } from './security/ErrorController';
 
 const GroupPage = () => {
 
   const navigate = useNavigate(); 
+
+  useEffect(() =>{
+    const id = localStorage.getItem('userId');
+    if(id === null) {
+        showLoginRequired(navigate);
+    }
+  }, [])
+  
+
   // 검색어 상태
   const [searchTerm, setSearchTerm] = useState('');
   const [initialSearchTerm, setInitialSearchTerm] = useState('');
