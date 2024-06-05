@@ -6,18 +6,16 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { refreshAccessToken } from "./security/TokenManage";
-
-
+import { showLoginRequired } from "./security/ErrorController";
 
 const SettingPage = () => {
-
-  useEffect(() =>{
-    const id = localStorage.getItem('userId');
-    if(id === null) {
-        showLoginRequired(navigate);
+  useEffect(() => {
+    const id = localStorage.getItem("userId");
+    if (id === null) {
+      showLoginRequired(navigate);
     }
-  }, [])
-  
+  }, []);
+
   let { state } = useLocation();
   console.log("state", state);
 
@@ -74,7 +72,7 @@ const SettingPage = () => {
     }
   };
 
-   // 더미 데이터로 태그 리스트 설정
+  // 더미 데이터로 태그 리스트 설정
   //  useEffect(() => {
   //   const dummyData = [
   //     { id: 1, name: "스프링" },
@@ -90,7 +88,7 @@ const SettingPage = () => {
   //   ];
   //   setTagList(dummyData);
   // }, []);
-  useEffect(() => { 
+  useEffect(() => {
     if (state === null) {
       Swal.fire({
         position: "center",
@@ -480,7 +478,9 @@ const SettingPage = () => {
                 선택하세요
               </option>
               {tagList
-                .filter(tag => !interests.includes(tag.name) || tag.name === interest)
+                .filter(
+                  tag => !interests.includes(tag.name) || tag.name === interest
+                )
                 .map(tag => (
                   <option key={tag.id} value={tag.name}>
                     {tag.name}
