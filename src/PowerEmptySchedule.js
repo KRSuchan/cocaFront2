@@ -292,6 +292,7 @@ const PowerEmptySchedule = () => {
             }
 
             console.log('data', data);
+            console.log('toDate', range[0].toDate())
 
             const res = await axios.post(process.env.REACT_APP_SERVER_URL + '/api/commonscheduleController/findEmptyScheduleReq', data, config);
 
@@ -386,9 +387,11 @@ const PowerEmptySchedule = () => {
         setEmptySchedules(emptyScheduleData);
 
         const memberScheduleData = await getMembersSchedules();
-        const memberSchedule = memberScheduleData.map(item => item.scheduleList);
-        console.log(memberSchedule);
-        setSchedules(memberSchedule);
+        if(memberScheduleData) {
+            const memberSchedule = memberScheduleData.map(item => item.scheduleList);
+            console.log(memberSchedule);
+            setSchedules(memberSchedule);
+        }
         
 
         if (range && range.length === 2) { // 검색 조건이 선택된 경우
@@ -472,6 +475,59 @@ const PowerEmptySchedule = () => {
         setMembers(members.filter(member => member.id !== id));
     };
 
+    // 일정 등록 요청
+    const sendScheduleRequest = async (title, description, location, startTime, endTime, color) => {
+        const accessToken = localStorage.getItem("accessToken");
+        try {
+            const config = {
+                headers: {
+                Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            console.log(members);
+
+            const memberData = members.filter(item => item.id !== localStorage.getItem('userId'))
+            .map(item => ({id: item.id}));
+
+            console.log(memberData);
+
+            const data = {
+                sender: {
+                    id: localStorage.getItem('userId')
+                },
+                requestedSchedule: {
+                    title: title,
+                    description: description,
+                    location: location,
+                    startTime: startTime+':00',
+                    endTime: endTime+':00',
+                    color: color
+                },
+                receivers: memberData
+            }
+
+            console.log('da', data);
+
+            const res = await axios.post(process.env.REACT_APP_SERVER_URL + '/api/request/add/schedule', data, config);
+
+            if(res.data.code === 201) {
+                return true;
+            }
+            else if(res.data.code === 401) {
+                await refreshAccessToken(navigate);
+                sendScheduleRequest(title, description, location, startTime, endTime, color);
+            }
+            else {
+                return new Error('unknown Error');
+            }
+
+        } catch(error) {
+            console.error(error);
+            return false;
+        }
+    }
+
     const handleEventClick = (info) => {
         const event = info.event;
     
@@ -481,7 +537,7 @@ const PowerEmptySchedule = () => {
             const endTime = moment(event.end).format('YYYY-MM-DD HH:mm');
     
             Swal.fire({
-                title: '일정추가',
+                title: '일정 추가 요청',
                 html: `
                     <input id="swal-input1" class="swal2-input" placeholder="제목">
                     <input id="swal-input2" class="swal2-input" placeholder="내용">
@@ -494,13 +550,69 @@ const PowerEmptySchedule = () => {
                     const content = document.getElementById('swal-input2').value;
                     const start = document.getElementById('swal-input3').value;
                     const end = document.getElementById('swal-input4').value;
-    
+                    
                     if (title && start && end) {
                         console.log('Title:', title);
                         console.log('Content:', content);
                         console.log('Start:', start);
                         console.log('End:', end);
+                        const data = {
+                            title: title,
+                            content: content,
+                            start: start,
+                            end: end
+                        }
+
+                        return data;
+                    } else {
+                        return Swal.showValidationMessage('내용을 제외한 모든 정보가 있어야 해요!');
                     }
+                }
+            }).then(async (res) => {
+                if(res.isConfirmed) {
+                    console.log(res);
+                    Swal.fire({
+                        icon: "question",
+                        title: "일정 추가 요청",
+                        width: 800,
+                        html: `내 캘린더에는 일정이 추가되고, 선택한 멤버들에게는 일정 등록 요청이 발생해요!<br>
+                        정말로 ${formatDate(res.value.start)} ~ ${formatDate(res.value.end)} 일정으로 요청을 보낼까요?`,
+                        showCancelButton: true,
+                        confirmButtonText: "요청",
+                        cancelButtonText: "취소",
+                    }).then(async (response) => {
+                        if(response.isConfirmed) {
+                            const res2 = await sendScheduleRequest(res.value.title, res.value.content, '', res.value.start, res.value.end, '#E94E77');
+                            if(res2) {
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "정상적으로 요청되었어요!",
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                  }).then(res => {
+                                    navigate('/');
+                                });
+                            } else {
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "error",
+                                    html: `요청 중 오류가 발생했어요!<br>잠시 후, 다시 한 번 시도해주세요!`,
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                });
+                            }
+                        }
+                        else {
+                            Swal.fire({
+                                position: "center",
+                                icon: "info",
+                                title: "요청을 취소했어요.",
+                                showConfirmButton: false,
+                                timer: 1500,
+                              });
+                        }
+                    });
                 }
             });
         }
@@ -548,6 +660,7 @@ const PowerEmptySchedule = () => {
 
         return (
             <FullCalendar
+                initialDate={range !== null ? formatDate(range[0].$d) : new Date()}
                 ref={calendarRef}
                 plugins={[resourceTimelinePlugin]}
                 // initialView="customRange"
