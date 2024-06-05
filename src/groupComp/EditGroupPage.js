@@ -399,7 +399,10 @@ const EditGroupPage = () => {
 
   const openMemberModal = async (index) => {
     const members = await fetchMembers();
-    setMembers(members);
+    const filteredMembers = members.filter(member => 
+      !groupDetails.groupManagers.some(manager => manager.id === member.id)
+    );
+    setMembers(filteredMembers);
     setCurrentManagerIndex(index);
     setIsModalOpen(true);
   };
