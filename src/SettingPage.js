@@ -6,6 +6,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { refreshAccessToken } from "./security/TokenManage";
+
+useEffect(() =>{
+  const id = localStorage.getItem('userId');
+  if(id === null) {
+      showLoginRequired(navigate);
+  }
+}, [])
+
 const SettingPage = () => {
   let { state } = useLocation();
   console.log("state", state);

@@ -16,6 +16,12 @@ import { refreshAccessToken } from './security/TokenManage';
 import Swal from 'sweetalert2';
 import { ko } from 'date-fns/locale'; // 한글 로케일 추가
 
+useEffect(() =>{
+    const id = localStorage.getItem('userId');
+    if(id === null) {
+        showLoginRequired(navigate);
+    }
+}, [])
 
 const FriendsPage = () => {
     const navigate = useNavigate();

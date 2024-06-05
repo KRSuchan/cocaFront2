@@ -12,6 +12,13 @@ import axios from 'axios';
 import { refreshAccessToken } from './security/TokenManage';
 import { useSelector } from 'react-redux';
 
+useEffect(() =>{
+    const id = localStorage.getItem('userId');
+    if(id === null) {
+        showLoginRequired(navigate);
+    }
+}, [])
+
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { TabPane } = Tabs;
