@@ -319,7 +319,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                     showConfirmButton: false,
                     timer: 1500
                 }).then(res => {
-                    // window.location.reload();
+                    window.location.reload();
                 });
             } else if(response.data.code === 401) {
                 await refreshAccessToken(navigate);
@@ -415,7 +415,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                     showConfirmButton: false,
                     timer: 1500
                 }).then(res => {
-                    // window.location.reload();
+                    window.location.reload();
                 });
             } else if(response.data.code === 401) {
                 await refreshAccessToken(navigate);
