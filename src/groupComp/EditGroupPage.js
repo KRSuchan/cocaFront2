@@ -399,7 +399,10 @@ const EditGroupPage = () => {
 
   const openMemberModal = async (index) => {
     const members = await fetchMembers();
-    setMembers(members);
+    const filteredMembers = members.filter(member => 
+      !groupDetails.groupManagers.some(manager => manager.id === member.id)
+    );
+    setMembers(filteredMembers);
     setCurrentManagerIndex(index);
     setIsModalOpen(true);
   };
@@ -488,9 +491,11 @@ const EditGroupPage = () => {
                 className={styles.input}
               >
                 <option value="" disabled>태그 선택</option>
-                {availableTags.map(option => (
-                  <option key={option.id} value={option.id}>{option.name}</option>
-                ))}
+                {availableTags
+                  .filter(option => !groupDetails.groupTags.some((tag, tagIndex) => tag?.id === option.id && tagIndex !== index))
+                  .map(option => (
+                    <option key={option.id} value={option.id}>{option.name}</option>
+                  ))}
               </select>
             ))}
           </div>
@@ -552,3 +557,4 @@ const EditGroupPage = () => {
 };
 
 export default EditGroupPage;
+

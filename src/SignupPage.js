@@ -222,7 +222,7 @@ function SignUpPage() {
           {interests.map((interest, index) => (
             <select key={index} id={`interest-${index}`} style={{ marginRight: '10px' }} value={interest} onChange={(e) => handleInterestChange(index, e)} required>
               <option value="" disabled>선택하세요</option>
-              {tagList.map(tag => (
+              {tagList.filter(tag => !interests.includes(tag.name) || tag.name === interest).map(tag => (
                 <option key={tag.id} value={tag.name}>{tag.name}</option>
               ))}
             </select>

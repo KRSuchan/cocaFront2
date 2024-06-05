@@ -810,7 +810,7 @@ const PowerEmptySchedule = () => {
             </div>
             <div className={styles.subPanel} style={{ display: 'flex', overflowX: 'auto', justifyContent: 'flex-start', height: '40px' }}>
                 <Button onClick={handleAddMember} style={{ marginRight: '10px' }}>멤버 추가</Button>
-                {members.map(member => (
+                {members.map((member, index) => (
                     <div key={member.id} style={{ display: 'flex', alignItems: 'center', marginRight: '10px' }}>
                         {member.photo ? (
                             <img 
@@ -822,10 +822,17 @@ const PowerEmptySchedule = () => {
                             <UserOutlined style={{ fontSize: '40px', marginRight: '10px' }} /> // 기본 아이콘 사용
                         )}
                         <span 
-                            style={{ cursor: 'pointer' }}
-                            onMouseEnter={(e) => e.target.style.color = 'red'}
-                            onMouseLeave={(e) => e.target.style.color = 'black'}
-                            onClick={() => handleDeleteMember(member.id)}
+                            style={{ 
+                                cursor: index !== 0 ? 'pointer' : 'default', 
+                                color: index !== 0 ? 'black' : 'gray' 
+                            }}
+                            onMouseEnter={(e) => {
+                                if (index !== 0) e.target.style.color = 'red';
+                            }}
+                            onMouseLeave={(e) => {
+                                if (index !== 0) e.target.style.color = 'black';
+                            }}
+                            onClick={() => index !== 0 && handleDeleteMember(member.id)} // 첫 번째 멤버는 삭제 불가
                         >
                             {member.name}
                         </span>

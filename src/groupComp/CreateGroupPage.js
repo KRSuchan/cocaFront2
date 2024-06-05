@@ -44,6 +44,20 @@ const CreateGroupPage = () => {
         console.error('관심분야 정보를 가져오는데 실패했습니다.');
       }
     });
+    // const dummyData = [
+    //   { id: 1, field: "IT", name: "스프링" },
+    //   { id: 2, field: "IT", name: "리액트" },
+    //   { id: 3, field: "IT", name: "자바" },
+    //   { id: 4, field: "IT", name: "파이썬" },
+    //   { id: 5, field: "IT", name: "자바스크립트" },
+    //   { id: 6, field: "IT", name: "C++" },
+    //   { id: 7, field: "IT", name: "루비" },
+    //   { id: 8, field: "IT", name: "고" },
+    //   { id: 9, field: "IT", name: "PHP" },
+    //   { id: 10, field: "IT", name: "HTML" }
+    // ];
+    // setInterestOptions(dummyData.map(option => option.name));
+    // setTags(dummyData.map(option => option));
   }, []);
 
   const createGroupAxios = async () => {
@@ -173,9 +187,11 @@ const CreateGroupPage = () => {
                 className={styles.select}
                 >
                 <option value="">관심분야 선택</option>
-                {interestOptions.map((option) => (
+                {interestOptions
+                    .filter(option => !interests.includes(option) || option === interest)
+                    .map((option) => (
                     <option key={option} value={option}>
-                    {option}
+                        {option}
                     </option>
                 ))}
                 </select>
