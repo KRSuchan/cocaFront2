@@ -224,7 +224,7 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
                             </div>
                             <div className="schedule-attachments">
                                 {item.attachments.map((attachment, i) => (
-                                    <a key={i} href={attachment.filePath} target="_blank" rel="noopener noreferrer">
+                                    <a key={i} href={attachment.filePath} download={attachment.fileName} target="_blank" rel="noopener noreferrer">
                                         <div className="attachment-name">💾 {attachment.fileName}</div>
                                     </a>
                                 ))}

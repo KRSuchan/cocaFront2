@@ -372,14 +372,18 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             formData.append('scheduleData', new Blob([JSON.stringify(requestData)], { type: 'application/json' } ));
 
             if (tmpAttachments && tmpAttachments.length > 0) {
-                tmpAttachments.forEach((attachment, index) => {
-                    if (attachment) {
+                const attachmentPromises = tmpAttachments.map(async (attachment) => {
+                    if (attachment && !(attachment instanceof File)) {
+                        const downloadedFile = await urlToFile(attachment.filePath, attachment.fileName);
+                        formData.append('scheduleFiles', downloadedFile);
+                    } else if (attachment instanceof File) {
                         formData.append('scheduleFiles', attachment);
                     }
                 });
-            }
-            else {
-                formData.append('scheduleFiles', "[]");
+    
+                await Promise.all(attachmentPromises);
+            } else {
+                formData.append('attachments', "[]");
             }
 
             // Log the FormData contents
@@ -411,7 +415,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                     showConfirmButton: false,
                     timer: 1500
                 }).then(res => {
-                    window.location.reload();
+                    // window.location.reload();
                 });
             } else if(response.data.code === 401) {
                 await refreshAccessToken(navigate);
