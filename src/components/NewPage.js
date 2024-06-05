@@ -125,6 +125,10 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
             console.log('ms2g', res);
 
             if(res.data.code === 200) {
+                if(res.data.data.length === 0){
+                    return 'no';
+                }
+
                 return true;
             } else if(res.data.code === 401) {
                 await refreshAccessToken(navigate);
@@ -152,8 +156,18 @@ const NewPage = ({ setActivePanel, selectedDate, schedule, setEditingSchedule, e
                 console.log(`${selectedDate} 일자에 포함된 내 일정을 가져옵니다.`);
 
                 const res = await addMyScehduleToGroup(selectedDate);
-
-                if(res) {
+                console.log(res);
+                if(res === 'no') {
+                    Swal.fire({
+                        position: "center",
+                        icon: "info",
+                        title: "일정 없음",
+                        text: "해당 일자에 등록된 내 일정이 없어요!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+                else if(res === true) {
                     Swal.fire({
                         position: "center",
                         icon: "success",
