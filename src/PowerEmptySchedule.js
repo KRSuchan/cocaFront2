@@ -12,12 +12,7 @@ import axios from 'axios';
 import { refreshAccessToken } from './security/TokenManage';
 import { useSelector } from 'react-redux';
 
-useEffect(() =>{
-    const id = localStorage.getItem('userId');
-    if(id === null) {
-        showLoginRequired(navigate);
-    }
-}, [])
+
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -31,6 +26,13 @@ const { TabPane } = Tabs;
 // 🍀 handleEventClick 일정 클릭시 일정 추가 모달창 띄우고 제목, 내용, 시작시간, 종료시간 입력 가능하고 저장하면 일정 추가됨
 
 const PowerEmptySchedule = () => {
+
+    useEffect(() =>{
+        const id = localStorage.getItem('userId');
+        if(id === null) {
+            showLoginRequired(navigate);
+        }
+    }, [])
     const navigate = useNavigate();
     const calendarRef = useRef(null);
     const [isModalVisible, setIsModalVisible] = useState(false); // 모달 상태
