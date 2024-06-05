@@ -50,7 +50,7 @@ const SettingPage = () => {
   };
   // 태그 리스트 상태 추가
   const [tagList, setTagList] = useState([]);
-  // 태그 리스트 가져오기 함수 추가
+  // // 태그 리스트 가져오기 함수 추가
   const fetchTagList = async () => {
     try {
       const res = await axios.get(
@@ -62,7 +62,24 @@ const SettingPage = () => {
       console.error(error);
     }
   };
-  useEffect(() => {
+
+   // 더미 데이터로 태그 리스트 설정
+  //  useEffect(() => {
+  //   const dummyData = [
+  //     { id: 1, name: "스프링" },
+  //     { id: 2, name: "리액트" },
+  //     { id: 3, name: "자바" },
+  //     { id: 4, name: "파이썬" },
+  //     { id: 5, name: "자바스크립트" },
+  //     { id: 6, name: "C++" },
+  //     { id: 7, name: "루비" },
+  //     { id: 8, name: "고" },
+  //     { id: 9, name: "PHP" },
+  //     { id: 10, name: "HTML" }
+  //   ];
+  //   setTagList(dummyData);
+  // }, []);
+  useEffect(() => { 
     if (state === null) {
       Swal.fire({
         position: "center",
@@ -451,11 +468,13 @@ const SettingPage = () => {
               <option value="" disabled>
                 선택하세요
               </option>
-              {tagList.map(tag => (
-                <option key={tag.id} value={tag.name}>
-                  {tag.name}
-                </option>
-              ))}
+              {tagList
+                .filter(tag => !interests.includes(tag.name) || tag.name === interest)
+                .map(tag => (
+                  <option key={tag.id} value={tag.name}>
+                    {tag.name}
+                  </option>
+                ))}
             </select>
           ))}
         </div>
