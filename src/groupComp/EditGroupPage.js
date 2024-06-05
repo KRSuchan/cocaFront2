@@ -9,6 +9,13 @@ import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
 import { Modal, Button } from 'antd';
 
+useEffect(() =>{
+  const id = localStorage.getItem('userId');
+  if(id === null) {
+      showLoginRequired(navigate);
+  }
+}, [])
+
 const EditGroupPage = () => {
   const { groupId } = useParams();
   const navigate = useNavigate();
