@@ -692,7 +692,7 @@ const NoticePage = () => {
                 <button className={styles.backButton} onClick={handleBack}>{'<'}</button>
                 <h1 className={styles.title}>알림</h1>
                 {/* <button className={styles.deleteAllButton} onClick={handleDeleteAll}>전체 삭제</button> */}
-                <button className={styles.addButton} onClick={handleDeleteAll} style={{ marginLeft:'10px', backgroundColor: '#41ADCA', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 20px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}>전체 삭제</button>
+                {/* <button className={styles.addButton} onClick={handleDeleteAll} style={{ marginLeft:'10px', backgroundColor: '#41ADCA', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 20px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}>전체 삭제</button> */}
 
             </div>
             <div style={{ width: '100%', height: '100%' }}>
