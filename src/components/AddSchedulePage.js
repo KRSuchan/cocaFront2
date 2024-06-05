@@ -82,7 +82,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
 
     // 일정 추가 또는 수정 로직
     const saveSchedule = async () => { //✅ 저장버튼 혹은 수정버튼을 눌렀을때 
-        if (!dateValidationCheck(startDate, endDate)) {
+        if (!(await dateValidationCheck(startDate, endDate))) {
             return;
         }
 
@@ -198,6 +198,24 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
         })
     }
     
+    const urlToFile = async (url, fileName) => {
+        try {
+            // e.preventDefault();
+            const response = await fetch(url);
+            console.log(response);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const blob = await response.blob();
+            return new File([blob], fileName, {type: blob.type});
+        } catch (error) {
+            console.error('Error fetching file:', error);
+            throw error;
+        }
+    }
+
+    // const get
+
     // 개인
     const postSchedule = async (url, method) => {
         const accessToken = localStorage.getItem('accessToken');
@@ -214,14 +232,14 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                 tmpAttachments = null;
             }
 
-            console.log('att3', tmpAttachments);
-            const attachmentData = tmpAttachments === null ? null :
-            tmpAttachments
-            .filter(item => !(item instanceof File) && item !== null)
-            .map(item => ({
-                fileName: item.fileName,
-                filePath: item.filePath
-            }));
+            // console.log('att3', tmpAttachments);
+            // const attachmentData = tmpAttachments === null ? null :
+            // tmpAttachments
+            // .filter(item => !(item instanceof File) && item !== null)
+            // .map(item => ({
+            //     fileName: item.fileName,
+            //     filePath: item.filePath
+            // }));
 
             const requestData = {
                 personalSchedule: {
@@ -232,8 +250,8 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
                     startTime: formatDate(startDate),
                     endTime: formatDate(endDate),
                     color: colorCode,
-                    isPrivate: isPrivate,
-                    attachments: attachmentData
+                    isPrivate: isPrivate
+                    // attachments: attachmentData
                 },
                 member: {
                     id: localStorage.getItem('userId')
@@ -247,11 +265,16 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             formData.append('data', new Blob([JSON.stringify(requestData)], { type: 'application/json' } ));
 
             if (tmpAttachments && tmpAttachments.length > 0) {
-                tmpAttachments.forEach((attachment, index) => {
-                    if (attachment) {
+                const attachmentPromises = tmpAttachments.map(async (attachment) => {
+                    if (attachment && !(attachment instanceof File)) {
+                        const downloadedFile = await urlToFile(attachment.filePath, attachment.fileName);
+                        formData.append('attachments', downloadedFile);
+                    } else if (attachment instanceof File) {
                         formData.append('attachments', attachment);
                     }
                 });
+    
+                await Promise.all(attachmentPromises);
             } else {
                 formData.append('attachments', "[]");
             }
@@ -262,7 +285,7 @@ const AddSchedulePage = ({ setActivePanel, selectedDate, editingSchedule }) => {
             }
 
             console.log('att', tmpAttachments);
-            tmpAttachments.map(item => {console.log(item instanceof File)});
+            // tmpAttachments.map(item => {console.log(item instanceof File)});
             console.log('fd', formData);
         
             let response;
