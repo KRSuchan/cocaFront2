@@ -51,9 +51,7 @@ const PowerEmptySchedule = () => {
   const [unit, setUnit] = useState("일"); // '일', '시간', '분'
   const [range, setRange] = useState(null); //시작일 끝일
   const [members, setMembers] = useState([
-    // { id: 1, name: '아이유에오', photo: 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/202306/04/138bdfca-3e86-4c09-9632-d22df52a0484.jpg' },
-    // { id: 2, name: '멤브레인', photo: 'https://i.pinimg.com/originals/c1/65/ae/c165ae2cbbf02e148743a4a7400ad0f5.jpg' },
-    // { id: 3, name: '멤버 3', photo: '' },
+    { id: localStorage.getItem('userId'), name: localStorage.getItem('userId'), photo: 'https://cocaattachments.s3.amazonaws.com/DEFAULT_PROFILE_IMG.jpg' }
   ]); // 기존 멤버 상태
 
   // ✌️✌️✌️ 일정 상태들
