@@ -7,16 +7,19 @@ import Swal from 'sweetalert2';
 import { refreshAccessToken } from './security/TokenManage';
 import axios from 'axios';
 
-useEffect(() =>{
-    const id = localStorage.getItem('userId');
-    if(id === null) {
-        showLoginRequired(navigate);
-    }
-}, [])
 
 const { TabPane } = Tabs;
 
 const NoticePage = () => {
+
+    useEffect(() =>{
+        const id = localStorage.getItem('userId');
+        if(id === null) {
+            showLoginRequired(navigate);
+        }
+    }, [])
+
+    
     const navigate = useNavigate();
     const [tab, setTab] = useState('일정');
     const [schedules, setSchedules] = useState([
