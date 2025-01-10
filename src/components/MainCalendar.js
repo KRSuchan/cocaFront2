@@ -16,7 +16,7 @@ moment.locale("ko");
 // Create the localizer
 const localizer = momentLocalizer(moment);
 
-// 메인페이지 일정 정보 통신
+// 메인페이지 일정 정보 통신 d
 const getPersonalSchedule = async (id, startDate, endDate, navigate) => {
     console.log("Get Personal Schedule");
     const accessToken = localStorage.getItem("accessToken");
